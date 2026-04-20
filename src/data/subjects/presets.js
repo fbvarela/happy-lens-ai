@@ -94,3 +94,18 @@ export const SUBJECT_PRESETS = [
 export function getSubjectPreset(id) {
   return SUBJECT_PRESETS.find((s) => s.id === id);
 }
+
+SUBJECT_PRESETS.push({
+  id: "pets",
+  label: "Pets",
+  icon: "🐾",
+  preferredLens: ["main", "tele2x"],
+  shutterFloorSec: 1 / 250,
+  isoCeiling: 3200,
+  cameraMode: "Photo",
+  intent: "Eye-level framing, fast shutter, patience; never direct flash in the eyes.",
+  contexts: ["portrait", "garden", "indoor", "action", "sleeping"],
+  animals: ["cat", "dog", "other"],
+  defaultContext: "portrait",
+  defaultAnimal: "cat",
+});

@@ -149,6 +149,24 @@ export const DICTIONARIES = {
       product: "Product",
       lowlight: "Low-light indoor",
       action: "Action / Sports",
+      pets: "Pets",
+    },
+
+    pets: {
+      contextLabel: "Where / what",
+      animalLabel: "Animal",
+      context: {
+        portrait: "Portrait",
+        garden: "In the garden",
+        indoor: "At home",
+        action: "Playing / running",
+        sleeping: "Sleeping / still",
+      },
+      animal: {
+        cat: "Cat",
+        dog: "Dog",
+        other: "Other",
+      },
     },
 
     lens: {
@@ -309,6 +327,24 @@ export const DICTIONARIES = {
       product: "Producto",
       lowlight: "Poca luz (interior)",
       action: "Acción / Deporte",
+      pets: "Mascotas",
+    },
+
+    pets: {
+      contextLabel: "Dónde / qué hace",
+      animalLabel: "Animal",
+      context: {
+        portrait: "Retrato",
+        garden: "En el jardín",
+        indoor: "En casa",
+        action: "Jugando / corriendo",
+        sleeping: "Dormido / quieto",
+      },
+      animal: {
+        cat: "Gato",
+        dog: "Perro",
+        other: "Otro",
+      },
     },
 
     lens: {

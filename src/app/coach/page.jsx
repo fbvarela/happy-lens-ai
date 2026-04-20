@@ -2,7 +2,8 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { SUBJECT_PRESETS } from "@/data/subjects/presets";
+import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
+import { PET_CONTEXTS } from "@/data/subjects/pet-contexts";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
@@ -34,6 +35,8 @@ function CoachPageInner() {
     notes: "",
   });
   const [useFlash, setUseFlash] = useState(false);
+  const [petContext, setPetContext] = useState("portrait");
+  const [animal, setAnimal] = useState("cat");
   const [locating, setLocating] = useState(false);
   const [timeHint, setTimeHint] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,6 +63,18 @@ function CoachPageInner() {
   }, [params]);
 
   useEffect(() => { if (!hasFlash) setUseFlash(false); }, [hasFlash]);
+
+  useEffect(() => {
+    try {
+      const savedAnimal = localStorage.getItem("hl.coach.pet.animal.v1");
+      if (savedAnimal && ["cat", "dog", "other"].includes(savedAnimal)) setAnimal(savedAnimal);
+    } catch {}
+  }, []);
+
+  const changeAnimal = (a) => {
+    setAnimal(a);
+    try { localStorage.setItem("hl.coach.pet.animal.v1", a); } catch {}
+  };
 
   const useMyLocation = () => {
     if (!navigator.geolocation) { setError(t("coach.locate.unavailable")); return; }
@@ -89,6 +104,7 @@ function CoachPageInner() {
         dateTime: scene.dateTime ? new Date(scene.dateTime).toISOString() : null,
         notes: scene.notes,
       },
+      ...(subjectId === "pets" ? { petContext, animal } : {}),
     };
     const storageKey = offlineKey(payload);
     try {
@@ -136,6 +152,34 @@ function CoachPageInner() {
               </button>
             ))}
           </div>
+          {subjectId === "pets" && (
+            <div className="pets-subpicker">
+              <div className="input-label" style={{ marginTop: 10 }}>{t("pets.contextLabel")}</div>
+              <div className="chip-row" role="listbox" aria-label={t("pets.contextLabel")}>
+                {Object.values(PET_CONTEXTS).map((c) => (
+                  <button key={c.id} type="button" onClick={() => setPetContext(c.id)}
+                    className="chip chip-sm" aria-pressed={petContext === c.id}>
+                    <span aria-hidden>{c.icon}</span>
+                    <span>{t(`pets.context.${c.id}`)}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="input-label" style={{ marginTop: 10 }}>{t("pets.animalLabel")}</div>
+              <div className="chip-row" role="radiogroup" aria-label={t("pets.animalLabel")}>
+                {[
+                  { id: "cat", icon: "🐈" },
+                  { id: "dog", icon: "🐕" },
+                  { id: "other", icon: "🐾" },
+                ].map((a) => (
+                  <button key={a.id} type="button" role="radio" onClick={() => changeAnimal(a.id)}
+                    className="chip chip-sm" aria-checked={animal === a.id} aria-pressed={animal === a.id}>
+                    <span aria-hidden>{a.icon}</span>
+                    <span>{t(`pets.animal.${a.id}`)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="coach-section">

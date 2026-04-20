@@ -4,6 +4,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { RecipeResponseSchema } from "@/lib/recipe-schema";
 import { clampRecipeToGear, resolveGear } from "@/lib/gear-validator";
 import { getSubjectPreset } from "@/data/subjects/presets";
+import { resolvePetContext, resolvePetAnimal, PET_ANIMAL_HINTS } from "@/data/subjects/pet-contexts";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
 import { sceneGuard } from "@/lib/scene-guard";
@@ -84,6 +85,21 @@ function describeGear(gear, useFlash) {
   };
 }
 
+function buildPetsBrief(subject) {
+  if (subject.id !== "pets") return null;
+  return [
+    "",
+    `PETS SUBJECT — animal: ${subject.animal}, context: ${subject.petContextId}.`,
+    `Context hint: "${subject.petContextHint}"`,
+    `Animal hint: "${subject.animalHint}"`,
+    "Rules:",
+    "- Eye-level framing is the default; state the pet's eye-line in `position`.",
+    "- Never direct-flash into the eyes; bounce off ceiling or use natural light.",
+    "- If context is `action` or the animal is a puppy/kitten, set shutter at least 1/1000 s and suggest burst in `focus`.",
+    "- If context is `sleeping`, mention silent / quiet-shutter where the gear supports it.",
+  ].join("\n");
+}
+
 function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, useFlash }) {
   const langName = LOCALE_NAME[locale] || "English";
   const gearDesc = describeGear(gear, useFlash);
@@ -127,6 +143,9 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
   } else {
     lines.push("", "This gear is NOT an iPhone 16 Pro — set iphone: null on every recipe.");
   }
+
+  const petsBrief = buildPetsBrief(subject);
+  if (petsBrief) lines.push(petsBrief);
   lines.push(
     "",
     "Produce 1–3 shot recipes. The PRIMARY recipe is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
@@ -148,10 +167,29 @@ export async function POST(req) {
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: "Invalid JSON." }, { status: 400 }); }
 
-  const { subjectId, scene = {}, gear: gearInput, gearId = "iphone-16-pro", locale = "en", useFlash = false } = body || {};
+  const { subjectId, scene = {}, gear: gearInput, gearId = "iphone-16-pro", locale = "en", useFlash = false, petContext: petContextId, animal: animalId } = body || {};
 
-  const subject = getSubjectPreset(subjectId);
-  if (!subject) return NextResponse.json({ error: "Unknown subject." }, { status: 400 });
+  const basePreset = getSubjectPreset(subjectId);
+  if (!basePreset) return NextResponse.json({ error: "Unknown subject." }, { status: 400 });
+
+  let subject = basePreset;
+  let petContext = null;
+  let animal = null;
+  if (subjectId === "pets") {
+    petContext = resolvePetContext(petContextId || basePreset.defaultContext);
+    animal = resolvePetAnimal(animalId || basePreset.defaultAnimal);
+    subject = {
+      ...basePreset,
+      preferredLens: petContext.preferredLens,
+      shutterFloorSec: petContext.shutterFloorSec,
+      isoCeiling: petContext.isoCeiling,
+      cameraMode: petContext.cameraMode,
+      petContextId: petContext.id,
+      petContextHint: petContext.hint,
+      animal,
+      animalHint: PET_ANIMAL_HINTS[animal],
+    };
+  }
 
   const gear = resolveGear(gearInput || { id: gearId });
   const hasFlash = useFlash && (gear.flashes?.length || 0) > 0;
@@ -171,7 +209,8 @@ export async function POST(req) {
     return NextResponse.json({ ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "stub" });
   }
 
-  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}`;
+  const petKeyPart = subjectId === "pets" ? `|pets:${subject.petContextId}:${subject.animal}` : "";
+  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}${petKeyPart}`;
   const cached = getCached(key);
   if (cached) return NextResponse.json({ ...cached, source: "cache" });
 
@@ -187,7 +226,11 @@ export async function POST(req) {
       recipes: object.recipes.map((r) => {
         const c = clampRecipeToGear(r, gear);
         if (guardIssues.length) {
-          const extra = guardIssues.filter((i) => i.level === "warn").map((i) => i.message);
+          const existing = new Set((c.warnings || []).map((w) => w.trim()));
+          const extra = guardIssues
+            .filter((i) => i.level === "warn")
+            .map((i) => i.message)
+            .filter((m) => !existing.has(m.trim()));
           c.warnings = [...(c.warnings || []), ...extra];
         }
         c.iphone = isIphone ? (c.iphone || null) : null;
