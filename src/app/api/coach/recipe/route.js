@@ -12,6 +12,7 @@ import { cacheKey, getCached, setCached } from "@/lib/recipe-cache";
 export const runtime = "nodejs";
 
 const MODEL_ID = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
 function stubRecipes(subject, gear, sky) {
   const lensId = subject.preferredLens[0];
@@ -40,9 +41,11 @@ function stubRecipes(subject, gear, sky) {
   };
 }
 
-function buildPrompt({ subject, scene, gear, sky, weather, guardIssues }) {
+function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale }) {
+  const langName = LOCALE_NAME[locale] || "English";
   const lines = [
     `You are a shot coach for a photographer using a ${gear.label}.`,
+    `IMPORTANT: Write every human-readable field (label, position, focus, stabilization, compositionTips, warnings) in ${langName}. Keep technical tokens unchanged (numeric f-numbers, shutter strings like "1/250s", lens ids, cameraMode enum values).`,
     `Device capabilities (JSON): ${JSON.stringify({ lenses: gear.lenses, modes: gear.modes, iso: gear.iso, shutter: gear.shutter })}`,
     `Subject preset: ${JSON.stringify(subject)}`,
     `Scene: ${JSON.stringify(scene)}`,
@@ -72,7 +75,7 @@ export async function POST(req) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
-  const { subjectId, scene = {}, gearId = "iphone-16-pro" } = body || {};
+  const { subjectId, scene = {}, gearId = "iphone-16-pro", locale = "en" } = body || {};
 
   const subject = getSubjectPreset(subjectId);
   if (!subject) {
@@ -103,7 +106,7 @@ export async function POST(req) {
     });
   }
 
-  const key = cacheKey({ subjectId, gearId, scene });
+  const key = cacheKey({ subjectId, gearId, scene }) + `|${locale}`;
   const cached = getCached(key);
   if (cached) {
     return NextResponse.json({ ...cached, source: "cache" });
@@ -114,7 +117,7 @@ export async function POST(req) {
     const { object } = await generateObject({
       model: groq(MODEL_ID),
       schema: RecipeResponseSchema,
-      prompt: buildPrompt({ subject, scene, gear, sky, weather, guardIssues }),
+      prompt: buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale }),
     });
     const clamped = {
       recipes: object.recipes.map((r) => {

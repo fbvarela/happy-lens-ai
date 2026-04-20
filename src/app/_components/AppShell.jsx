@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV = [
-  { href: "/",         label: "Home",      icon: "🏠" },
-  { href: "/coach",    label: "Coach",     icon: "🎯" },
-  { href: "/plan",     label: "Plan",      icon: "🗺️" },
-  { href: "/critique", label: "Critique",  icon: "🔍" },
+  { href: "/",         key: "home",     icon: "🏠" },
+  { href: "/coach",    key: "coach",    icon: "🎯" },
+  { href: "/plan",     key: "plan",     icon: "🗺️" },
+  { href: "/critique", key: "critique", icon: "🔍" },
 ];
 
 function isActive(pathname, href) {
@@ -15,8 +16,29 @@ function isActive(pathname, href) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
+function LocaleSwitcher({ className = "" }) {
+  const { locale, setLocale, t } = useLocale();
+  return (
+    <div className={`locale-switch ${className}`} role="group" aria-label={t("locale.label")}>
+      <button
+        type="button"
+        className={`locale-btn ${locale === "en" ? "locale-on" : ""}`}
+        aria-pressed={locale === "en"}
+        onClick={() => setLocale("en")}
+      >EN</button>
+      <button
+        type="button"
+        className={`locale-btn ${locale === "es" ? "locale-on" : ""}`}
+        aria-pressed={locale === "es"}
+        onClick={() => setLocale("es")}
+      >ES</button>
+    </div>
+  );
+}
+
 export default function AppShell({ children }) {
   const pathname = usePathname() || "/";
+  const t = useT();
   return (
     <>
       <nav className="sidebar-nav" aria-label="Primary">
@@ -31,17 +53,19 @@ export default function AppShell({ children }) {
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
             >
               <span aria-hidden>{item.icon}</span>
-              <span>{item.label}</span>
+              <span>{t(`nav.${item.key}`)}</span>
             </Link>
           ))}
         </div>
         <div className="sidebar-footer">
-          <span className="accent" style={{ fontSize: "0.95rem" }}>Happy Factory</span>
+          <LocaleSwitcher />
+          <span className="accent" style={{ fontSize: "0.95rem", display: "block", marginTop: 10 }}>Happy Factory</span>
         </div>
       </nav>
 
-      <header className="nav-mobile-bar" aria-hidden>
+      <header className="nav-mobile-bar">
         <span className="nav-mobile-logo">happy lens</span>
+        <LocaleSwitcher className="locale-switch-mobile" />
       </header>
 
       <main className="app">
@@ -57,7 +81,7 @@ export default function AppShell({ children }) {
             aria-current={isActive(pathname, item.href) ? "page" : undefined}
           >
             <span className="bottom-nav-item-icon" aria-hidden>{item.icon}</span>
-            <span>{item.label}</span>
+            <span>{t(`nav.${item.key}`)}</span>
           </Link>
         ))}
       </nav>

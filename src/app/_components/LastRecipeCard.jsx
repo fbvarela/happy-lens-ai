@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IPHONE_16_PRO } from "@/data/gear/iphone-16-pro";
-import { SUBJECT_PRESETS } from "@/data/subjects/presets";
+import { useT } from "@/lib/i18n/LocaleProvider";
 
 function findLastRecipe() {
   if (typeof window === "undefined") return null;
@@ -28,29 +28,30 @@ function findLastRecipe() {
 }
 
 export default function LastRecipeCard() {
+  const t = useT();
   const [state, setState] = useState(null);
   useEffect(() => { setState(findLastRecipe()); }, []);
   if (!state) return null;
-  const subject = SUBJECT_PRESETS.find((s) => s.id === state.subjectId);
   const r = state.value.recipes[0];
-  const lens = IPHONE_16_PRO.lenses.find((l) => l.id === r.lens);
+  const subjectLabel = t(`subject.${state.subjectId}`);
+  const lensLabel = t(`lens.${r.lens}`);
   return (
     <section style={{ marginTop: 28 }}>
       <div className="card last-recipe">
         <div className="recipe-head">
           <div className="card-title" style={{ margin: 0 }}>
-            Last recipe — {subject?.label || state.subjectId}
+            {t("home.last.title", subjectLabel)}
           </div>
-          <span className="badge badge-leaf">Saved</span>
+          <span className="badge badge-leaf">{t("home.last.saved")}</span>
         </div>
         <div className="recipe-stats">
-          <div><div className="recipe-stat-label">Lens</div><div className="recipe-stat-value">{lens?.label || r.lens}</div></div>
-          <div><div className="recipe-stat-label">Aperture</div><div className="recipe-stat-value">f/{r.fNumber}</div></div>
-          <div><div className="recipe-stat-label">Shutter</div><div className="recipe-stat-value">{r.shutter}</div></div>
-          <div><div className="recipe-stat-label">ISO</div><div className="recipe-stat-value">{r.iso}</div></div>
-          <div><div className="recipe-stat-label">Mode</div><div className="recipe-stat-value">{r.cameraMode}</div></div>
+          <div><div className="recipe-stat-label">{t("coach.recipe.lens")}</div><div className="recipe-stat-value">{lensLabel}</div></div>
+          <div><div className="recipe-stat-label">{t("coach.recipe.aperture")}</div><div className="recipe-stat-value">f/{r.fNumber}</div></div>
+          <div><div className="recipe-stat-label">{t("coach.recipe.shutter")}</div><div className="recipe-stat-value">{r.shutter}</div></div>
+          <div><div className="recipe-stat-label">{t("coach.recipe.iso")}</div><div className="recipe-stat-value">{r.iso}</div></div>
+          <div><div className="recipe-stat-label">{t("coach.recipe.mode")}</div><div className="recipe-stat-value">{r.cameraMode}</div></div>
         </div>
-        <Link href="/coach" className="btn btn-sun">Open coach →</Link>
+        <Link href="/coach" className="btn btn-sun">{t("home.last.open")}</Link>
       </div>
     </section>
   );

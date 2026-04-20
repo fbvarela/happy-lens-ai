@@ -7,6 +7,7 @@ export const runtime = "nodejs";
 export const maxDuration = 30;
 
 const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
+const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
 function stubCritique(intent, exif) {
@@ -19,7 +20,8 @@ function stubCritique(intent, exif) {
   };
 }
 
-function buildPromptParts({ intent, exif }) {
+function buildPromptParts({ intent, exif, locale }) {
+  const langName = LOCALE_NAME[locale] || "English";
   const exifSummary = exif
     ? `EXIF: ${JSON.stringify({
         camera: exif.Make && exif.Model ? `${exif.Make} ${exif.Model}` : exif.Model || null,
@@ -38,6 +40,7 @@ function buildPromptParts({ intent, exif }) {
     : "EXIF: unavailable.";
   return [
     `You are a photo critique coach. The photographer is using an iPhone 16 Pro unless EXIF says otherwise.`,
+    `IMPORTANT: Write every human-readable field (verdict.headline, strengths, issues[].observation, tryNext, recipeTweaks.note) in ${langName}. Keep technical tokens (f-numbers, shutter strings, lens names, ISO, EV values) unchanged. The 'area' enum in issues must stay in English.`,
     intent ? `Stated intent for this shot: ${intent}` : "Intent not provided — infer it from the image.",
     exifSummary,
     "Look at the attached photo. Produce a critique grounded in what you actually see plus the EXIF.",
@@ -57,7 +60,7 @@ export async function POST(req) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
-  const { imageDataUrl, intent, exif } = body || {};
+  const { imageDataUrl, intent, exif, locale = "en" } = body || {};
   if (!imageDataUrl || !imageDataUrl.startsWith("data:image/")) {
     return NextResponse.json({ error: "Image data URL required." }, { status: 400 });
   }
@@ -79,7 +82,7 @@ export async function POST(req) {
         {
           role: "user",
           content: [
-            { type: "text", text: buildPromptParts({ intent, exif }) },
+            { type: "text", text: buildPromptParts({ intent, exif, locale }) },
             { type: "image", image: imageDataUrl },
           ],
         },
