@@ -1,33 +1,38 @@
 import Link from "next/link";
+import LastRecipeCard from "./_components/LastRecipeCard";
 
 const FEATURES = [
-  {
-    href: "/plan",
-    icon: "🗺️",
-    title: "Plan a shoot",
-    body: "Pick a subject + location + date. Get sun/moon/weather, gear checklist, and an AI shot list tuned to your kit.",
-    badge: "Core",
-  },
-  {
-    href: "/critique",
-    icon: "🔍",
-    title: "Critique a photo",
-    body: "Drop a RAW/JPEG. We read the EXIF, compare it to the scene, and an AI coach suggests what to try next time.",
-    badge: "AI",
-  },
   {
     href: "/coach",
     icon: "🎯",
     title: "Shot coach",
     body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.",
-    badge: "New",
+    badge: "Live",
+    badgeClass: "badge-leaf",
+  },
+  {
+    href: "/plan",
+    icon: "🗺️",
+    title: "Plan a shoot",
+    body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already does today's recipe.",
+    badge: "Soon",
+    badgeClass: "badge-sun",
+  },
+  {
+    href: "/critique",
+    icon: "🔍",
+    title: "Critique a photo",
+    body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.",
+    badge: "Soon",
+    badgeClass: "badge-sun",
   },
   {
     href: "/conditions",
     icon: "🌌",
     title: "Tonight's conditions",
-    body: "Milky Way visibility, Moon phase, Bortle class at your location, golden & blue hour, aurora Kp index.",
-    badge: "Soon",
+    body: "Milky Way visibility, moon phase, Bortle class, golden & blue hour at your location.",
+    badge: "Later",
+    badgeClass: "badge-clay",
   },
 ];
 
@@ -38,30 +43,30 @@ export default function HomePage() {
         <div className="accent" style={{ fontSize: "1.4rem" }}>happy lens</div>
         <h1>Shoot with a plan. Leave with the photo.</h1>
         <p>
-          Photo-trip planner and shot coach. Tell HappyLens what you want to shoot and where —
-          it builds the plan, tracks the light, and reviews the result.
+          A shot coach tuned to your iPhone 16 Pro. Tell happy lens what you want to shoot and where —
+          it gives you lens, settings and position for the light you'll actually have.
         </p>
-        <div style={{ marginTop: 20, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link className="btn btn-primary" href="/plan">Plan a shoot</Link>
-          <Link className="btn btn-sun" href="/critique">Critique a photo</Link>
+        <div style={{ marginTop: 24, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link className="btn btn-primary" href="/coach">🎯 Open Shot coach</Link>
+          <Link className="btn btn-ghost" href="/plan">About the roadmap</Link>
         </div>
       </header>
 
+      <LastRecipeCard />
+
       <section style={{ marginTop: 32 }}>
-        <h2 className="page-title">What you can do</h2>
-        <p className="page-sub">Four modules, one idea: help you come home with the photo you pictured.</p>
+        <h2 className="page-title" style={{ fontSize: "1.4rem" }}>What you can do</h2>
+        <p className="page-sub">Start with the coach — the rest is on the way.</p>
 
         <div className="card-grid">
           {FEATURES.map((f) => (
-            <Link key={f.href} href={f.href} className="card" style={{ textDecoration: "none", color: "inherit" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: "1.6rem" }}>{f.icon}</span>
-                <span className={`badge ${f.badge === "Core" ? "badge-leaf" : f.badge === "AI" || f.badge === "New" ? "badge-sun" : "badge-clay"}`}>
-                  {f.badge}
-                </span>
+            <Link key={f.href} href={f.href} className="card feature-card">
+              <div className="feature-head">
+                <span className="feature-icon" aria-hidden>{f.icon}</span>
+                <span className={`badge ${f.badgeClass}`}>{f.badge}</span>
               </div>
               <div className="card-title">{f.title}</div>
-              <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.92rem" }}>{f.body}</p>
+              <p className="feature-body">{f.body}</p>
             </Link>
           ))}
         </div>
