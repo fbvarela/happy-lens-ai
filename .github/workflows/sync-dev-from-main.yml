@@ -1,0 +1,24 @@
+name: Sync dev branch from main
+
+# Keeps `dev` as a fast-forwarding mirror of `main` so Vercel's preview
+# build for `dev` (aliased to lens-dev.happyfactory.app) redeploys
+# automatically on every merge to main. The `dev` branch exists solely
+# to expose AUTH-enabled preview env vars — its code always equals main.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fast-forward:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push main onto dev
+        run: git push origin HEAD:dev
