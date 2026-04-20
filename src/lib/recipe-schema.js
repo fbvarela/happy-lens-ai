@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+export const IphoneHintsSchema = z.object({
+  photographicStyle: z.string().nullable().describe("One of the gear's photographicStyles list, or null."),
+  format: z.enum(["HEIF", "JPEG", "ProRAW-12", "ProRAW-48", "ProRes"]),
+  cameraControlHint: z.string().nullable().describe("Camera Control button gesture hint, null if not faster than on-screen."),
+  aeAfLockHint: z.string().nullable().describe("When/how to use AE/AF lock (long-press). Null if not relevant."),
+  frontCamera: z.boolean().describe("True when the recipe expects the TrueDepth selfie camera."),
+  macroOverride: z.boolean().describe("True when the recipe uses the ultrawide macro at close focus."),
+});
+
 export const ShotRecipeSchema = z.object({
   label: z.string().describe("Short name for this recipe variant, e.g. 'Primary' or 'If the light drops'."),
   lens: z.string().describe("Must match one of the gear's lens ids."),
@@ -15,8 +24,9 @@ export const ShotRecipeSchema = z.object({
   warnings: z.array(z.string()),
   flash: z.object({
     use: z.boolean(),
-    notes: z.string().describe("If use=true: TTL/manual, FEC (e.g. -1 EV), bounce direction, sync type. If use=false: 'No flash' or why."),
+    notes: z.string().describe("If use=true: TTL/manual, FEC, bounce, sync. If use=false: 'No flash' or reason."),
   }),
+  iphone: IphoneHintsSchema.nullable().describe("iPhone-16-Pro-specific affordances. null for other gear."),
 });
 
 export const RecipeResponseSchema = z.object({

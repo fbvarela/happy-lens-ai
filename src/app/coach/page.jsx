@@ -304,6 +304,10 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
       `${t("coach.recipe.focus")}: ${r.focus}`,
       `${t("coach.recipe.stabilization")}: ${r.stabilization}`,
       r.flash?.use ? `${t("coach.recipe.flash")}: ${r.flash.notes}` : null,
+      r.iphone?.format ? `${t("coach.recipe.iphone.format")}: ${r.iphone.format}` : null,
+      r.iphone?.photographicStyle ? `${t("coach.recipe.iphone.style")}: ${r.iphone.photographicStyle}` : null,
+      r.iphone?.cameraControlHint ? `${t("coach.recipe.iphone.cameraControl")}: ${r.iphone.cameraControlHint}` : null,
+      r.iphone?.aeAfLockHint ? `${t("coach.recipe.iphone.aeAfLock")}: ${r.iphone.aeAfLockHint}` : null,
       ...r.compositionTips.map((x) => `• ${x}`),
     ].filter(Boolean).join("\n");
     try {
@@ -335,6 +339,7 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
           {r.flash.use ? <span className="flash-on">⚡ {r.flash.notes}</span> : <span style={{ color: "var(--text-muted)" }}>{r.flash.notes}</span>}
         </p>
       )}
+      {r.iphone && <IphoneStrip iphone={r.iphone} t={t} />}
       <ul className="recipe-tips">
         {r.compositionTips.map((x, j) => <li key={j}>{x}</li>)}
       </ul>
@@ -355,6 +360,33 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
         </button>
       </div>
     </article>
+  );
+}
+
+function IphoneStrip({ iphone, t }) {
+  const chips = [];
+  if (iphone.format) chips.push({ k: "format", label: `📄 ${iphone.format}`, tone: "badge-leaf" });
+  if (iphone.photographicStyle) chips.push({ k: "style", label: `🎨 ${iphone.photographicStyle}`, tone: "badge-sun" });
+  if (iphone.frontCamera) chips.push({ k: "front", label: `🤳 ${t("coach.recipe.iphone.selfie")}`, tone: "badge-sun" });
+  if (iphone.macroOverride) chips.push({ k: "macro", label: `🌱 ${t("coach.recipe.iphone.macro")}`, tone: "badge-leaf" });
+  return (
+    <div className="iphone-strip">
+      {chips.length > 0 && (
+        <div className="iphone-chips">
+          {chips.map((c) => <span key={c.k} className={`badge ${c.tone}`}>{c.label}</span>)}
+        </div>
+      )}
+      {iphone.cameraControlHint && (
+        <p className="recipe-line" style={{ margin: "8px 0 0" }}>
+          <strong>{t("coach.recipe.iphone.cameraControl")}.</strong> {iphone.cameraControlHint}
+        </p>
+      )}
+      {iphone.aeAfLockHint && (
+        <p className="recipe-line" style={{ margin: "4px 0 0" }}>
+          <strong>{t("coach.recipe.iphone.aeAfLock")}.</strong> {iphone.aeAfLockHint}
+        </p>
+      )}
+    </div>
   );
 }
 

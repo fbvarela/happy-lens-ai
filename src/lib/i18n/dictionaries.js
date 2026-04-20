@@ -37,6 +37,14 @@ export const DICTIONARIES = {
         lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
         position: "Position", focus: "Focus", stabilization: "Stabilization", flash: "Flash",
         voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "✓ Copied",
+        iphone: {
+          format: "Format",
+          style: "Photographic Style",
+          cameraControl: "Camera Control",
+          aeAfLock: "AE/AF lock",
+          selfie: "TrueDepth",
+          macro: "Macro 2 cm",
+        },
       },
       source: {
         groq: "Fresh from AI coach",
@@ -181,6 +189,14 @@ export const DICTIONARIES = {
         lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
         position: "Posición", focus: "Enfoque", stabilization: "Estabilización", flash: "Flash",
         voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "✓ Copiado",
+        iphone: {
+          format: "Formato",
+          style: "Estilo fotográfico",
+          cameraControl: "Botón Control",
+          aeAfLock: "Bloqueo AE/AF",
+          selfie: "TrueDepth",
+          macro: "Macro 2 cm",
+        },
       },
       source: {
         groq: "Recién hecho por la IA",
