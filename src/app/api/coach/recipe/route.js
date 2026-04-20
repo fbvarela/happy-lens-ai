@@ -5,6 +5,9 @@ import { RecipeResponseSchema } from "@/lib/recipe-schema";
 import { clampRecipeToGear, getGearProfile } from "@/lib/gear-validator";
 import { getSubjectPreset } from "@/data/subjects/presets";
 import { sunSnapshot } from "@/lib/sun";
+import { weatherSnapshot } from "@/lib/weather";
+import { sceneGuard } from "@/lib/scene-guard";
+import { cacheKey, getCached, setCached } from "@/lib/recipe-cache";
 
 export const runtime = "nodejs";
 
@@ -37,13 +40,19 @@ function stubRecipes(subject, gear, sky) {
   };
 }
 
-function buildPrompt({ subject, scene, gear, sky }) {
-  return [
+function buildPrompt({ subject, scene, gear, sky, weather, guardIssues }) {
+  const lines = [
     `You are a shot coach for a photographer using a ${gear.label}.`,
     `Device capabilities (JSON): ${JSON.stringify({ lenses: gear.lenses, modes: gear.modes, iso: gear.iso, shutter: gear.shutter })}`,
     `Subject preset: ${JSON.stringify(subject)}`,
     `Scene: ${JSON.stringify(scene)}`,
     sky ? `Sky/light snapshot: ${JSON.stringify(sky)}` : "Sky snapshot unavailable.",
+    weather ? `Weather snapshot: ${JSON.stringify(weather)}` : "Weather snapshot unavailable.",
+  ];
+  if (guardIssues.length) {
+    lines.push(`Scene-subject issues flagged by pre-check: ${JSON.stringify(guardIssues)}`);
+  }
+  lines.push(
     "",
     "Produce 1–3 shot recipes. The PRIMARY recipe is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
     "Hard rules:",
@@ -51,8 +60,9 @@ function buildPrompt({ subject, scene, gear, sky }) {
     "- ISO within device range.",
     "- Shutter in realistic human format (e.g. '1/250s' or '6s').",
     "- Position must be concrete: direction relative to subject and light, approximate distance, height.",
-    "- If the subject needs conditions the scene doesn't offer (e.g. astro under daylight), add a warning.",
-  ].join("\n");
+    "- If the pre-check flagged a block/warn issue, include it verbatim in the primary recipe's warnings.",
+  );
+  return lines.join("\n");
 }
 
 export async function POST(req) {
@@ -69,15 +79,34 @@ export async function POST(req) {
     return NextResponse.json({ error: "Unknown subject." }, { status: 400 });
   }
   const gear = getGearProfile(gearId);
-  const sky = sunSnapshot({ lat: scene.lat, lng: scene.lng, date: scene.dateTime });
+  const [sky, weather] = await Promise.all([
+    Promise.resolve(sunSnapshot({ lat: scene.lat, lng: scene.lng, date: scene.dateTime })),
+    weatherSnapshot({ lat: scene.lat, lng: scene.lng, date: scene.dateTime }),
+  ]);
+  const guardIssues = sceneGuard(subject, sky);
+
+  const blocker = guardIssues.find((i) => i.level === "block");
+  if (blocker) {
+    return NextResponse.json(
+      { error: blocker.message, code: "scene-incompatible", sky, weather },
+      { status: 422 },
+    );
+  }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return NextResponse.json({
       ...stubRecipes(subject, gear, sky),
       sky,
+      weather,
       source: "stub",
     });
+  }
+
+  const key = cacheKey({ subjectId, gearId, scene });
+  const cached = getCached(key);
+  if (cached) {
+    return NextResponse.json({ ...cached, source: "cache" });
   }
 
   try {
@@ -85,16 +114,26 @@ export async function POST(req) {
     const { object } = await generateObject({
       model: groq(MODEL_ID),
       schema: RecipeResponseSchema,
-      prompt: buildPrompt({ subject, scene, gear, sky }),
+      prompt: buildPrompt({ subject, scene, gear, sky, weather, guardIssues }),
     });
     const clamped = {
-      recipes: object.recipes.map((r) => clampRecipeToGear(r, gear)),
+      recipes: object.recipes.map((r) => {
+        const c = clampRecipeToGear(r, gear);
+        if (guardIssues.length) {
+          const extra = guardIssues.filter((i) => i.level === "warn").map((i) => i.message);
+          c.warnings = [...(c.warnings || []), ...extra];
+        }
+        return c;
+      }),
+      sky,
+      weather,
     };
-    return NextResponse.json({ ...clamped, sky, source: "groq" });
+    setCached(key, clamped);
+    return NextResponse.json({ ...clamped, source: "groq" });
   } catch (err) {
     console.error("coach/recipe error", err);
     return NextResponse.json(
-      { ...stubRecipes(subject, gear, sky), sky, source: "fallback", error: String(err?.message || err) },
+      { ...stubRecipes(subject, gear, sky), sky, weather, source: "fallback", error: String(err?.message || err) },
       { status: 200 },
     );
   }

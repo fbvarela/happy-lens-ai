@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Happy Lens">
+  <rect width="512" height="512" rx="96" fill="#3d2b1f"/>
+  <g transform="translate(256 256)">
+    <circle r="168" fill="none" stroke="#f5f0e8" stroke-width="10" opacity="0.18"/>
+    <circle r="132" fill="#f9f4ea"/>
+    <g fill="#e8a020">
+      <polygon points="0,-128 110.9,-64 110.9,64 0,128 -110.9,64 -110.9,-64"/>
+    </g>
+    <circle r="62" fill="#3d2b1f"/>
+    <circle r="22" fill="#e8a020"/>
+  </g>
+  <text x="256" y="460" text-anchor="middle"
+        font-family="Fraunces, Georgia, serif" font-weight="700"
+        font-size="56" fill="#f5f0e8" opacity="0.9">lens</text>
+</svg>

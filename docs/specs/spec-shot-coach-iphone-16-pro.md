@@ -37,7 +37,7 @@ Related: [README.md](README.md) module list; existing placeholder [plan/page.jsx
 
 ### Data model (client-side only for v1)
 
-- `GearProfile` — static JSON for iPhone 16 Pro in `src/data/gear/iphone-17-pro.js`:
+- `GearProfile` — static JSON for iPhone 16 Pro in `src/data/gear/iphone-16-pro.js`:
   - Lenses: ultrawide (0.5×, ~13mm-eq, f/2.2), main (1×, 24mm-eq, f/1.78), tele 2× crop, tele 5× (120mm-eq, f/2.8).
   - Sensor sizes / pixel pitch per lens, min/max shutter, OIS, ProRAW support, Night/Action/Cinematic mode availability.
 - `SubjectPreset` — static JSON in `src/data/subjects/*.js`: default aperture intent, shutter-speed floor, ISO ceiling, preferred focal range, composition hints.

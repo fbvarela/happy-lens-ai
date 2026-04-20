@@ -1,13 +1,16 @@
 import "./globals.css";
-import Script from "next/script";
+import AppShell from "./_components/AppShell";
 
 export const metadata = {
-  title: "HappyLens — Photo-trip planner & shot coach",
+  title: "Happy Lens AI — Shot coach",
   description:
-    "Plan photo shoots with sun/moon/tide/weather + AI shot recipes. Upload afterwards for EXIF-aware critique.",
+    "Shot coach for iPhone photography — lens, settings and position tuned to the light you'll actually have.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "HappyLens" },
-  icons: { apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Happy Lens" },
+  icons: {
+    icon: [{ url: "/icons/icon.svg", type: "image/svg+xml" }],
+    apple: "/icons/icon.svg",
+  },
 };
 
 export const viewport = {
@@ -22,13 +25,12 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600;700&family=Caveat:wght@400;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&family=Caveat:wght@400;500;600&display=swap"
           rel="stylesheet"
         />
-        <Script id="theme-init" strategy="beforeInteractive">{`(function(){try{var t=localStorage.getItem('hf-theme')||'system';if(t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`}</Script>
       </head>
       <body suppressHydrationWarning>
-        <div className="app">{children}</div>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
