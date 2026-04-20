@@ -4,8 +4,11 @@ import { useState } from "react";
 import { SUBJECT_PRESETS } from "@/data/subjects/presets";
 import { IPHONE_16_PRO } from "@/data/gear/iphone-16-pro";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
+import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 export default function CoachPage() {
+  const t = useT();
+  const { locale } = useLocale();
   const [subjectId, setSubjectId] = useState("portrait");
   const [scene, setScene] = useState({
     lat: "",
@@ -21,7 +24,7 @@ export default function CoachPage() {
 
   const useMyLocation = () => {
     if (!navigator.geolocation) {
-      setError("Geolocation not available — enter coordinates manually.");
+      setError(t("coach.locate.unavailable"));
       return;
     }
     setLocating(true);
@@ -44,12 +47,11 @@ export default function CoachPage() {
 
   const submit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
+    setLoading(true); setError(null); setResult(null);
     const payload = {
       subjectId,
       gearId: "iphone-16-pro",
+      locale,
       scene: {
         lat: scene.lat ? +scene.lat : null,
         lng: scene.lng ? +scene.lng : null,
@@ -60,8 +62,7 @@ export default function CoachPage() {
     const storageKey = offlineKey(payload);
     try {
       const res = await fetch("/api/coach/recipe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
@@ -73,30 +74,22 @@ export default function CoachPage() {
       try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch {}
     } catch (err) {
       const offline = readOffline(storageKey);
-      if (offline) {
-        setResult({ ...offline, source: "offline" });
-        setError(null);
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
+      if (offline) { setResult({ ...offline, source: "offline" }); setError(null); }
+      else setError(err.message);
+    } finally { setLoading(false); }
   };
 
   return (
     <>
-      <h1 className="page-title">Shot coach</h1>
-      <p className="page-sub">
-        Pick a subject, drop a location and time — get a settings-and-position recipe tuned to your iPhone 16 Pro.
-      </p>
+      <h1 className="page-title">{t("coach.title")}</h1>
+      <p className="page-sub">{t("coach.sub")}</p>
 
       <form onSubmit={submit} className="card coach-card coach-form">
         <div className="coach-section">
           <div className="coach-step-title">
-            <span className="step-num">1</span> Subject
+            <span className="step-num">1</span> {t("coach.step.subject")}
           </div>
-          <div className="chip-row" role="listbox" aria-label="Subject">
+          <div className="chip-row" role="listbox" aria-label={t("coach.step.subject")}>
             {SUBJECT_PRESETS.map((s) => (
               <button
                 key={s.id}
@@ -106,7 +99,7 @@ export default function CoachPage() {
                 aria-pressed={subjectId === s.id}
               >
                 <span aria-hidden>{s.icon}</span>
-                <span>{s.label}</span>
+                <span>{t(`subject.${s.id}`)}</span>
               </button>
             ))}
           </div>
@@ -114,130 +107,104 @@ export default function CoachPage() {
 
         <div className="coach-section">
           <div className="coach-step-title">
-            <span className="step-num">2</span> Scene
+            <span className="step-num">2</span> {t("coach.step.scene")}
           </div>
           <div className="scene-grid">
             <label className="scene-field">
-              <span className="input-label">Latitude</span>
-              <input
-                className="input"
-                inputMode="decimal"
-                autoComplete="off"
+              <span className="input-label">{t("coach.field.latitude")}</span>
+              <input className="input" inputMode="decimal" autoComplete="off"
                 value={scene.lat}
                 onChange={(e) => setScene({ ...scene, lat: e.target.value })}
-                placeholder="40.4168"
-              />
+                placeholder="40.4168" />
             </label>
             <label className="scene-field">
-              <span className="input-label">Longitude</span>
-              <input
-                className="input"
-                inputMode="decimal"
-                autoComplete="off"
+              <span className="input-label">{t("coach.field.longitude")}</span>
+              <input className="input" inputMode="decimal" autoComplete="off"
                 value={scene.lng}
                 onChange={(e) => setScene({ ...scene, lng: e.target.value })}
-                placeholder="-3.7038"
-              />
+                placeholder="-3.7038" />
             </label>
             <label className="scene-field full">
-              <span className="input-label">Date &amp; time</span>
-              <input
-                type="datetime-local"
-                className="input"
+              <span className="input-label">{t("coach.field.dateTime")}</span>
+              <input type="datetime-local" className="input"
                 value={scene.dateTime}
-                onChange={(e) => {
-                  setScene({ ...scene, dateTime: e.target.value });
-                  setTimeHint(null);
-                }}
-              />
+                onChange={(e) => { setScene({ ...scene, dateTime: e.target.value }); setTimeHint(null); }} />
             </label>
             <div className="full time-presets">
               {TIME_PRESETS().map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className="chip"
+                <button key={p.id} type="button" className="chip"
                   onClick={() => {
                     const r = resolveTimePreset(p.id, {
                       lat: scene.lat ? +scene.lat : null,
                       lng: scene.lng ? +scene.lng : null,
                     });
-                    if (r.error) {
-                      setTimeHint({ kind: "error", text: r.error });
-                      return;
-                    }
+                    if (r.error) { setTimeHint({ kind: "error", text: t("coach.timePreset.needCoords") }); return; }
                     setScene((s) => ({ ...s, dateTime: r.dateTime }));
-                    setTimeHint({ kind: "ok", text: `Set to ${r.label}.` });
+                    setTimeHint({ kind: "ok", text: t("coach.timePreset.setTo", t(`coach.timePreset.${p.id}`)) });
                   }}
                 >
                   <span aria-hidden>{p.icon}</span>
-                  <span>{p.label}</span>
+                  <span>{t(`coach.timePreset.${p.id}`)}</span>
                 </button>
               ))}
             </div>
-            {timeHint && (
-              <p className={`full time-hint ${timeHint.kind}`}>{timeHint.text}</p>
-            )}
+            {timeHint && <p className={`full time-hint ${timeHint.kind}`}>{timeHint.text}</p>}
             <div className="full">
               <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
                 <span aria-hidden>📍</span>
-                <span>{locating ? "Locating…" : "Use my location"}</span>
+                <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
               </button>
             </div>
             <label className="scene-field full">
-              <span className="input-label">Notes (optional)</span>
-              <input
-                className="input"
+              <span className="input-label">{t("coach.field.notes")}</span>
+              <input className="input"
                 value={scene.notes}
                 onChange={(e) => setScene({ ...scene, notes: e.target.value })}
-                placeholder="backlit, indoors, moving subject…"
-              />
+                placeholder={t("coach.placeholder.notes")} />
             </label>
           </div>
         </div>
 
         <div className="coach-section">
           <div className="coach-step-title">
-            <span className="step-num">3</span> Gear
+            <span className="step-num">3</span> {t("coach.step.gear")}
           </div>
           <div className="gear-pill">
             <span className="gear-icon" aria-hidden>📱</span>
             <div className="gear-text">
               <span className="gear-label">{IPHONE_16_PRO.label}</span>
-              <span className="gear-meta">
-                {IPHONE_16_PRO.lenses.length} lenses · Night · ProRAW · Action
-              </span>
+              <span className="gear-meta">{t("coach.gear.deviceMeta")}</span>
             </div>
           </div>
         </div>
 
         <button type="submit" className="btn btn-primary coach-submit" disabled={loading}>
-          {loading ? "Thinking…" : "Generate recipe"}
+          {loading ? t("coach.submit.loading") : t("coach.submit.idle")}
         </button>
         {error && !error.startsWith("Scene:") && <p className="field-error" style={{ margin: 0 }}>{error}</p>}
       </form>
 
       {error?.startsWith("Scene:") && (
         <div className="card scene-block">
-          <div className="card-title">That subject won't work here</div>
+          <div className="card-title">{t("coach.sceneBlock.title")}</div>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>{error.replace(/^Scene:\s*/, "")}</p>
           <p style={{ marginTop: 10, marginBottom: 0, fontSize: 13, color: "var(--text-muted)" }}>
-            Try a different subject above, or change the date &amp; time.
+            {t("coach.sceneBlock.hint")}
           </p>
         </div>
       )}
 
-      {result && <Results result={result} subjectId={subjectId} scene={scene} />}
+      {result && <Results result={result} subjectId={subjectId} scene={scene} t={t} />}
     </>
   );
 }
 
-function Results({ result, subjectId, scene }) {
+function Results({ result, subjectId, scene, t }) {
   return (
     <section style={{ marginTop: 20, display: "grid", gap: 14 }}>
       {(result.sky || result.weather) && (
         <div className="card">
-          <div className="card-title">Sky, light &amp; weather</div>
+          <div className="card-title">{t("coach.sky.title")}</div>
           <div className="sky-row">
             {result.sky && (
               <>
@@ -259,15 +226,15 @@ function Results({ result, subjectId, scene }) {
       )}
       <div className="recipe-grid">
         {result.recipes.map((r, i) => (
-          <RecipeCard key={i} recipe={r} subjectId={subjectId} scene={scene} />
+          <RecipeCard key={i} recipe={r} subjectId={subjectId} scene={scene} t={t} />
         ))}
       </div>
-      {result.source && <SourceBadge source={result.source} />}
+      {result.source && <SourceBadge source={result.source} t={t} />}
     </section>
   );
 }
 
-function RecipeCard({ recipe: r, subjectId, scene }) {
+function RecipeCard({ recipe: r, subjectId, t }) {
   const feedbackKey = `hl.coach.fb.${subjectId}.${r.label}`;
   const [vote, setVote] = useState(() => {
     if (typeof window === "undefined") return null;
@@ -287,11 +254,11 @@ function RecipeCard({ recipe: r, subjectId, scene }) {
   const copy = async () => {
     const text = [
       `${r.label} — ${r.cameraMode}`,
-      `${prettyLens(r.lens)} · f/${r.fNumber} · ${r.shutter} · ISO ${r.iso} · EV ${r.ev > 0 ? "+" : ""}${r.ev}`,
-      `Position: ${r.position}`,
-      `Focus: ${r.focus}`,
-      `Stabilization: ${r.stabilization}`,
-      ...r.compositionTips.map((t) => `• ${t}`),
+      `${t(`lens.${r.lens}`)} · f/${r.fNumber} · ${r.shutter} · ISO ${r.iso} · EV ${r.ev > 0 ? "+" : ""}${r.ev}`,
+      `${t("coach.recipe.position")}: ${r.position}`,
+      `${t("coach.recipe.focus")}: ${r.focus}`,
+      `${t("coach.recipe.stabilization")}: ${r.stabilization}`,
+      ...r.compositionTips.map((x) => `• ${x}`),
     ].join("\n");
     try {
       await navigator.clipboard.writeText(text);
@@ -307,17 +274,17 @@ function RecipeCard({ recipe: r, subjectId, scene }) {
         <span className="badge badge-sun">{r.cameraMode}</span>
       </div>
       <div className="recipe-stats">
-        <Stat label="Lens" value={prettyLens(r.lens)} />
-        <Stat label="Aperture" value={`f/${r.fNumber}`} />
-        <Stat label="Shutter" value={r.shutter} />
-        <Stat label="ISO" value={r.iso} />
-        <Stat label="EV" value={r.ev > 0 ? `+${r.ev}` : r.ev} />
+        <Stat label={t("coach.recipe.lens")} value={t(`lens.${r.lens}`)} />
+        <Stat label={t("coach.recipe.aperture")} value={`f/${r.fNumber}`} />
+        <Stat label={t("coach.recipe.shutter")} value={r.shutter} />
+        <Stat label={t("coach.recipe.iso")} value={r.iso} />
+        <Stat label={t("coach.recipe.ev")} value={r.ev > 0 ? `+${r.ev}` : r.ev} />
       </div>
-      <p className="recipe-line"><strong>Position.</strong> {r.position}</p>
-      <p className="recipe-line"><strong>Focus.</strong> {r.focus}</p>
-      <p className="recipe-line"><strong>Stabilization.</strong> {r.stabilization}</p>
+      <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {r.position}</p>
+      <p className="recipe-line"><strong>{t("coach.recipe.focus")}.</strong> {r.focus}</p>
+      <p className="recipe-line"><strong>{t("coach.recipe.stabilization")}.</strong> {r.stabilization}</p>
       <ul className="recipe-tips">
-        {r.compositionTips.map((t, j) => <li key={j}>{t}</li>)}
+        {r.compositionTips.map((x, j) => <li key={j}>{x}</li>)}
       </ul>
       {r.warnings?.length > 0 && (
         <div className="recipe-warning">
@@ -325,24 +292,14 @@ function RecipeCard({ recipe: r, subjectId, scene }) {
         </div>
       )}
       <div className="recipe-actions">
-        <div className="recipe-vote" role="group" aria-label="Rate this recipe">
-          <button
-            type="button"
-            className={`vote-btn ${vote === "up" ? "vote-on" : ""}`}
-            onClick={() => rate("up")}
-            aria-pressed={vote === "up"}
-            aria-label="Useful"
-          >👍</button>
-          <button
-            type="button"
-            className={`vote-btn ${vote === "down" ? "vote-on" : ""}`}
-            onClick={() => rate("down")}
-            aria-pressed={vote === "down"}
-            aria-label="Not useful"
-          >👎</button>
+        <div className="recipe-vote" role="group" aria-label="rate">
+          <button type="button" className={`vote-btn ${vote === "up" ? "vote-on" : ""}`}
+            onClick={() => rate("up")} aria-pressed={vote === "up"} aria-label={t("coach.recipe.voteUp")}>👍</button>
+          <button type="button" className={`vote-btn ${vote === "down" ? "vote-on" : ""}`}
+            onClick={() => rate("down")} aria-pressed={vote === "down"} aria-label={t("coach.recipe.voteDown")}>👎</button>
         </div>
         <button type="button" className="copy-btn" onClick={copy}>
-          {copied ? "✓ Copied" : "📋 Copy"}
+          {copied ? t("coach.recipe.copied") : `📋 ${t("coach.recipe.copy")}`}
         </button>
       </div>
     </article>
@@ -358,24 +315,19 @@ function Stat({ label, value }) {
   );
 }
 
-function SourceBadge({ source }) {
-  const meta = {
-    groq:     { icon: "⚡", label: "Fresh from AI coach",  tone: "leaf" },
-    cache:    { icon: "⚡", label: "Cached (30 min)",       tone: "leaf" },
-    offline:  { icon: "📴", label: "Offline — last saved",  tone: "clay" },
-    stub:     { icon: "🧪", label: "Stub — set GROQ_API_KEY", tone: "sun" },
-    fallback: { icon: "⚠️", label: "AI unavailable — stub", tone: "clay" },
-  }[source] || { icon: "•", label: source, tone: "sun" };
+function SourceBadge({ source, t }) {
+  const tone = source === "groq" || source === "cache" ? "leaf"
+             : source === "offline" || source === "fallback" ? "clay"
+             : "sun";
+  const icon = source === "groq" || source === "cache" ? "⚡"
+             : source === "offline" ? "📴"
+             : source === "stub" ? "🧪"
+             : "⚠️";
   return (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <span className={`badge badge-${meta.tone}`}>{meta.icon} {meta.label}</span>
+      <span className={`badge badge-${tone}`}>{icon} {t(`coach.source.${source}`)}</span>
     </div>
   );
-}
-
-function prettyLens(id) {
-  const lens = IPHONE_16_PRO.lenses.find((l) => l.id === id);
-  return lens ? lens.label : id;
 }
 
 function offlineKey({ subjectId, gearId, scene }) {

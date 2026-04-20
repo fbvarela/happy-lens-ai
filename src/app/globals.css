@@ -117,13 +117,31 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   position: fixed; top: 0; left: 0; right: 0;
   height: 56px; z-index: 100;
   background: var(--bark);
-  align-items: center; padding: 0 16px;
+  align-items: center; justify-content: space-between;
+  padding: 0 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .nav-mobile-logo {
   font-family: "Fraunces", Georgia, serif;
   color: #fff; font-weight: 700; font-size: 1.05rem;
 }
+
+.locale-switch {
+  display: inline-flex; gap: 4px;
+  padding: 3px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.locale-btn {
+  height: 26px; padding: 0 10px; border-radius: 99px;
+  background: transparent; border: none; color: rgba(255, 255, 255, 0.65);
+  font-family: "DM Sans", sans-serif; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.05em; cursor: pointer;
+  transition: background 0.14s, color 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+.locale-btn:hover { color: #fff; }
+.locale-btn.locale-on { background: var(--sun); color: var(--bark); }
 .bottom-nav {
   display: none;
   position: fixed; bottom: 0; left: 0; right: 0;

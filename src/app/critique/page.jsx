@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import exifr from "exifr";
+import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 const MAX_PREVIEW_PX = 1600;
 
@@ -28,6 +29,8 @@ async function fileToDownscaledDataUrl(file) {
 }
 
 export default function CritiquePage() {
+  const t = useT();
+  const { locale } = useLocale();
   const fileInput = useRef(null);
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -40,7 +43,7 @@ export default function CritiquePage() {
 
   const handleFile = async (f) => {
     if (!f || !f.type.startsWith("image/")) {
-      setError("Pick a JPEG or HEIC image.");
+      setError(t("critique.errors.pickImage"));
       return;
     }
     setError(null);
@@ -54,7 +57,7 @@ export default function CritiquePage() {
       setPreviewUrl(dataUrl);
       setExif(meta || null);
     } catch (err) {
-      setError(err.message || "Couldn't read that image.");
+      setError(err.message || t("critique.errors.cantRead"));
     }
   };
 
@@ -71,10 +74,10 @@ export default function CritiquePage() {
       const res = await fetch("/api/coach/critique", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageDataUrl: previewUrl, exif, intent: intent.trim() || null }),
+        body: JSON.stringify({ imageDataUrl: previewUrl, exif, intent: intent.trim() || null, locale }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Critique failed.");
+      if (!res.ok) throw new Error(data?.error || t("critique.errors.failed"));
       setResult(data);
     } catch (err) {
       setError(err.message);
@@ -90,10 +93,8 @@ export default function CritiquePage() {
 
   return (
     <>
-      <h1 className="page-title">Critique a photo</h1>
-      <p className="page-sub">
-        Drop a JPEG — we read the EXIF, look at the image, and tell you what to try next time.
-      </p>
+      <h1 className="page-title">{t("critique.title")}</h1>
+      <p className="page-sub">{t("critique.sub")}</p>
 
       <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
         {!previewUrl && (
@@ -107,8 +108,8 @@ export default function CritiquePage() {
             tabIndex={0}
           >
             <div style={{ fontSize: "2rem" }}>📷</div>
-            <div style={{ fontWeight: 600, color: "var(--bark)" }}>Tap to pick — or drop a photo here</div>
-            <div style={{ color: "var(--text-muted)", fontSize: "0.88rem" }}>JPEG / HEIC · max ~10 MB</div>
+            <div style={{ fontWeight: 600, color: "var(--bark)" }}>{t("critique.dropzone.title")}</div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.88rem" }}>{t("critique.dropzone.hint")}</div>
             <input
               ref={fileInput}
               type="file"
@@ -122,23 +123,21 @@ export default function CritiquePage() {
         {previewUrl && (
           <div style={{ display: "grid", gap: 12 }}>
             <div className="preview-wrap">
-              <img src={previewUrl} alt={file?.name || "Photo preview"} className="preview-img" />
+              <img src={previewUrl} alt={file?.name || "preview"} className="preview-img" />
             </div>
-            {exif && <ExifSummary exif={exif} />}
+            {exif && <ExifSummary exif={exif} t={t} />}
             <label className="scene-field">
-              <span className="input-label">What were you trying to shoot? (optional)</span>
-              <input
-                className="input"
+              <span className="input-label">{t("critique.intent.label")}</span>
+              <input className="input"
                 value={intent}
                 onChange={(e) => setIntent(e.target.value)}
-                placeholder="e.g. backlit portrait at golden hour"
-              />
+                placeholder={t("critique.intent.placeholder")} />
             </label>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button type="button" className="btn btn-primary" onClick={submit} disabled={loading}>
-                {loading ? "Reading the photo…" : "Get critique"}
+                {loading ? t("critique.submit.loading") : t("critique.submit.idle")}
               </button>
-              <button type="button" className="btn btn-ghost" onClick={reset}>Use a different photo</button>
+              <button type="button" className="btn btn-ghost" onClick={reset}>{t("critique.reset")}</button>
             </div>
           </div>
         )}
@@ -146,23 +145,23 @@ export default function CritiquePage() {
         {error && <p className="field-error" style={{ margin: 0 }}>{error}</p>}
       </div>
 
-      {result && <CritiqueResult result={result} />}
+      {result && <CritiqueResult result={result} t={t} />}
     </>
   );
 }
 
-function ExifSummary({ exif }) {
+function ExifSummary({ exif, t }) {
   const items = [
-    exif.Make && exif.Model ? { label: "Camera", value: `${exif.Make} ${exif.Model}` } : null,
-    exif.LensModel ? { label: "Lens", value: exif.LensModel } : null,
-    exif.FocalLength != null ? { label: "Focal", value: `${exif.FocalLength} mm${exif.FocalLengthIn35mmFormat ? ` (${exif.FocalLengthIn35mmFormat} eq)` : ""}` } : null,
-    exif.FNumber != null ? { label: "Aperture", value: `f/${exif.FNumber}` } : null,
-    exif.ExposureTime != null ? { label: "Shutter", value: exif.ExposureTime >= 1 ? `${exif.ExposureTime}s` : `1/${Math.round(1 / exif.ExposureTime)}s` } : null,
-    exif.ISO != null ? { label: "ISO", value: exif.ISO } : null,
-    exif.ExposureCompensation != null ? { label: "EV", value: exif.ExposureCompensation } : null,
-    exif.DateTimeOriginal ? { label: "Taken", value: new Date(exif.DateTimeOriginal).toLocaleString() } : null,
+    exif.Make && exif.Model ? { label: t("critique.exif.camera"), value: `${exif.Make} ${exif.Model}` } : null,
+    exif.LensModel ? { label: t("critique.exif.lens"), value: exif.LensModel } : null,
+    exif.FocalLength != null ? { label: t("critique.exif.focal"), value: `${exif.FocalLength} mm${exif.FocalLengthIn35mmFormat ? ` (${exif.FocalLengthIn35mmFormat} eq)` : ""}` } : null,
+    exif.FNumber != null ? { label: t("critique.exif.aperture"), value: `f/${exif.FNumber}` } : null,
+    exif.ExposureTime != null ? { label: t("critique.exif.shutter"), value: exif.ExposureTime >= 1 ? `${exif.ExposureTime}s` : `1/${Math.round(1 / exif.ExposureTime)}s` } : null,
+    exif.ISO != null ? { label: t("critique.exif.iso"), value: exif.ISO } : null,
+    exif.ExposureCompensation != null ? { label: t("critique.exif.ev"), value: exif.ExposureCompensation } : null,
+    exif.DateTimeOriginal ? { label: t("critique.exif.taken"), value: new Date(exif.DateTimeOriginal).toLocaleString() } : null,
   ].filter(Boolean);
-  if (!items.length) return <div className="recipe-warning">No EXIF on this image — critique will rely on what it sees.</div>;
+  if (!items.length) return <div className="recipe-warning">{t("critique.exif.noExif")}</div>;
   return (
     <div className="recipe-stats">
       {items.map((it) => (
@@ -175,7 +174,7 @@ function ExifSummary({ exif }) {
   );
 }
 
-function CritiqueResult({ result }) {
+function CritiqueResult({ result, t }) {
   const score = result.verdict?.score ?? 0;
   return (
     <section style={{ marginTop: 20, display: "grid", gap: 14 }}>
@@ -188,7 +187,7 @@ function CritiqueResult({ result }) {
         </div>
         {result.strengths?.length > 0 && (
           <>
-            <div className="recipe-stat-label" style={{ marginTop: 6 }}>What worked</div>
+            <div className="recipe-stat-label" style={{ marginTop: 6 }}>{t("critique.result.strengths")}</div>
             <ul className="recipe-tips">
               {result.strengths.map((s, i) => <li key={i}>{s}</li>)}
             </ul>
@@ -196,7 +195,7 @@ function CritiqueResult({ result }) {
         )}
         {result.issues?.length > 0 && (
           <>
-            <div className="recipe-stat-label" style={{ marginTop: 14 }}>What to watch</div>
+            <div className="recipe-stat-label" style={{ marginTop: 14 }}>{t("critique.result.issues")}</div>
             <ul className="recipe-tips">
               {result.issues.map((it, i) => (
                 <li key={i}><strong style={{ textTransform: "capitalize" }}>{it.area}.</strong> {it.observation}</li>
@@ -206,21 +205,21 @@ function CritiqueResult({ result }) {
         )}
         {result.tryNext?.length > 0 && (
           <>
-            <div className="recipe-stat-label" style={{ marginTop: 14 }}>Try next time</div>
+            <div className="recipe-stat-label" style={{ marginTop: 14 }}>{t("critique.result.tryNext")}</div>
             <ul className="recipe-tips">
-              {result.tryNext.map((t, i) => <li key={i}>{t}</li>)}
+              {result.tryNext.map((x, i) => <li key={i}>{x}</li>)}
             </ul>
           </>
         )}
         {result.recipeTweaks && hasAnyTweak(result.recipeTweaks) && (
           <div style={{ marginTop: 14 }}>
-            <div className="recipe-stat-label">Recipe tweaks</div>
+            <div className="recipe-stat-label">{t("critique.result.tweaks")}</div>
             <div className="recipe-stats" style={{ marginTop: 4 }}>
-              {result.recipeTweaks.lens && <Stat label="Lens" value={result.recipeTweaks.lens} />}
-              {result.recipeTweaks.fNumber != null && <Stat label="Aperture" value={`f/${result.recipeTweaks.fNumber}`} />}
-              {result.recipeTweaks.shutter && <Stat label="Shutter" value={result.recipeTweaks.shutter} />}
-              {result.recipeTweaks.iso != null && <Stat label="ISO" value={result.recipeTweaks.iso} />}
-              {result.recipeTweaks.ev != null && <Stat label="EV" value={result.recipeTweaks.ev > 0 ? `+${result.recipeTweaks.ev}` : result.recipeTweaks.ev} />}
+              {result.recipeTweaks.lens && <Stat label={t("coach.recipe.lens")} value={result.recipeTweaks.lens} />}
+              {result.recipeTweaks.fNumber != null && <Stat label={t("coach.recipe.aperture")} value={`f/${result.recipeTweaks.fNumber}`} />}
+              {result.recipeTweaks.shutter && <Stat label={t("coach.recipe.shutter")} value={result.recipeTweaks.shutter} />}
+              {result.recipeTweaks.iso != null && <Stat label={t("coach.recipe.iso")} value={result.recipeTweaks.iso} />}
+              {result.recipeTweaks.ev != null && <Stat label={t("coach.recipe.ev")} value={result.recipeTweaks.ev > 0 ? `+${result.recipeTweaks.ev}` : result.recipeTweaks.ev} />}
             </div>
             {result.recipeTweaks.note && <p className="recipe-line" style={{ marginTop: 8 }}>{result.recipeTweaks.note}</p>}
           </div>

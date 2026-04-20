@@ -1,0 +1,202 @@
+export const DICTIONARIES = {
+  en: {
+    nav: { home: "Home", coach: "Coach", plan: "Plan", critique: "Critique" },
+    locale: { label: "Language", en: "English", es: "Español" },
+
+    home: {
+      kicker: "happy lens",
+      title: "Shoot with a plan. Leave with the photo.",
+      body: "A shot coach tuned to your iPhone 16 Pro. Tell happy lens what you want to shoot and where — it gives you lens, settings and position for the light you'll actually have.",
+      ctaCoach: "🎯 Open Shot coach",
+      ctaRoadmap: "About the roadmap",
+      sectionTitle: "What you can do",
+      sectionSub: "Start with the coach — the rest is on the way.",
+      last: { title: (s) => `Last recipe — ${s}`, saved: "Saved", open: "Open coach →" },
+      feature: {
+        coach: { title: "Shot coach", body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.", badge: "Live" },
+        plan: { title: "Plan a shoot", body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already does today's recipe.", badge: "Soon" },
+        critique: { title: "Critique a photo", body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.", badge: "Soon" },
+        conditions: { title: "Tonight's conditions", body: "Milky Way visibility, moon phase, Bortle class, golden & blue hour at your location.", badge: "Later" },
+      },
+    },
+
+    coach: {
+      title: "Shot coach",
+      sub: "Pick a subject, drop a location and time — get a settings-and-position recipe tuned to your iPhone 16 Pro.",
+      step: { subject: "Subject", scene: "Scene", gear: "Gear" },
+      field: { latitude: "Latitude", longitude: "Longitude", dateTime: "Date & time", notes: "Notes (optional)" },
+      placeholder: { notes: "backlit, indoors, moving subject…" },
+      locate: { ready: "Use my location", locating: "Locating…", unavailable: "Geolocation not available — enter coordinates manually." },
+      timePreset: { now: "Now", golden: "Golden hour", blue: "Blue hour", astro: "Astro tonight", setTo: (label) => `Set to ${label}.`, needCoords: "Enter a latitude and longitude first." },
+      gear: { deviceMeta: "4 lenses · Night · ProRAW · Action" },
+      submit: { idle: "Generate recipe", loading: "Thinking…" },
+      sky: { title: "Sky, light & weather" },
+      sceneBlock: { title: "That subject won't work here", hint: "Try a different subject above, or change the date & time." },
+      recipe: {
+        lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
+        position: "Position", focus: "Focus", stabilization: "Stabilization",
+        voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "✓ Copied",
+      },
+      source: {
+        groq: "Fresh from AI coach",
+        cache: "Cached (30 min)",
+        offline: "Offline — last saved",
+        stub: "Stub — set GROQ_API_KEY",
+        fallback: "AI unavailable — stub",
+      },
+    },
+
+    plan: {
+      title: "Plan a shoot",
+      sub: "The full planner (location search, tides, weather windows, multi-shot timeline) is next on the roadmap. In the meantime the Shot coach already does the hard part — turning a subject + place + time into concrete settings and a position, tuned to your iPhone 16 Pro.",
+      cta: { title: "Start with the coach", body: "Pick a subject, drop a location and time. Get lens, f-number, shutter, ISO, camera mode and where to stand — grounded in real sun position and weather for that hour.", button: "Open Shot coach →" },
+      roadmap: { title: "Coming to /plan", items: ["Location search (not just lat/lng) with named spots", "Sunrise/sunset, blue & golden hour windows, moon phase", "Tide tables for coastal shoots", "Multi-shot timeline across a trip", "Gear profiles beyond the iPhone 16 Pro"] },
+    },
+
+    critique: {
+      title: "Critique a photo",
+      sub: "Drop a JPEG — we read the EXIF, look at the image, and tell you what to try next time.",
+      dropzone: { title: "Tap to pick — or drop a photo here", hint: "JPEG / HEIC · max ~10 MB" },
+      intent: { label: "What were you trying to shoot? (optional)", placeholder: "e.g. backlit portrait at golden hour" },
+      submit: { idle: "Get critique", loading: "Reading the photo…" },
+      reset: "Use a different photo",
+      errors: { pickImage: "Pick a JPEG or HEIC image.", cantRead: "Couldn't read that image.", failed: "Critique failed." },
+      exif: { camera: "Camera", lens: "Lens", focal: "Focal", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", taken: "Taken", noExif: "No EXIF on this image — critique will rely on what it sees." },
+      result: { strengths: "What worked", issues: "What to watch", tryNext: "Try next time", tweaks: "Recipe tweaks" },
+      placeholder: {
+        sub: "The review side of happy lens — drop a photo, it reads the EXIF and compares intent to result.",
+        until: { title: "Until critique lands", body: "Generate a recipe for your next shot, log what worked with 👍 / 👎 on each variant, and copy the settings for the field.", button: "Open Shot coach →" },
+        roadmap: { title: "Coming to /critique", items: ["Drag-and-drop upload (JPEG / HEIC / RAW)", "EXIF parse: camera, lens, ISO, shutter, aperture, GPS, time", "Vision model compares intent vs. result — composition, light, focus", "\"Try next time\" action list tied back to the coach"] },
+      },
+    },
+
+    offline: {
+      title: "You're offline",
+      sub: "No network — but the coach still works on recipes you've already generated.",
+      worksTitle: "What still works",
+      works: ["The last recipe you saved for this location + subject + hour", "👍 / 👎 votes and Copy on recipes you've already loaded"],
+      back: "Back to Shot coach",
+    },
+
+    subject: {
+      portrait: "Portrait",
+      landscape: "Landscape",
+      astro: "Astro / Milky Way",
+      macro: "Macro",
+      wildlife: "Wildlife",
+      street: "Street",
+      product: "Product",
+      lowlight: "Low-light indoor",
+      action: "Action / Sports",
+    },
+
+    lens: {
+      ultrawide: "Ultrawide 0.5×",
+      main: "Main 1×",
+      tele2x: "Main crop 2×",
+      tele5x: "Tetraprism 5×",
+    },
+  },
+
+  es: {
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", critique: "Crítica" },
+    locale: { label: "Idioma", en: "English", es: "Español" },
+
+    home: {
+      kicker: "happy lens",
+      title: "Dispara con un plan. Vuelve con la foto.",
+      body: "Un coach de disparo afinado para tu iPhone 16 Pro. Dile a happy lens qué quieres fotografiar y dónde — te da objetivo, ajustes y posición para la luz que realmente vas a tener.",
+      ctaCoach: "🎯 Abrir Shot coach",
+      ctaRoadmap: "Ver la hoja de ruta",
+      sectionTitle: "Qué puedes hacer",
+      sectionSub: "Empieza por el coach — el resto está en camino.",
+      last: { title: (s) => `Última receta — ${s}`, saved: "Guardada", open: "Abrir coach →" },
+      feature: {
+        coach: { title: "Shot coach", body: "Elige un sujeto, añade una ubicación. Obtén diafragma, velocidad, ISO, modo de cámara y posición afinados para tu iPhone 16 Pro.", badge: "Activo" },
+        plan: { title: "Planificar sesión", body: "Sol, luna, tiempo y una cronología para tu salida. En la hoja de ruta — el coach ya hace la receta del día.", badge: "Próximo" },
+        critique: { title: "Criticar una foto", body: "Sube una JPEG — leemos el EXIF, lo comparamos con la escena y sugerimos qué probar la próxima vez.", badge: "Próximo" },
+        conditions: { title: "Condiciones de esta noche", body: "Visibilidad de la Vía Láctea, fase lunar, clase Bortle, hora dorada y azul en tu ubicación.", badge: "Más adelante" },
+      },
+    },
+
+    coach: {
+      title: "Shot coach",
+      sub: "Elige un sujeto, añade una ubicación y hora — obtén una receta de ajustes y posición afinada a tu iPhone 16 Pro.",
+      step: { subject: "Sujeto", scene: "Escena", gear: "Equipo" },
+      field: { latitude: "Latitud", longitude: "Longitud", dateTime: "Fecha y hora", notes: "Notas (opcional)" },
+      placeholder: { notes: "a contraluz, interior, sujeto en movimiento…" },
+      locate: { ready: "Usar mi ubicación", locating: "Localizando…", unavailable: "Geolocalización no disponible — introduce las coordenadas a mano." },
+      timePreset: { now: "Ahora", golden: "Hora dorada", blue: "Hora azul", astro: "Astro esta noche", setTo: (label) => `Puesto a ${label}.`, needCoords: "Introduce primero una latitud y longitud." },
+      gear: { deviceMeta: "4 objetivos · Noche · ProRAW · Acción" },
+      submit: { idle: "Generar receta", loading: "Pensando…" },
+      sky: { title: "Cielo, luz y tiempo" },
+      sceneBlock: { title: "Ese sujeto no funciona aquí", hint: "Prueba con otro sujeto arriba, o cambia la fecha y la hora." },
+      recipe: {
+        lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
+        position: "Posición", focus: "Enfoque", stabilization: "Estabilización",
+        voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "✓ Copiado",
+      },
+      source: {
+        groq: "Recién hecho por la IA",
+        cache: "En caché (30 min)",
+        offline: "Sin conexión — última guardada",
+        stub: "Demo — añade GROQ_API_KEY",
+        fallback: "IA no disponible — demo",
+      },
+    },
+
+    plan: {
+      title: "Planificar sesión",
+      sub: "El planificador completo (búsqueda por lugar, mareas, ventanas meteorológicas, cronología de disparos) es el siguiente paso. Mientras tanto, el Shot coach ya hace lo difícil: convertir un sujeto + lugar + hora en ajustes concretos y una posición, afinados a tu iPhone 16 Pro.",
+      cta: { title: "Empieza por el coach", body: "Elige un sujeto, añade ubicación y hora. Obtén objetivo, diafragma, velocidad, ISO, modo de cámara y dónde colocarte — basado en la posición real del sol y el tiempo para esa hora.", button: "Abrir Shot coach →" },
+      roadmap: { title: "Próximamente en /plan", items: ["Búsqueda por lugar (no solo lat/lng) con spots con nombre", "Amanecer/ocaso, ventanas de hora azul y dorada, fase lunar", "Tablas de mareas para sesiones en la costa", "Cronología multi-disparo para un viaje", "Perfiles de equipo más allá del iPhone 16 Pro"] },
+    },
+
+    critique: {
+      title: "Criticar una foto",
+      sub: "Sube una JPEG — leemos el EXIF, miramos la imagen y te decimos qué probar la próxima vez.",
+      dropzone: { title: "Toca para elegir — o suelta una foto aquí", hint: "JPEG / HEIC · máx ~10 MB" },
+      intent: { label: "¿Qué intentabas fotografiar? (opcional)", placeholder: "p. ej. retrato a contraluz en hora dorada" },
+      submit: { idle: "Obtener crítica", loading: "Leyendo la foto…" },
+      reset: "Usar otra foto",
+      errors: { pickImage: "Elige una imagen JPEG o HEIC.", cantRead: "No pude leer esa imagen.", failed: "Falló la crítica." },
+      exif: { camera: "Cámara", lens: "Objetivo", focal: "Focal", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", taken: "Tomada", noExif: "Sin EXIF en esta imagen — la crítica se basará solo en lo que se ve." },
+      result: { strengths: "Qué funcionó", issues: "A vigilar", tryNext: "Próxima vez prueba", tweaks: "Ajustes de receta" },
+      placeholder: {
+        sub: "La parte de revisión de happy lens — sube una foto, lee el EXIF y compara tu intención con el resultado.",
+        until: { title: "Hasta que llegue la crítica", body: "Genera una receta para tu próximo disparo, marca 👍 / 👎 en cada variante y copia los ajustes para el terreno.", button: "Abrir Shot coach →" },
+        roadmap: { title: "Próximamente en /critique", items: ["Subida por arrastrar-y-soltar (JPEG / HEIC / RAW)", "Lectura de EXIF: cámara, objetivo, ISO, velocidad, diafragma, GPS, hora", "Modelo de visión comparando intención vs. resultado — composición, luz, enfoque", "Lista de \"próxima vez prueba\" conectada con el coach"] },
+      },
+    },
+
+    offline: {
+      title: "Sin conexión",
+      sub: "Sin red — pero el coach sigue funcionando con las recetas que ya has generado.",
+      worksTitle: "Qué sigue funcionando",
+      works: ["La última receta guardada para esta ubicación + sujeto + hora", "Votos 👍 / 👎 y Copiar en recetas ya cargadas"],
+      back: "Volver al Shot coach",
+    },
+
+    subject: {
+      portrait: "Retrato",
+      landscape: "Paisaje",
+      astro: "Astro / Vía Láctea",
+      macro: "Macro",
+      wildlife: "Fauna",
+      street: "Calle",
+      product: "Producto",
+      lowlight: "Poca luz (interior)",
+      action: "Acción / Deporte",
+    },
+
+    lens: {
+      ultrawide: "Gran angular 0,5×",
+      main: "Principal 1×",
+      tele2x: "Recorte del principal 2×",
+      tele5x: "Tetraprisma 5×",
+    },
+  },
+};
+
+export const SUPPORTED = ["en", "es"];
+export const DEFAULT_LOCALE = "en";

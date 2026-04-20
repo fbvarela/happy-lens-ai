@@ -1,72 +1,45 @@
+"use client";
+
 import Link from "next/link";
 import LastRecipeCard from "./_components/LastRecipeCard";
+import { useT } from "@/lib/i18n/LocaleProvider";
 
 const FEATURES = [
-  {
-    href: "/coach",
-    icon: "🎯",
-    title: "Shot coach",
-    body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.",
-    badge: "Live",
-    badgeClass: "badge-leaf",
-  },
-  {
-    href: "/plan",
-    icon: "🗺️",
-    title: "Plan a shoot",
-    body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already does today's recipe.",
-    badge: "Soon",
-    badgeClass: "badge-sun",
-  },
-  {
-    href: "/critique",
-    icon: "🔍",
-    title: "Critique a photo",
-    body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.",
-    badge: "Soon",
-    badgeClass: "badge-sun",
-  },
-  {
-    href: "/conditions",
-    icon: "🌌",
-    title: "Tonight's conditions",
-    body: "Milky Way visibility, moon phase, Bortle class, golden & blue hour at your location.",
-    badge: "Later",
-    badgeClass: "badge-clay",
-  },
+  { href: "/coach",      key: "coach",      icon: "🎯", badgeClass: "badge-leaf" },
+  { href: "/plan",       key: "plan",       icon: "🗺️", badgeClass: "badge-sun" },
+  { href: "/critique",   key: "critique",   icon: "🔍", badgeClass: "badge-sun" },
+  { href: "/conditions", key: "conditions", icon: "🌌", badgeClass: "badge-clay" },
 ];
 
 export default function HomePage() {
+  const t = useT();
   return (
     <>
       <header className="hero">
-        <div className="accent" style={{ fontSize: "1.4rem" }}>happy lens</div>
-        <h1>Shoot with a plan. Leave with the photo.</h1>
-        <p>
-          A shot coach tuned to your iPhone 16 Pro. Tell happy lens what you want to shoot and where —
-          it gives you lens, settings and position for the light you'll actually have.
-        </p>
+        <div className="accent" style={{ fontSize: "1.4rem" }}>{t("home.kicker")}</div>
+        <h1>{t("home.title")}</h1>
+        <p>{t("home.body")}</p>
         <div style={{ marginTop: 24, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link className="btn btn-primary" href="/coach">🎯 Open Shot coach</Link>
-          <Link className="btn btn-ghost" href="/plan">About the roadmap</Link>
+          <Link className="btn btn-primary" href="/coach">{t("home.ctaCoach")}</Link>
+          <Link className="btn btn-ghost" href="/plan">{t("home.ctaRoadmap")}</Link>
         </div>
       </header>
 
       <LastRecipeCard />
 
       <section style={{ marginTop: 32 }}>
-        <h2 className="page-title" style={{ fontSize: "1.4rem" }}>What you can do</h2>
-        <p className="page-sub">Start with the coach — the rest is on the way.</p>
+        <h2 className="page-title" style={{ fontSize: "1.4rem" }}>{t("home.sectionTitle")}</h2>
+        <p className="page-sub">{t("home.sectionSub")}</p>
 
         <div className="card-grid">
           {FEATURES.map((f) => (
             <Link key={f.href} href={f.href} className="card feature-card">
               <div className="feature-head">
                 <span className="feature-icon" aria-hidden>{f.icon}</span>
-                <span className={`badge ${f.badgeClass}`}>{f.badge}</span>
+                <span className={`badge ${f.badgeClass}`}>{t(`home.feature.${f.key}.badge`)}</span>
               </div>
-              <div className="card-title">{f.title}</div>
-              <p className="feature-body">{f.body}</p>
+              <div className="card-title">{t(`home.feature.${f.key}.title`)}</div>
+              <p className="feature-body">{t(`home.feature.${f.key}.body`)}</p>
             </Link>
           ))}
         </div>
