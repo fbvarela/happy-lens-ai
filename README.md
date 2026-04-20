@@ -9,7 +9,7 @@ Next.js 16 (App Router, JS) · React 19 · Tailwind v4 · PWA (`@ducanh2912/next
 ```bash
 cp .env.example .env.local
 npm install
-npm run dev      # http://localhost:3011
+npm run dev      # http://localhost:3014
 ```
 
 ## Modules (planned)
@@ -19,4 +19,4 @@ npm run dev      # http://localhost:3011
 - `/conditions` — tonight's astro/light conditions at your location.
 
 ## Domain
-`lens.happyfactory.app` · local port `3011`.
+`lens.happyfactory.app` · local port `3014`.

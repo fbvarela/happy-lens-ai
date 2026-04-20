@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SUBJECT_PRESETS } from "@/data/subjects/presets";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
@@ -8,6 +8,14 @@ import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
 
 export default function CoachPage() {
+  return (
+    <Suspense fallback={null}>
+      <CoachPageInner />
+    </Suspense>
+  );
+}
+
+function CoachPageInner() {
   const t = useT();
   const { locale } = useLocale();
   const params = useSearchParams();
