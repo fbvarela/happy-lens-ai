@@ -13,12 +13,14 @@ export const runtime = "nodejs";
 
 const MODEL_ID = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
+const SCHEMA_VERSION = "v2"; // bump when ShotRecipeSchema changes shape
 
 function stubRecipes(subject, gear, sky, useFlash) {
   const lens = gear.lenses[0];
   const fn = lens.fNumberFixed ?? lens.fNumberMin ?? 5.6;
   const night = sky && sky.sun.altitudeDeg < -6;
   const flash = gear.flashes?.[0];
+  const isIphone = gear.id === "iphone-16-pro";
   return {
     recipes: [
       {
@@ -37,6 +39,9 @@ function stubRecipes(subject, gear, sky, useFlash) {
         flash: useFlash && flash
           ? { use: true, notes: `${flash.label} TTL, -1 EV, bounce ceiling.` }
           : { use: false, notes: "No flash." },
+        iphone: isIphone
+          ? { photographicStyle: "Standard", format: night ? "ProRAW-48" : "HEIF", cameraControlHint: null, aeAfLockHint: null, frontCamera: false, macroOverride: false }
+          : null,
       },
     ],
   };
@@ -55,6 +60,10 @@ function describeGear(gear, useFlash) {
     exposureModes: gear.exposureModes || null,
     iso: gear.iso,
     shutter: gear.shutter,
+    photographicStyles: gear.photographicStyles || null,
+    cameraControl: gear.cameraControl || null,
+    formats: gear.formats || null,
+    builtInFlashes: flashes.filter((f) => f.builtIn).map((f) => ({ id: f.id, label: f.label, frontOnly: !!f.frontOnly })),
     lenses: gear.lenses.map((l) => ({
       id: l.id,
       label: l.label,
@@ -67,6 +76,8 @@ function describeGear(gear, useFlash) {
       apertureAtWide: l.apertureAtWide ?? null,
       apertureAtTele: l.apertureAtTele ?? null,
       ois: l.ois ?? null,
+      macro: l.macro ?? null,
+      selfie: !!l.selfie,
       note: l.note ?? null,
     })),
     attachedFlash,
@@ -78,7 +89,7 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
   const gearDesc = describeGear(gear, useFlash);
   const lines = [
     `You are a shot coach for a photographer using a ${gear.label}.`,
-    `IMPORTANT: Write every human-readable field (label, position, focus, stabilization, compositionTips, warnings, flash.notes) in ${langName}. Keep technical tokens unchanged (numeric f-numbers, shutter strings like "1/250s", lens ids from the gear profile, cameraMode values from the gear's modes list).`,
+    `IMPORTANT: Write every human-readable field (label, position, focus, stabilization, compositionTips, warnings, flash.notes, iphone.cameraControlHint, iphone.aeAfLockHint) in ${langName}. Keep technical tokens unchanged (numeric f-numbers, shutter strings like "1/250s", lens ids from the gear profile, cameraMode values from the gear's modes list, iphone.format enum, iphone.photographicStyle name — these are Apple brand tokens the user needs to find in the iOS Camera app).`,
     `Gear profile (JSON, authoritative): ${JSON.stringify(gearDesc)}`,
     `Subject preset: ${JSON.stringify(subject)}`,
     `Scene: ${JSON.stringify(scene)}`,
@@ -90,10 +101,31 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
   }
   if (useFlash && gearDesc.attachedFlash) {
     lines.push(
-      `FLASH IS AVAILABLE: ${JSON.stringify(gearDesc.attachedFlash)}. Use it when it actually helps the shot (fill in harsh light, subject separation in low light, freezing motion indoors). If the subject doesn't benefit (bright sun, landscape, astro), set flash.use=false with a one-line reason.`,
+      `EXTERNAL FLASH ATTACHED: ${JSON.stringify(gearDesc.attachedFlash)}. Use it when it actually helps the shot (fill in harsh light, subject separation in low light, freezing motion indoors). If the subject doesn't benefit (bright sun, landscape, astro), set flash.use=false with a one-line reason.`,
+    );
+  } else if (gearDesc.builtInFlashes?.length) {
+    lines.push(
+      `BUILT-IN FLASHES AVAILABLE (no external): ${JSON.stringify(gearDesc.builtInFlashes)}. The rear Adaptive True Tone Flash is a 9-LED unit that shifts colour temperature and focal-length spread — recipe may set flash.use=true for indoor/low-light fill, but only when it truly helps (don't use for astro, landscape, bright sun). Retina Flash is screen-based and only makes sense with the TrueDepth (front) camera.`,
     );
   } else {
-    lines.push("NO EXTERNAL FLASH. Every recipe must set flash.use=false with notes='No flash.'.");
+    lines.push("NO FLASH AVAILABLE. Every recipe must set flash.use=false with notes='No flash.'.");
+  }
+
+  if (gear.id === "iphone-16-pro") {
+    lines.push(
+      "",
+      "IPHONE 16 PRO CAPABILITY BRIEF — use these in the 'iphone' sub-object:",
+      `- Photographic Styles: ${JSON.stringify(gearDesc.photographicStyles)}. Recommend one only when it meaningfully changes the look (portrait, product, street); otherwise null.`,
+      `- Camera Control button gestures: ${JSON.stringify(gearDesc.cameraControl?.gestures)}. Set iphone.cameraControlHint ONLY when the user would reach the setting faster via the hardware button (e.g. 'Light-press → Depth → slide to f/2.8', 'Light-press → Style → Vibrant'). Otherwise null.`,
+      `- Formats: HEIF (default, efficient), JPEG (compat), ProRAW-12 (standard RAW edits), ProRAW-48 (max dynamic range + editing headroom, use for landscape/product/astro), ProRes (video only — never pick for a photo recipe).`,
+      "- AE/AF lock: long-press the subject in the viewfinder; set iphone.aeAfLockHint when lock-then-recompose materially helps (backlit, tricky light, reframing).",
+      "- Macro: subject 'macro' → lens 'ultrawide', iphone.macroOverride=true, cameraMode 'Macro', and position/focus must mention the 2 cm minimum focus distance. Any other subject keeps macroOverride=false.",
+      "- TrueDepth (front / selfie) lens: pick it only when notes mention selfie / front / me / vlog. Set iphone.frontCamera=true and use Retina Flash (screen) for low-light selfies.",
+      "- iphone.format is REQUIRED (pick one of HEIF/JPEG/ProRAW-12/ProRAW-48). HEIF is the safe default for casual subjects; ProRAW-48 for landscape/product/astro; HEIF or ProRAW-12 for portrait/street.",
+      "- Every other gear: emit iphone: null.",
+    );
+  } else {
+    lines.push("", "This gear is NOT an iPhone 16 Pro — set iphone: null on every recipe.");
   }
   lines.push(
     "",
@@ -139,7 +171,7 @@ export async function POST(req) {
     return NextResponse.json({ ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "stub" });
   }
 
-  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}`;
+  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}`;
   const cached = getCached(key);
   if (cached) return NextResponse.json({ ...cached, source: "cache" });
 
@@ -150,6 +182,7 @@ export async function POST(req) {
       schema: RecipeResponseSchema,
       prompt: buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, useFlash: hasFlash }),
     });
+    const isIphone = gear.id === "iphone-16-pro";
     const clamped = {
       recipes: object.recipes.map((r) => {
         const c = clampRecipeToGear(r, gear);
@@ -157,6 +190,7 @@ export async function POST(req) {
           const extra = guardIssues.filter((i) => i.level === "warn").map((i) => i.message);
           c.warnings = [...(c.warnings || []), ...extra];
         }
+        c.iphone = isIphone ? (c.iphone || null) : null;
         return c;
       }),
       sky,

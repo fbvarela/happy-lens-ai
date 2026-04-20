@@ -436,6 +436,14 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 
 .flash-on { color: var(--sun); font-weight: 600; }
 
+.iphone-strip {
+  margin-top: 10px; padding: 10px 12px;
+  background: var(--cream); border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.iphone-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.iphone-chips .badge { font-size: 0.78rem; }
+
 .gear-list { display: grid; gap: 14px; grid-template-columns: 1fr; }
 @media (min-width: 720px) { .gear-list { grid-template-columns: 1fr 1fr; } }
 .gear-card { display: flex; flex-direction: column; gap: 6px; }

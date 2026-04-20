@@ -81,3 +81,39 @@ Phase 1 — land `/coach` behind no flag but unlinked from the homepage; manual 
 - <5% of recipes flagged by the schema validator as gear-incompatible (indicates prompt quality).
 - P50 recipe latency under 3s, P95 under 8s.
 - Return usage: ≥30% of users who generate a recipe generate a second one within 14 days.
+
+###  Camera Hardware & Lens Specifications
+The iPhone 16 Pro features a quad-camera system (three rear, one front) built around a new 48MP sensor architecture .
+
+- Lens Type	Resolution & Aperture	Focal Length	Key Features
+- Fusion (Main)	48MP, ƒ/1.78	24 mm	2nd-gen Sensor-shift OIS, 100% Focus Pixels
+- Ultra Wide	48MP, ƒ/2.2	13 mm	120° field of view, Hybrid Focus Pixels
+- Telephoto	12MP, ƒ/2.8	120 mm	Tetraprism design, 3D Sensor-shift OIS, 5x optical zoom
+- TrueDepth (Front)	12MP, ƒ/1.9	23 mm	Focus Pixels auto-focus, Retina Flash
+- Manual Controls & Camera Control
+- The new Camera Control (hardware button) provides DSLR-like tactile interaction for manual adjustments. You can lightly press to trigger a secondary menu to adjust the following parameters without touching the screen :
+- Exposure: Manually brighten or darken the scene (+/- EV).
+- Depth: Adjust the level of background blur (bokeh) before taking the shot.
+- Zoom: Seamless control over all optical lenses (0.5x, 1x, 2x, 5x).
+- Cameras: Quickly switch between the physical lenses.
+- Style/Tone: Adjust the mood and color palette of the Photographic Styles.
+- Additionally, standard manual controls via the touchscreen allow you to lock focus and exposure (AE/AF Lock) by long-pressing the viewfinder .
+
+### Formats & Resolution
+- You have high flexibility regarding file formats and resolutions for maximum editing flexibility .
+- Standard Formats: HEIF (efficient, default), JPEG (selectable in Settings).
+- Pro Formats:
+  - Apple ProRAW: Available in 12 MP or 48 MP (DNG format).
+  - ProRes: For video (up to 4K at 120 fps when recording to external storage).
+
+New 48MP Workflow: You can shoot 48MP photos in HEIF (saving space) or ProRAW (maximum editing data) .
+
+### Flash & Lighting
+- Rear Flash: Adaptive True Tone Flash. It utilizes 9 LEDs that adjust their intensity and color temperature based on the focal length. It provides uniform lighting for wide shots and precise, focused light for telephoto shots .
+- Front Flash: Retina Flash. Uses the screen to match the ambient light color temperature for natural-looking selfies .
+
+### Notable Computational & Creative Features
+- Photographic Styles (Latest Gen): Apply real-time color and tone adjustments to specific color palettes (like "Gold" or "Amber") while preserving skin tones. Unlike filters, these are baked into the raw data of the photo .
+- Next-gen Portraits: Capture Portrait mode data automatically (even without switching to Portrait mode). You can adjust the focus point and background blur after taking the photo .
+- Macro Photography: Enabled by the Ultra Wide camera, allowing focus as close as 2 cm.
+- Spatial Photos: Capture 3
