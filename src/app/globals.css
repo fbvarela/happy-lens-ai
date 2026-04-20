@@ -419,6 +419,56 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   margin-top: 16px; border-left: 4px solid var(--clay);
 }
 
+.flash-toggle {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 12px; padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--cream); border: 1.5px solid var(--line);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.18s;
+}
+.flash-toggle:hover { border-color: var(--bark-light); }
+.flash-toggle input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: var(--sun); cursor: pointer;
+}
+.flash-toggle-label { font-size: 0.9rem; color: var(--text); }
+
+.flash-on { color: var(--sun); font-weight: 600; }
+
+.gear-list { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 720px) { .gear-list { grid-template-columns: 1fr 1fr; } }
+.gear-card { display: flex; flex-direction: column; gap: 6px; }
+.gear-card-active { border-color: var(--leaf); box-shadow: 0 0 0 2px rgba(74, 124, 89, 0.18), var(--shadow); }
+
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.timeline-row {
+  display: grid; grid-template-columns: 28px 1fr auto;
+  align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px dashed var(--line);
+  font-size: 0.92rem;
+}
+.timeline-row:last-child { border-bottom: none; }
+.timeline-icon { text-align: center; line-height: 1; }
+.timeline-label { color: var(--text); }
+.timeline-value {
+  font-family: "Fraunces", Georgia, serif; font-weight: 600;
+  color: var(--bark); font-variant-numeric: tabular-nums;
+}
+
+.weather-strip {
+  display: grid; gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+}
+.weather-col {
+  background: var(--cream); border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm); padding: 10px;
+  text-align: center; min-width: 0;
+}
+.weather-time { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em; }
+.weather-temp { font-family: "Fraunces", Georgia, serif; font-size: 1.2rem; font-weight: 700; color: var(--bark); margin: 2px 0; }
+.weather-meta { font-size: 0.72rem; color: var(--text-muted); }
+
 .dropzone {
   border: 2px dashed var(--line);
   border-radius: var(--radius);

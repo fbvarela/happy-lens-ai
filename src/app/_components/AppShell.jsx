@@ -9,6 +9,7 @@ const NAV = [
   { href: "/coach",    key: "coach",    icon: "🎯" },
   { href: "/plan",     key: "plan",     icon: "🗺️" },
   { href: "/critique", key: "critique", icon: "🔍" },
+  { href: "/gear",     key: "gear",     icon: "📷" },
 ];
 
 function isActive(pathname, href) {
