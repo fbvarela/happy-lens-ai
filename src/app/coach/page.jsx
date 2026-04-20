@@ -6,6 +6,12 @@ import { SUBJECT_PRESETS } from "@/data/subjects/presets";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
+import {
+  ApertureIcon, ShutterIcon, IsoIcon, EvIcon, ModeDialIcon,
+  FocusIcon, StabIcon, FlashOnIcon, FlashOffIcon,
+  StyleSwatchIcon, CameraControlIcon, LockIcon,
+  MacroIcon, NightIcon, LensRingIcon, SunCompassIcon,
+} from "@/components/icons";
 
 export default function CoachPage() {
   return (
@@ -256,8 +262,14 @@ function Results({ result, subjectId, t, lensLabel }) {
           <div className="card-title">{t("coach.sky.title")}</div>
           <div className="sky-row">
             {result.sky && (<>
-              <span>☀️ alt {result.sky.sun.altitudeDeg}° · az {result.sky.sun.azimuthDeg}°</span>
-              <span>🌙 moon {Math.round(result.sky.moon.fraction * 100)}%</span>
+              <span className="sky-item">
+                <SunCompassIcon azimuthDeg={result.sky.sun.azimuthDeg} size={22} title={t("coach.icons.sunPosition")} />
+                alt {result.sky.sun.altitudeDeg}° · az {result.sky.sun.azimuthDeg}°
+              </span>
+              <span className="sky-item">
+                <NightIcon size={16} className="inline-icon" title={t("coach.icons.night")} />
+                moon {Math.round(result.sky.moon.fraction * 100)}%
+              </span>
             </>)}
             {result.weather && (<>
               {result.weather.label && <span>⛅ {result.weather.label}</span>}
@@ -324,19 +336,24 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
         <span className="badge badge-sun">{r.cameraMode}</span>
       </div>
       <div className="recipe-stats">
-        <Stat label={t("coach.recipe.lens")} value={lensLabel(r.lens)} />
-        <Stat label={t("coach.recipe.aperture")} value={`f/${r.fNumber}`} />
-        <Stat label={t("coach.recipe.shutter")} value={r.shutter} />
-        <Stat label={t("coach.recipe.iso")} value={r.iso} />
-        <Stat label={t("coach.recipe.ev")} value={r.ev > 0 ? `+${r.ev}` : r.ev} />
+        <Stat icon={<LensRingIcon lens={r.lens} title={t("coach.icons.lens")} />} label={t("coach.recipe.lens")} value={lensLabel(r.lens)} />
+        <Stat icon={<ApertureIcon title={t("coach.icons.aperture")} />} label={t("coach.recipe.aperture")} value={`f/${r.fNumber}`} />
+        <Stat icon={<ShutterIcon title={t("coach.icons.shutter")} />} label={t("coach.recipe.shutter")} value={r.shutter} />
+        <Stat icon={<IsoIcon title={t("coach.icons.iso")} />} label={t("coach.recipe.iso")} value={r.iso} />
+        <Stat icon={<EvIcon title={t("coach.icons.ev")} />} label={t("coach.recipe.ev")} value={r.ev > 0 ? `+${r.ev}` : r.ev} />
       </div>
       <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {r.position}</p>
-      <p className="recipe-line"><strong>{t("coach.recipe.focus")}.</strong> {r.focus}</p>
-      <p className="recipe-line"><strong>{t("coach.recipe.stabilization")}.</strong> {r.stabilization}</p>
+      <p className="recipe-line"><strong><FocusIcon size={14} className="inline-icon" /> {t("coach.recipe.focus")}.</strong> {r.focus}</p>
+      <p className="recipe-line"><strong><StabIcon size={14} className="inline-icon" /> {t("coach.recipe.stabilization")}.</strong> {r.stabilization}</p>
       {r.flash && (
         <p className="recipe-line">
-          <strong>{t("coach.recipe.flash")}.</strong>{" "}
-          {r.flash.use ? <span className="flash-on">⚡ {r.flash.notes}</span> : <span style={{ color: "var(--text-muted)" }}>{r.flash.notes}</span>}
+          <strong>
+            {r.flash.use
+              ? <FlashOnIcon size={14} className="inline-icon flash-on" title={t("coach.icons.flashOn")} />
+              : <FlashOffIcon size={14} className="inline-icon" title={t("coach.icons.flashOff")} />}
+            {" "}{t("coach.recipe.flash")}.
+          </strong>{" "}
+          {r.flash.use ? <span className="flash-on">{r.flash.notes}</span> : <span style={{ color: "var(--text-muted)" }}>{r.flash.notes}</span>}
         </p>
       )}
       {r.iphone && <IphoneStrip iphone={r.iphone} t={t} />}
@@ -364,37 +381,79 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
 }
 
 function IphoneStrip({ iphone, t }) {
-  const chips = [];
-  if (iphone.format) chips.push({ k: "format", label: `📄 ${iphone.format}`, tone: "badge-leaf" });
-  if (iphone.photographicStyle) chips.push({ k: "style", label: `🎨 ${iphone.photographicStyle}`, tone: "badge-sun" });
-  if (iphone.frontCamera) chips.push({ k: "front", label: `🤳 ${t("coach.recipe.iphone.selfie")}`, tone: "badge-sun" });
-  if (iphone.macroOverride) chips.push({ k: "macro", label: `🌱 ${t("coach.recipe.iphone.macro")}`, tone: "badge-leaf" });
   return (
     <div className="iphone-strip">
-      {chips.length > 0 && (
-        <div className="iphone-chips">
-          {chips.map((c) => <span key={c.k} className={`badge ${c.tone}`}>{c.label}</span>)}
-        </div>
-      )}
+      <div className="iphone-chips">
+        {iphone.format && (
+          <span className="badge badge-leaf">
+            <FormatGlyph format={iphone.format} />
+            {iphone.format}
+          </span>
+        )}
+        {iphone.photographicStyle && (
+          <span className="badge badge-sun">
+            <StyleSwatchIcon style={iphone.photographicStyle} size={14} className="inline-icon" title={t("coach.recipe.iphone.style")} />
+            {iphone.photographicStyle}
+          </span>
+        )}
+        {iphone.frontCamera && (
+          <span className="badge badge-sun">
+            <LensRingIcon lens="truedepth" size={14} className="inline-icon" title={t("coach.recipe.iphone.selfie")} />
+            {t("coach.recipe.iphone.selfie")}
+          </span>
+        )}
+        {iphone.macroOverride && (
+          <span className="badge badge-leaf">
+            <MacroIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.macro")} />
+            {t("coach.recipe.iphone.macro")}
+          </span>
+        )}
+      </div>
       {iphone.cameraControlHint && (
         <p className="recipe-line" style={{ margin: "8px 0 0" }}>
-          <strong>{t("coach.recipe.iphone.cameraControl")}.</strong> {iphone.cameraControlHint}
+          <strong>
+            <CameraControlIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.cameraControl")} />
+            {" "}{t("coach.recipe.iphone.cameraControl")}.
+          </strong>{" "}{iphone.cameraControlHint}
         </p>
       )}
       {iphone.aeAfLockHint && (
         <p className="recipe-line" style={{ margin: "4px 0 0" }}>
-          <strong>{t("coach.recipe.iphone.aeAfLock")}.</strong> {iphone.aeAfLockHint}
+          <strong>
+            <LockIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.aeAfLock")} />
+            {" "}{t("coach.recipe.iphone.aeAfLock")}.
+          </strong>{" "}{iphone.aeAfLockHint}
         </p>
       )}
     </div>
   );
 }
 
-function Stat({ label, value }) {
+function FormatGlyph({ format }) {
+  if (format === "ProRAW-48" || format === "ProRAW-12") {
+    return (
+      <svg width="14" height="14" viewBox="0 0 24 24" className="inline-icon" aria-hidden>
+        <rect x="4" y="3" width="14" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+        <text x="11" y="15" textAnchor="middle" fontSize="7" fontWeight="700" fill="currentColor">RAW</text>
+      </svg>
+    );
+  }
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" className="inline-icon" aria-hidden>
+      <path d="M6 3 L14 3 L19 8 L19 21 L6 21 Z" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      <path d="M14 3 L14 8 L19 8" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    </svg>
+  );
+}
+
+function Stat({ icon, label, value }) {
   return (
     <div style={{ minWidth: 0 }}>
       <div className="recipe-stat-label">{label}</div>
-      <div className="recipe-stat-value">{value}</div>
+      <div className="recipe-stat-value stat-with-icon">
+        {icon ? <span className="recipe-stat-icon">{icon}</span> : null}
+        <span>{value}</span>
+      </div>
     </div>
   );
 }

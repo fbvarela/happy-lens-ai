@@ -442,7 +442,29 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   border-radius: var(--radius-sm);
 }
 .iphone-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.iphone-chips .badge { font-size: 0.78rem; }
+.iphone-chips .badge {
+  font-size: 0.78rem;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+.inline-icon { vertical-align: -2px; flex: 0 0 auto; }
+
+.stat-with-icon { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.recipe-stat-icon {
+  flex: 0 0 auto;
+  color: var(--bark);
+  display: inline-flex; align-items: center;
+}
+
+.sky-row { align-items: center; }
+.sky-item { display: inline-flex; align-items: center; gap: 6px; }
+
+.gear-lens-list { list-style: none; padding-left: 0; }
+.gear-lens-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 3px 0; flex-wrap: wrap;
+}
+.gear-lens-icon { flex: 0 0 auto; color: var(--bark); }
 
 .gear-list { display: grid; gap: 14px; grid-template-columns: 1fr; }
 @media (min-width: 720px) { .gear-list { grid-template-columns: 1fr 1fr; } }

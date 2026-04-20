@@ -53,6 +53,14 @@ export const DICTIONARIES = {
         stub: "Stub — set GROQ_API_KEY",
         fallback: "AI unavailable — stub",
       },
+      icons: {
+        aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "Exposure compensation",
+        mode: "Camera mode", focus: "Focus point", stabilization: "Stabilization",
+        flashOn: "Flash on", flashOff: "Flash off",
+        style: "Photographic Style", cameraControl: "Camera Control button",
+        aeAfLock: "AE/AF lock", macro: "Macro", night: "Night / moon",
+        lens: "Lens", sunPosition: "Sun position",
+      },
     },
 
     plan: {
@@ -204,6 +212,14 @@ export const DICTIONARIES = {
         offline: "Sin conexión — última guardada",
         stub: "Demo — añade GROQ_API_KEY",
         fallback: "IA no disponible — demo",
+      },
+      icons: {
+        aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "Compensación de exposición",
+        mode: "Modo de cámara", focus: "Punto de enfoque", stabilization: "Estabilización",
+        flashOn: "Flash activado", flashOff: "Flash desactivado",
+        style: "Estilo fotográfico", cameraControl: "Botón Control",
+        aeAfLock: "Bloqueo AE/AF", macro: "Macro", night: "Noche / luna",
+        lens: "Objetivo", sunPosition: "Posición del sol",
       },
     },
 

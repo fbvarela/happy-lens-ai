@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
+import { LensRingIcon, FlashOnIcon } from "@/components/icons";
 
 function slug(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
@@ -94,13 +95,19 @@ export default function GearPage() {
               </div>
               {g.bodyNotes && <p className="recipe-line" style={{ color: "var(--text-muted)" }}>{g.bodyNotes}</p>}
               <div className="recipe-stat-label" style={{ marginTop: 8 }}>{t("gear.lenses")}</div>
-              <ul className="recipe-tips">
+              <ul className="recipe-tips gear-lens-list">
                 {g.lenses.map((l) => {
                   const ap = l.fNumberFixed != null ? `f/${l.fNumberFixed}`
                            : l.apertureAtWide != null && l.apertureAtTele != null ? `f/${l.apertureAtWide}–${l.apertureAtTele}`
                            : l.fNumberMin != null ? `f/${l.fNumberMin}–${l.fNumberMax ?? "?"}`
                            : "";
-                  return <li key={l.id}>{l.label} <span style={{ color: "var(--text-muted)" }}>· {ap}</span></li>;
+                  return (
+                    <li key={l.id} className="gear-lens-row">
+                      <LensRingIcon lens={l.id} size={18} className="gear-lens-icon" />
+                      <span>{l.label}</span>
+                      <span style={{ color: "var(--text-muted)" }}>· {ap}</span>
+                    </li>
+                  );
                 })}
               </ul>
               {g.flashes?.length > 0 && (
@@ -108,9 +115,10 @@ export default function GearPage() {
                   <div className="recipe-stat-label" style={{ marginTop: 10 }}>{t("gear.flashes")}</div>
                   <ul className="recipe-tips">
                     {g.flashes.map((f) => (
-                      <li key={f.id}>
-                        ⚡ {f.label}
-                        {f.guideNumberM && <span style={{ color: "var(--text-muted)" }}> · GN {f.guideNumberM}</span>}
+                      <li key={f.id} className="gear-lens-row">
+                        <FlashOnIcon size={16} className="gear-lens-icon" style={{ color: "var(--sun)" }} />
+                        <span>{f.label}</span>
+                        {f.guideNumberM && <span style={{ color: "var(--text-muted)" }}>· GN {f.guideNumberM}</span>}
                         {f.ttl && <span className="badge badge-sun" style={{ marginLeft: 6 }}>TTL</span>}
                         {f.hss && <span className="badge badge-sun" style={{ marginLeft: 6 }}>HSS</span>}
                       </li>
