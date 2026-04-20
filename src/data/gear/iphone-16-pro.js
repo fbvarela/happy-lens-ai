@@ -43,4 +43,5 @@ export const IPHONE_16_PRO = {
   ],
   shutter: { minSec: 1 / 8000, maxSec: 30, nightModeMaxSec: 30 },
   iso: { min: 20, max: 12800 },
+  flashes: [],
 };

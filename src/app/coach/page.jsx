@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { SUBJECT_PRESETS } from "@/data/subjects/presets";
-import { IPHONE_16_PRO } from "@/data/gear/iphone-16-pro";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
+import { useGearStore } from "@/lib/gear-store";
 
 export default function CoachPage() {
   const t = useT();
   const { locale } = useLocale();
+  const params = useSearchParams();
+  const gearStore = useGearStore();
   const [subjectId, setSubjectId] = useState("portrait");
   const [scene, setScene] = useState({
     lat: "",
@@ -16,31 +19,43 @@ export default function CoachPage() {
     dateTime: new Date().toISOString().slice(0, 16),
     notes: "",
   });
+  const [useFlash, setUseFlash] = useState(false);
   const [locating, setLocating] = useState(false);
   const [timeHint, setTimeHint] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  const useMyLocation = () => {
-    if (!navigator.geolocation) {
-      setError(t("coach.locate.unavailable"));
-      return;
+  const active = gearStore.active;
+  const hasFlash = (active?.flashes?.length || 0) > 0;
+
+  useEffect(() => {
+    const qSubject = params.get("subject");
+    const qLat = params.get("lat");
+    const qLng = params.get("lng");
+    const qDt = params.get("dateTime");
+    if (qSubject && SUBJECT_PRESETS.some((s) => s.id === qSubject)) setSubjectId(qSubject);
+    if (qLat || qLng || qDt) {
+      setScene((s) => ({
+        ...s,
+        lat: qLat ?? s.lat,
+        lng: qLng ?? s.lng,
+        dateTime: qDt ?? s.dateTime,
+      }));
     }
+  }, [params]);
+
+  useEffect(() => { if (!hasFlash) setUseFlash(false); }, [hasFlash]);
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) { setError(t("coach.locate.unavailable")); return; }
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        setScene((s) => ({
-          ...s,
-          lat: pos.coords.latitude.toFixed(4),
-          lng: pos.coords.longitude.toFixed(4),
-        }));
+        setScene((s) => ({ ...s, lat: pos.coords.latitude.toFixed(4), lng: pos.coords.longitude.toFixed(4) }));
         setLocating(false);
       },
-      (err) => {
-        setError(err.message);
-        setLocating(false);
-      },
+      (err) => { setError(err.message); setLocating(false); },
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
     );
   };
@@ -50,7 +65,9 @@ export default function CoachPage() {
     setLoading(true); setError(null); setResult(null);
     const payload = {
       subjectId,
-      gearId: "iphone-16-pro",
+      gearId: active.id,
+      gear: active,
+      useFlash: useFlash && hasFlash,
       locale,
       scene: {
         lat: scene.lat ? +scene.lat : null,
@@ -79,6 +96,13 @@ export default function CoachPage() {
     } finally { setLoading(false); }
   };
 
+  const lensLabel = (id) => {
+    const builtin = active.lenses.find((l) => l.id === id);
+    if (builtin?.label) return builtin.label;
+    const translated = t(`lens.${id}`);
+    return translated !== `lens.${id}` ? translated : id;
+  };
+
   return (
     <>
       <h1 className="page-title">{t("coach.title")}</h1>
@@ -91,13 +115,8 @@ export default function CoachPage() {
           </div>
           <div className="chip-row" role="listbox" aria-label={t("coach.step.subject")}>
             {SUBJECT_PRESETS.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setSubjectId(s.id)}
-                className="chip"
-                aria-pressed={subjectId === s.id}
-              >
+              <button key={s.id} type="button" onClick={() => setSubjectId(s.id)}
+                className="chip" aria-pressed={subjectId === s.id}>
                 <span aria-hidden>{s.icon}</span>
                 <span>{t(`subject.${s.id}`)}</span>
               </button>
@@ -141,8 +160,7 @@ export default function CoachPage() {
                     if (r.error) { setTimeHint({ kind: "error", text: t("coach.timePreset.needCoords") }); return; }
                     setScene((s) => ({ ...s, dateTime: r.dateTime }));
                     setTimeHint({ kind: "ok", text: t("coach.timePreset.setTo", t(`coach.timePreset.${p.id}`)) });
-                  }}
-                >
+                  }}>
                   <span aria-hidden>{p.icon}</span>
                   <span>{t(`coach.timePreset.${p.id}`)}</span>
                 </button>
@@ -169,13 +187,36 @@ export default function CoachPage() {
           <div className="coach-step-title">
             <span className="step-num">3</span> {t("coach.step.gear")}
           </div>
-          <div className="gear-pill">
-            <span className="gear-icon" aria-hidden>📱</span>
+          <div className="chip-row">
+            {gearStore.all.map((g) => (
+              <button key={g.id} type="button" onClick={() => gearStore.setActiveId(g.id)}
+                className="chip" aria-pressed={g.id === active.id}>
+                <span aria-hidden>{g.kind === "phone" ? "📱" : g.kind === "dslr" ? "📷" : "🎥"}</span>
+                <span>{g.label}</span>
+              </button>
+            ))}
+            <a href="/gear" className="chip" aria-label={t("gear.manage")}>
+              <span aria-hidden>⚙️</span>
+              <span>{t("gear.manage")}</span>
+            </a>
+          </div>
+          <div className="gear-pill" style={{ marginTop: 10 }}>
+            <span className="gear-icon" aria-hidden>{active.kind === "phone" ? "📱" : "📷"}</span>
             <div className="gear-text">
-              <span className="gear-label">{IPHONE_16_PRO.label}</span>
-              <span className="gear-meta">{t("coach.gear.deviceMeta")}</span>
+              <span className="gear-label">{active.label}</span>
+              <span className="gear-meta">
+                {active.lenses.map((l) => l.label).join(" · ")}
+              </span>
             </div>
           </div>
+          {hasFlash && (
+            <label className="flash-toggle">
+              <input type="checkbox" checked={useFlash} onChange={(e) => setUseFlash(e.target.checked)} />
+              <span className="flash-toggle-label">
+                <span aria-hidden>⚡</span> {t("coach.flash.use", active.flashes[0].label)}
+              </span>
+            </label>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary coach-submit" disabled={loading}>
@@ -194,39 +235,35 @@ export default function CoachPage() {
         </div>
       )}
 
-      {result && <Results result={result} subjectId={subjectId} scene={scene} t={t} />}
+      {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
     </>
   );
 }
 
-function Results({ result, subjectId, scene, t }) {
+function Results({ result, subjectId, t, lensLabel }) {
   return (
     <section style={{ marginTop: 20, display: "grid", gap: 14 }}>
       {(result.sky || result.weather) && (
         <div className="card">
           <div className="card-title">{t("coach.sky.title")}</div>
           <div className="sky-row">
-            {result.sky && (
-              <>
-                <span>☀️ alt {result.sky.sun.altitudeDeg}° · az {result.sky.sun.azimuthDeg}°</span>
-                <span>🌙 moon {Math.round(result.sky.moon.fraction * 100)}%</span>
-              </>
-            )}
-            {result.weather && (
-              <>
-                {result.weather.label && <span>⛅ {result.weather.label}</span>}
-                {result.weather.tempC != null && <span>🌡 {Math.round(result.weather.tempC)}°C</span>}
-                {result.weather.cloudCoverPct != null && <span>☁️ {result.weather.cloudCoverPct}%</span>}
-                {result.weather.windKph != null && <span>💨 {result.weather.windKph} km/h</span>}
-                {result.weather.precipMm > 0 && <span>🌧 {result.weather.precipMm} mm</span>}
-              </>
-            )}
+            {result.sky && (<>
+              <span>☀️ alt {result.sky.sun.altitudeDeg}° · az {result.sky.sun.azimuthDeg}°</span>
+              <span>🌙 moon {Math.round(result.sky.moon.fraction * 100)}%</span>
+            </>)}
+            {result.weather && (<>
+              {result.weather.label && <span>⛅ {result.weather.label}</span>}
+              {result.weather.tempC != null && <span>🌡 {Math.round(result.weather.tempC)}°C</span>}
+              {result.weather.cloudCoverPct != null && <span>☁️ {result.weather.cloudCoverPct}%</span>}
+              {result.weather.windKph != null && <span>💨 {result.weather.windKph} km/h</span>}
+              {result.weather.precipMm > 0 && <span>🌧 {result.weather.precipMm} mm</span>}
+            </>)}
           </div>
         </div>
       )}
       <div className="recipe-grid">
         {result.recipes.map((r, i) => (
-          <RecipeCard key={i} recipe={r} subjectId={subjectId} scene={scene} t={t} />
+          <RecipeCard key={i} recipe={r} subjectId={subjectId} t={t} lensLabel={lensLabel} />
         ))}
       </div>
       {result.source && <SourceBadge source={result.source} t={t} />}
@@ -234,7 +271,7 @@ function Results({ result, subjectId, scene, t }) {
   );
 }
 
-function RecipeCard({ recipe: r, subjectId, t }) {
+function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
   const feedbackKey = `hl.coach.fb.${subjectId}.${r.label}`;
   const [vote, setVote] = useState(() => {
     if (typeof window === "undefined") return null;
@@ -254,12 +291,13 @@ function RecipeCard({ recipe: r, subjectId, t }) {
   const copy = async () => {
     const text = [
       `${r.label} — ${r.cameraMode}`,
-      `${t(`lens.${r.lens}`)} · f/${r.fNumber} · ${r.shutter} · ISO ${r.iso} · EV ${r.ev > 0 ? "+" : ""}${r.ev}`,
+      `${lensLabel(r.lens)} · f/${r.fNumber} · ${r.shutter} · ISO ${r.iso} · EV ${r.ev > 0 ? "+" : ""}${r.ev}`,
       `${t("coach.recipe.position")}: ${r.position}`,
       `${t("coach.recipe.focus")}: ${r.focus}`,
       `${t("coach.recipe.stabilization")}: ${r.stabilization}`,
+      r.flash?.use ? `${t("coach.recipe.flash")}: ${r.flash.notes}` : null,
       ...r.compositionTips.map((x) => `• ${x}`),
-    ].join("\n");
+    ].filter(Boolean).join("\n");
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -274,7 +312,7 @@ function RecipeCard({ recipe: r, subjectId, t }) {
         <span className="badge badge-sun">{r.cameraMode}</span>
       </div>
       <div className="recipe-stats">
-        <Stat label={t("coach.recipe.lens")} value={t(`lens.${r.lens}`)} />
+        <Stat label={t("coach.recipe.lens")} value={lensLabel(r.lens)} />
         <Stat label={t("coach.recipe.aperture")} value={`f/${r.fNumber}`} />
         <Stat label={t("coach.recipe.shutter")} value={r.shutter} />
         <Stat label={t("coach.recipe.iso")} value={r.iso} />
@@ -283,6 +321,12 @@ function RecipeCard({ recipe: r, subjectId, t }) {
       <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {r.position}</p>
       <p className="recipe-line"><strong>{t("coach.recipe.focus")}.</strong> {r.focus}</p>
       <p className="recipe-line"><strong>{t("coach.recipe.stabilization")}.</strong> {r.stabilization}</p>
+      {r.flash && (
+        <p className="recipe-line">
+          <strong>{t("coach.recipe.flash")}.</strong>{" "}
+          {r.flash.use ? <span className="flash-on">⚡ {r.flash.notes}</span> : <span style={{ color: "var(--text-muted)" }}>{r.flash.notes}</span>}
+        </p>
+      )}
       <ul className="recipe-tips">
         {r.compositionTips.map((x, j) => <li key={j}>{x}</li>)}
       </ul>
@@ -330,11 +374,11 @@ function SourceBadge({ source, t }) {
   );
 }
 
-function offlineKey({ subjectId, gearId, scene }) {
+function offlineKey({ subjectId, gearId, scene, useFlash }) {
   const lat = scene?.lat != null ? Math.round(scene.lat * 100) / 100 : "x";
   const lng = scene?.lng != null ? Math.round(scene.lng * 100) / 100 : "x";
   const hour = scene?.dateTime ? new Date(scene.dateTime).toISOString().slice(0, 13) : "x";
-  return `hl.coach.${gearId}.${subjectId}.${lat}.${lng}.${hour}`;
+  return `hl.coach.${gearId}.${subjectId}.${lat}.${lng}.${hour}.f${useFlash ? 1 : 0}`;
 }
 
 function readOffline(key) {

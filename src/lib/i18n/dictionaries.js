@@ -1,6 +1,6 @@
 export const DICTIONARIES = {
   en: {
-    nav: { home: "Home", coach: "Coach", plan: "Plan", critique: "Critique" },
+    nav: { home: "Home", coach: "Coach", plan: "Plan", critique: "Critique", gear: "Gear" },
     locale: { label: "Language", en: "English", es: "Español" },
 
     home: {
@@ -29,12 +29,13 @@ export const DICTIONARIES = {
       locate: { ready: "Use my location", locating: "Locating…", unavailable: "Geolocation not available — enter coordinates manually." },
       timePreset: { now: "Now", golden: "Golden hour", blue: "Blue hour", astro: "Astro tonight", setTo: (label) => `Set to ${label}.`, needCoords: "Enter a latitude and longitude first." },
       gear: { deviceMeta: "4 lenses · Night · ProRAW · Action" },
+      flash: { use: (label) => `Use external flash (${label})` },
       submit: { idle: "Generate recipe", loading: "Thinking…" },
       sky: { title: "Sky, light & weather" },
       sceneBlock: { title: "That subject won't work here", hint: "Try a different subject above, or change the date & time." },
       recipe: {
         lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
-        position: "Position", focus: "Focus", stabilization: "Stabilization",
+        position: "Position", focus: "Focus", stabilization: "Stabilization", flash: "Flash",
         voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "✓ Copied",
       },
       source: {
@@ -48,9 +49,24 @@ export const DICTIONARIES = {
 
     plan: {
       title: "Plan a shoot",
-      sub: "The full planner (location search, tides, weather windows, multi-shot timeline) is next on the roadmap. In the meantime the Shot coach already does the hard part — turning a subject + place + time into concrete settings and a position, tuned to your iPhone 16 Pro.",
-      cta: { title: "Start with the coach", body: "Pick a subject, drop a location and time. Get lens, f-number, shutter, ISO, camera mode and where to stand — grounded in real sun position and weather for that hour.", button: "Open Shot coach →" },
-      roadmap: { title: "Coming to /plan", items: ["Location search (not just lat/lng) with named spots", "Sunrise/sunset, blue & golden hour windows, moon phase", "Tide tables for coastal shoots", "Multi-shot timeline across a trip", "Gear profiles beyond the iPhone 16 Pro"] },
+      sub: "Pick a location and a day. Get the full light timeline, weather and an AI shot list — each slot opens in the coach.",
+      form: {
+        location: "Location", date: "Date",
+        latitude: "Latitude", longitude: "Longitude",
+        notes: "Notes (optional)", notesPlaceholder: "what you're hoping to capture…",
+        locate: "Use my location", locating: "Locating…",
+        submit: "Plan the day", loading: "Planning the day…",
+      },
+      timeline: {
+        title: "Light & moon",
+        sunrise: "Sunrise", goldenMorn: "Golden hour ends", noon: "Solar noon",
+        goldenEve: "Golden hour begins", sunset: "Sunset", blue: "Blue hour",
+        astroStart: "Astro darkness",
+        moonRise: "Moon rise", moonSet: "Moon set", moon: "Moon",
+      },
+      weather: { title: "Weather through the day" },
+      slots: { title: "Shot list", openInCoach: "Open in coach →" },
+      empty: "Pick a location and a date to see the plan.",
     },
 
     critique: {
@@ -67,6 +83,35 @@ export const DICTIONARIES = {
         sub: "The review side of happy lens — drop a photo, it reads the EXIF and compares intent to result.",
         until: { title: "Until critique lands", body: "Generate a recipe for your next shot, log what worked with 👍 / 👎 on each variant, and copy the settings for the field.", button: "Open Shot coach →" },
         roadmap: { title: "Coming to /critique", items: ["Drag-and-drop upload (JPEG / HEIC / RAW)", "EXIF parse: camera, lens, ISO, shutter, aperture, GPS, time", "Vision model compares intent vs. result — composition, light, focus", "\"Try next time\" action list tied back to the coach"] },
+      },
+    },
+
+    gear: {
+      title: "My gear",
+      sub: "Pick which body the coach uses. Add a DSLR, mirrorless, or any camera — with lenses and an optional flash — and the recipes adapt.",
+      active: "Active",
+      manage: "Manage gear",
+      useThis: "Use this",
+      remove: "Remove",
+      lenses: "Lenses",
+      flashes: "Flashes",
+      addCustom: "Add custom gear",
+      backToCoach: "Back to coach",
+      form: {
+        body: "Body",
+        label: "Model name",
+        kind: "Type",
+        bodyNotes: "Body notes",
+        isoMin: "ISO min", isoMax: "ISO max",
+        lens: "Lens",
+        lensLabel: "Lens name",
+        focalMin: "Focal min (mm)", focalMax: "Focal max (mm)",
+        apWide: "f/ at wide", apTele: "f/ at tele",
+        flash: "External flash",
+        flashLabel: "Flash model",
+        flashGN: "Guide number (m, ISO100)",
+        optional: "optional",
+        save: "Save gear", cancel: "Cancel",
       },
     },
 
@@ -99,7 +144,7 @@ export const DICTIONARIES = {
   },
 
   es: {
-    nav: { home: "Inicio", coach: "Coach", plan: "Plan", critique: "Crítica" },
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", critique: "Crítica", gear: "Equipo" },
     locale: { label: "Idioma", en: "English", es: "Español" },
 
     home: {
@@ -128,12 +173,13 @@ export const DICTIONARIES = {
       locate: { ready: "Usar mi ubicación", locating: "Localizando…", unavailable: "Geolocalización no disponible — introduce las coordenadas a mano." },
       timePreset: { now: "Ahora", golden: "Hora dorada", blue: "Hora azul", astro: "Astro esta noche", setTo: (label) => `Puesto a ${label}.`, needCoords: "Introduce primero una latitud y longitud." },
       gear: { deviceMeta: "4 objetivos · Noche · ProRAW · Acción" },
+      flash: { use: (label) => `Usar flash externo (${label})` },
       submit: { idle: "Generar receta", loading: "Pensando…" },
       sky: { title: "Cielo, luz y tiempo" },
       sceneBlock: { title: "Ese sujeto no funciona aquí", hint: "Prueba con otro sujeto arriba, o cambia la fecha y la hora." },
       recipe: {
         lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
-        position: "Posición", focus: "Enfoque", stabilization: "Estabilización",
+        position: "Posición", focus: "Enfoque", stabilization: "Estabilización", flash: "Flash",
         voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "✓ Copiado",
       },
       source: {
@@ -147,9 +193,24 @@ export const DICTIONARIES = {
 
     plan: {
       title: "Planificar sesión",
-      sub: "El planificador completo (búsqueda por lugar, mareas, ventanas meteorológicas, cronología de disparos) es el siguiente paso. Mientras tanto, el Shot coach ya hace lo difícil: convertir un sujeto + lugar + hora en ajustes concretos y una posición, afinados a tu iPhone 16 Pro.",
-      cta: { title: "Empieza por el coach", body: "Elige un sujeto, añade ubicación y hora. Obtén objetivo, diafragma, velocidad, ISO, modo de cámara y dónde colocarte — basado en la posición real del sol y el tiempo para esa hora.", button: "Abrir Shot coach →" },
-      roadmap: { title: "Próximamente en /plan", items: ["Búsqueda por lugar (no solo lat/lng) con spots con nombre", "Amanecer/ocaso, ventanas de hora azul y dorada, fase lunar", "Tablas de mareas para sesiones en la costa", "Cronología multi-disparo para un viaje", "Perfiles de equipo más allá del iPhone 16 Pro"] },
+      sub: "Elige una ubicación y un día. Obtén la cronología de luz, el tiempo y una lista de disparos generada por IA — cada hueco se abre en el coach.",
+      form: {
+        location: "Ubicación", date: "Fecha",
+        latitude: "Latitud", longitude: "Longitud",
+        notes: "Notas (opcional)", notesPlaceholder: "qué esperas capturar…",
+        locate: "Usar mi ubicación", locating: "Localizando…",
+        submit: "Planificar el día", loading: "Planificando el día…",
+      },
+      timeline: {
+        title: "Luz y luna",
+        sunrise: "Amanecer", goldenMorn: "Fin de hora dorada", noon: "Mediodía solar",
+        goldenEve: "Inicio de hora dorada", sunset: "Ocaso", blue: "Hora azul",
+        astroStart: "Oscuridad astronómica",
+        moonRise: "Salida de luna", moonSet: "Puesta de luna", moon: "Luna",
+      },
+      weather: { title: "Tiempo a lo largo del día" },
+      slots: { title: "Lista de disparos", openInCoach: "Abrir en coach →" },
+      empty: "Elige una ubicación y una fecha para ver el plan.",
     },
 
     critique: {
@@ -166,6 +227,35 @@ export const DICTIONARIES = {
         sub: "La parte de revisión de happy lens — sube una foto, lee el EXIF y compara tu intención con el resultado.",
         until: { title: "Hasta que llegue la crítica", body: "Genera una receta para tu próximo disparo, marca 👍 / 👎 en cada variante y copia los ajustes para el terreno.", button: "Abrir Shot coach →" },
         roadmap: { title: "Próximamente en /critique", items: ["Subida por arrastrar-y-soltar (JPEG / HEIC / RAW)", "Lectura de EXIF: cámara, objetivo, ISO, velocidad, diafragma, GPS, hora", "Modelo de visión comparando intención vs. resultado — composición, luz, enfoque", "Lista de \"próxima vez prueba\" conectada con el coach"] },
+      },
+    },
+
+    gear: {
+      title: "Mi equipo",
+      sub: "Elige qué cuerpo usa el coach. Añade una réflex, sin espejo o cualquier cámara — con objetivos y un flash opcional — y las recetas se adaptan.",
+      active: "Activo",
+      manage: "Gestionar equipo",
+      useThis: "Usar este",
+      remove: "Eliminar",
+      lenses: "Objetivos",
+      flashes: "Flashes",
+      addCustom: "Añadir equipo",
+      backToCoach: "Volver al coach",
+      form: {
+        body: "Cuerpo",
+        label: "Modelo",
+        kind: "Tipo",
+        bodyNotes: "Notas del cuerpo",
+        isoMin: "ISO mín", isoMax: "ISO máx",
+        lens: "Objetivo",
+        lensLabel: "Nombre del objetivo",
+        focalMin: "Focal mín (mm)", focalMax: "Focal máx (mm)",
+        apWide: "f/ al angular", apTele: "f/ al tele",
+        flash: "Flash externo",
+        flashLabel: "Modelo del flash",
+        flashGN: "Número guía (m, ISO100)",
+        optional: "opcional",
+        save: "Guardar equipo", cancel: "Cancelar",
       },
     },
 
