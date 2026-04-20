@@ -16,11 +16,11 @@ const FEATURES = [
     badge: "AI",
   },
   {
-    href: "/gear",
-    icon: "📷",
-    title: "My gear",
-    body: "Store bodies, lenses, filters. Plans adapt to the focal lengths and apertures you actually own.",
-    badge: "Soon",
+    href: "/coach",
+    icon: "🎯",
+    title: "Shot coach",
+    body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.",
+    badge: "New",
   },
   {
     href: "/conditions",
@@ -56,7 +56,7 @@ export default function HomePage() {
             <Link key={f.href} href={f.href} className="card" style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
                 <span style={{ fontSize: "1.6rem" }}>{f.icon}</span>
-                <span className={`badge ${f.badge === "Core" ? "badge-leaf" : f.badge === "AI" ? "badge-sun" : "badge-clay"}`}>
+                <span className={`badge ${f.badge === "Core" ? "badge-leaf" : f.badge === "AI" || f.badge === "New" ? "badge-sun" : "badge-clay"}`}>
                   {f.badge}
                 </span>
               </div>

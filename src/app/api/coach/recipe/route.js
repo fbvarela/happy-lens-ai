@@ -1,0 +1,101 @@
+import { NextResponse } from "next/server";
+import { generateObject } from "ai";
+import { createGroq } from "@ai-sdk/groq";
+import { RecipeResponseSchema } from "@/lib/recipe-schema";
+import { clampRecipeToGear, getGearProfile } from "@/lib/gear-validator";
+import { getSubjectPreset } from "@/data/subjects/presets";
+import { sunSnapshot } from "@/lib/sun";
+
+export const runtime = "nodejs";
+
+const MODEL_ID = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+
+function stubRecipes(subject, gear, sky) {
+  const lensId = subject.preferredLens[0];
+  const lens = gear.lenses.find((l) => l.id === lensId);
+  const night = sky && sky.sun.altitudeDeg < -6;
+  return {
+    recipes: [
+      {
+        label: "Primary",
+        lens: lens.id,
+        fNumber: lens.fNumberFixed,
+        shutter: night ? "6s" : "1/250s",
+        iso: night ? 3200 : 200,
+        ev: 0,
+        cameraMode: subject.cameraMode,
+        focus: "Tap-to-focus on the main subject; AE/AF lock once set.",
+        stabilization: night ? "Tripod required; use 3s self-timer." : "Handheld with OIS; elbows tucked.",
+        position: `Keep ${Math.round(lens.focalEq / 12)}× body-lengths from subject; place key light at ~45° off-axis.`,
+        compositionTips: [
+          "Rule-of-thirds on the eyes or strongest edge.",
+          "Leave negative space on the side the subject faces.",
+        ],
+        warnings: ["Stub recipe — set GROQ_API_KEY to enable the AI coach."],
+      },
+    ],
+  };
+}
+
+function buildPrompt({ subject, scene, gear, sky }) {
+  return [
+    `You are a shot coach for a photographer using a ${gear.label}.`,
+    `Device capabilities (JSON): ${JSON.stringify({ lenses: gear.lenses, modes: gear.modes, iso: gear.iso, shutter: gear.shutter })}`,
+    `Subject preset: ${JSON.stringify(subject)}`,
+    `Scene: ${JSON.stringify(scene)}`,
+    sky ? `Sky/light snapshot: ${JSON.stringify(sky)}` : "Sky snapshot unavailable.",
+    "",
+    "Produce 1–3 shot recipes. The PRIMARY recipe is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
+    "Hard rules:",
+    "- fNumber MUST equal the chosen lens's fixed fNumber (iPhone lenses have no variable aperture).",
+    "- ISO within device range.",
+    "- Shutter in realistic human format (e.g. '1/250s' or '6s').",
+    "- Position must be concrete: direction relative to subject and light, approximate distance, height.",
+    "- If the subject needs conditions the scene doesn't offer (e.g. astro under daylight), add a warning.",
+  ].join("\n");
+}
+
+export async function POST(req) {
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
+  const { subjectId, scene = {}, gearId = "iphone-16-pro" } = body || {};
+
+  const subject = getSubjectPreset(subjectId);
+  if (!subject) {
+    return NextResponse.json({ error: "Unknown subject." }, { status: 400 });
+  }
+  const gear = getGearProfile(gearId);
+  const sky = sunSnapshot({ lat: scene.lat, lng: scene.lng, date: scene.dateTime });
+
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({
+      ...stubRecipes(subject, gear, sky),
+      sky,
+      source: "stub",
+    });
+  }
+
+  try {
+    const groq = createGroq({ apiKey });
+    const { object } = await generateObject({
+      model: groq(MODEL_ID),
+      schema: RecipeResponseSchema,
+      prompt: buildPrompt({ subject, scene, gear, sky }),
+    });
+    const clamped = {
+      recipes: object.recipes.map((r) => clampRecipeToGear(r, gear)),
+    };
+    return NextResponse.json({ ...clamped, sky, source: "groq" });
+  } catch (err) {
+    console.error("coach/recipe error", err);
+    return NextResponse.json(
+      { ...stubRecipes(subject, gear, sky), sky, source: "fallback", error: String(err?.message || err) },
+      { status: 200 },
+    );
+  }
+}
