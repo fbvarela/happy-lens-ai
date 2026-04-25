@@ -89,6 +89,8 @@ function buildPrompt({ exif, hasDepth, isIPhone16Pro, subject, locale }) {
     "RULES:",
     "- All numeric values must be exact iOS slider values. Use 0 for sliders you do not want to move.",
     "- Diagnose what is actually visible (clipped highlights, color cast, soft contrast, noise, framing). Do not hallucinate metadata.",
+    "- `reasons[].slider` MUST use the exact iOS Photos.app label as a human string — never a dotted path or JSON key.",
+    '  Allowed values: "Photographic Style", "Style Tone", "Style Color", "Exposure", "Brilliance", "Highlights", "Shadows", "Contrast", "Brightness", "Black Point", "Saturation", "Vibrance", "Warmth", "Tint", "Sharpness", "Definition", "Noise Reduction", "Vignette", "Depth Control", "Portrait Lighting", "Lighting Intensity".',
     "- `reasons` must contain a one-line why for every non-zero slider, in display order (Photographic Style → Light → Color → Detail → Depth). Max 12.",
     `- ${isIPhone16Pro ? "This is an iPhone 16 Pro photo — full slider set available." : "This is NOT an iPhone 16 Pro — output the equivalent values the user can dial in if they were on iPhone 16 Pro Photos.app."}`,
     `- ${hasDepth ? "Depth map detected — you MAY set the `depth` block." : "No depth map — leave `depth` null."}`,
