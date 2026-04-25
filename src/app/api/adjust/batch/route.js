@@ -33,13 +33,13 @@ const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
 const DeltaSchema = z.object({
   light: z.object({
-    exposure: z.number().int().min(-100).max(100).default(0),
-    highlights: z.number().int().min(-100).max(100).default(0),
-    shadows: z.number().int().min(-100).max(100).default(0),
+    exposure: z.number().int().min(-100).max(100),
+    highlights: z.number().int().min(-100).max(100),
+    shadows: z.number().int().min(-100).max(100),
   }),
   color: z.object({
-    warmth: z.number().int().min(-100).max(100).default(0),
-    tint: z.number().int().min(-100).max(100).default(0),
+    warmth: z.number().int().min(-100).max(100),
+    tint: z.number().int().min(-100).max(100),
   }),
   why: z.string(),
 });
