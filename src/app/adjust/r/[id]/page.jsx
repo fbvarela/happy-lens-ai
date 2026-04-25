@@ -13,9 +13,22 @@ export default function SavedRecipePage({ params }) {
   const [copied, setCopied] = useState(null);
 
   useEffect(() => {
-    const s = getSavedRecipe(id);
-    if (!s) setMissing(true);
-    else setSaved(s);
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch(`/api/adjust/recipe/${id}`, { cache: "no-store" });
+        if (r.ok) {
+          const data = await r.json();
+          if (!cancelled) setSaved({ at: data.at ? new Date(data.at).getTime() : Date.now(), recipe: data.recipe, thumbnail: data.thumbnail, subject: data.subject });
+          return;
+        }
+      } catch {}
+      const s = getSavedRecipe(id);
+      if (cancelled) return;
+      if (!s) setMissing(true);
+      else setSaved(s);
+    })();
+    return () => { cancelled = true; };
   }, [id]);
 
   const copy = async (kind, text) => {
