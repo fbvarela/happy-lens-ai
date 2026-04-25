@@ -8,6 +8,27 @@ const LABELS = {
   saturation: "Saturation", vibrance: "Vibrance", warmth: "Warmth", tint: "Tint",
   sharpness: "Sharpness", definition: "Definition", noiseReduction: "Noise Reduction", vignette: "Vignette",
 };
+
+const PATH_LABELS = {
+  "photographicstyle.preset": "Photographic Style",
+  "photographicstyle.tone": "Style Tone",
+  "photographicstyle.color": "Style Color",
+  "depth.fstop": "Depth Control",
+  "depth.portraitlighting": "Portrait Lighting",
+  "depth.lightingintensity": "Lighting Intensity",
+};
+
+function normalizeSliderLabel(raw) {
+  if (!raw) return "";
+  const s = String(raw).trim();
+  const lower = s.toLowerCase();
+  if (PATH_LABELS[lower]) return PATH_LABELS[lower];
+  const tail = lower.includes(".") ? lower.split(".").pop() : lower;
+  if (LABELS[tail]) return LABELS[tail];
+  const camelHit = Object.keys(LABELS).find((k) => k.toLowerCase() === tail.replace(/[^a-z]/g, ""));
+  if (camelHit) return LABELS[camelHit];
+  return s.replace(/^./, (c) => c.toUpperCase());
+}
 const signed = (v) => v > 0 ? `+${v}` : `${v}`;
 const fmt = (v, d) => Number(v).toFixed(d);
 
@@ -137,7 +158,7 @@ export default function RecipeCard({ recipe, previewUrl, deviceProfile, deviceWa
           <div className="recipe-stat-label">Why these moves</div>
           <ul className="recipe-tips">
             {recipe.reasons.map((r, i) => (
-              <li key={i}><strong>{r.slider}.</strong> {r.why}</li>
+              <li key={i}><strong>{normalizeSliderLabel(r.slider)}.</strong> {r.why}</li>
             ))}
           </ul>
         </div>
