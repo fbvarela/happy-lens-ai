@@ -10,6 +10,7 @@ const NAV = [
   { href: "/plan",     key: "plan",     icon: "🗺️" },
   { href: "/adjust",   key: "adjust",   icon: "🎚️" },
   { href: "/gear",     key: "gear",     icon: "📷" },
+  { href: "/account",  key: "account",  icon: "👤" },
 ];
 
 function isActive(pathname, href) {

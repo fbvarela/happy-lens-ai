@@ -93,6 +93,7 @@ export default function AdjustPage() {
 
   const saveAndShare = () => {
     if (!recipe) return;
+    if (recipe.id) { router.push(`/adjust/r/${recipe.id}`); return; }
     const id = saveRecipe(recipe, previewUrl, subject.trim() || null);
     if (id) router.push(`/adjust/r/${id}`);
   };

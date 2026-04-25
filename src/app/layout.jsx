@@ -1,6 +1,7 @@
 import "./globals.css";
 import AppShell from "./_components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import { AuthProvider } from "@/lib/auth/AuthProvider";
 
 export const metadata = {
   title: "Happy Lens AI — Shot coach",
@@ -32,7 +33,9 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         <LocaleProvider>
-          <AppShell>{children}</AppShell>
+          <AuthProvider>
+            <AppShell>{children}</AppShell>
+          </AuthProvider>
         </LocaleProvider>
       </body>
     </html>

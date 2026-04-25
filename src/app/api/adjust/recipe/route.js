@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES, PORTRAIT_LIGHTING, DEPTH_FSTOPS } from "@/lib/adjustment-schema";
+import { getCurrentUser } from "@/lib/auth/session";
+import { consumeUploadForUser } from "@/lib/server-quota";
+import { getDb, schema } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -9,6 +12,26 @@ export const maxDuration = 30;
 const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
+
+async function persistRecipe({ user, recipe, deviceProfile, subject, thumbnail }) {
+  if (!user) return null;
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const [row] = await db.insert(schema.adjustmentRecipes).values({
+      userId: user.id,
+      deviceProfile,
+      subjectSlug: subject ? subject.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").slice(0, 40) : null,
+      recipeJson: recipe,
+      warningsJson: recipe.warnings || [],
+      thumbnailDataUrl: thumbnail.length < 200_000 ? thumbnail : null,
+    }).returning({ id: schema.adjustmentRecipes.id });
+    return row?.id || null;
+  } catch (err) {
+    console.error("persistRecipe failed", err);
+    return null;
+  }
+}
 
 function stubRecipe() {
   return {
@@ -91,10 +114,20 @@ export async function POST(req) {
   const isIPhone16Pro = !!(exif?.Model && /iPhone 16 Pro/i.test(exif.Model));
   const hasDepth = !!(exif && (exif.SubjectArea || /portrait/i.test(exif.SceneCaptureType || "") || exif.HasDepth === true));
 
+  const user = await getCurrentUser().catch(() => null);
+  if (user) {
+    const q = await consumeUploadForUser(user);
+    if (!q.ok) {
+      return NextResponse.json({ error: `Daily limit reached (${q.max}/day). Upgrade for unlimited.` }, { status: 429 });
+    }
+  }
+
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     const clamped = clampRecipe(stubRecipe(), { hasDepth });
-    return NextResponse.json({ ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "stub" });
+    const out = { ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "stub" };
+    const id = await persistRecipe({ user, recipe: clamped, deviceProfile: out.deviceProfile, subject, thumbnail: imageDataUrl });
+    return NextResponse.json(id ? { ...out, id } : out);
   }
 
   try {
@@ -111,7 +144,9 @@ export async function POST(req) {
       }],
     });
     const clamped = clampRecipe(object, { hasDepth });
-    return NextResponse.json({ ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "groq" });
+    const out = { ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "groq" };
+    const id = await persistRecipe({ user, recipe: clamped, deviceProfile: out.deviceProfile, subject, thumbnail: imageDataUrl });
+    return NextResponse.json(id ? { ...out, id } : out);
   } catch (err) {
     console.error("adjust recipe error", err);
     const clamped = clampRecipe(stubRecipe(), { hasDepth });
