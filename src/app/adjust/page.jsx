@@ -107,7 +107,7 @@ export default function AdjustPage() {
 
   return (
     <>
-      <h1 className="page-title">Critique &amp; adjust a photo</h1>
+      <h1 className="page-title">Critique & adjust a photo</h1>
       <p className="page-sub">Drop a photo — get a verdict and the exact iPhone 16 Pro Photos-app slider values to fix it.</p>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
         <Link href="/adjust/batch" className="btn btn-ghost">Batch mode</Link>
@@ -165,7 +165,7 @@ export default function AdjustPage() {
             </label>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <button type="button" className="btn btn-primary" onClick={submit} disabled={loading}>
-                {loading ? "Analyzing…" : "Critique &amp; adjust"}
+                {loading ? "Analyzing…" : "Critique & adjust"}
               </button>
               <button type="button" className="btn btn-ghost" onClick={reset}>Reset</button>
             </div>
@@ -189,7 +189,7 @@ export default function AdjustPage() {
             <button type="button" className="btn btn-ghost" onClick={() => copy("shortcuts", recipeToShortcutsList(recipe))}>
               {copied === "shortcuts" ? "Copied!" : "Copy for Shortcuts"}
             </button>
-            <button type="button" className="btn btn-ghost" onClick={saveAndShare}>Save &amp; link</button>
+            <button type="button" className="btn btn-ghost" onClick={saveAndShare}>Save & link</button>
             {isIOS && (
               <a className="btn btn-ghost" href="photos-redirect://" rel="noopener">Open in Photos</a>
             )}
