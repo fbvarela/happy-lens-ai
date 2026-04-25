@@ -1,6 +1,6 @@
 export const DICTIONARIES = {
   en: {
-    nav: { home: "Home", coach: "Coach", plan: "Plan", critique: "Critique", gear: "Gear" },
+    nav: { home: "Home", coach: "Coach", plan: "Plan", adjust: "Adjust", gear: "Gear" },
     locale: { label: "Language", en: "English", es: "Español" },
 
     home: {
@@ -178,7 +178,7 @@ export const DICTIONARIES = {
   },
 
   es: {
-    nav: { home: "Inicio", coach: "Coach", plan: "Plan", critique: "Crítica", gear: "Equipo" },
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", adjust: "Ajustes", gear: "Equipo" },
     locale: { label: "Idioma", en: "English", es: "Español" },
 
     home: {
