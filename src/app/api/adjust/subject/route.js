@@ -34,3 +34,27 @@ export async function POST(req) {
   await db.insert(schema.subjectBaselines).values({ userId: user.id, subjectSlug, displayName: displayName || subjectSlug, baselineRecipeJson: baseline, sampleCount: 1 });
   return NextResponse.json({ ok: true, sampleCount: 1 });
 }
+
+export async function PATCH(req) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  const db = getDb();
+  if (!db) return NextResponse.json({ error: "Database not configured." }, { status: 503 });
+  const { subjectSlug, displayName } = await req.json().catch(() => ({}));
+  if (!subjectSlug || !displayName) return NextResponse.json({ error: "subjectSlug and displayName required." }, { status: 400 });
+  await db.update(schema.subjectBaselines).set({ displayName, updatedAt: new Date() })
+    .where(and(eq(schema.subjectBaselines.userId, user.id), eq(schema.subjectBaselines.subjectSlug, subjectSlug)));
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req) {
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  const db = getDb();
+  if (!db) return NextResponse.json({ error: "Database not configured." }, { status: 503 });
+  const { subjectSlug } = await req.json().catch(() => ({}));
+  if (!subjectSlug) return NextResponse.json({ error: "subjectSlug required." }, { status: 400 });
+  await db.delete(schema.subjectBaselines)
+    .where(and(eq(schema.subjectBaselines.userId, user.id), eq(schema.subjectBaselines.subjectSlug, subjectSlug)));
+  return NextResponse.json({ ok: true });
+}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listSubjects, deleteSubjectBaseline, renameSubjectBaseline } from "@/lib/adjust-history";
+import { useAuth } from "@/lib/auth/AuthProvider";
 
 const LABELS = {
   exposure: "Exposure", brilliance: "Brilliance", highlights: "Highlights", shadows: "Shadows",
@@ -13,19 +14,62 @@ const LABELS = {
 const signed = (v) => v > 0 ? `+${v}` : `${v}`;
 
 export default function SubjectsPage() {
+  const { user } = useAuth();
   const [subjects, setSubjects] = useState({});
+  const [source, setSource] = useState("local");
 
-  useEffect(() => { setSubjects(listSubjects()); }, []);
-
-  const refresh = () => setSubjects(listSubjects());
-
-  const onRename = (slug, current) => {
-    const next = window.prompt("Display name:", current);
-    if (next && next !== current) { renameSubjectBaseline(slug, next); refresh(); }
+  const refresh = async () => {
+    if (user) {
+      try {
+        const r = await fetch("/api/adjust/subject", { cache: "no-store" });
+        const d = await r.json();
+        if (Array.isArray(d.subjects) && d.subjects.length) {
+          const map = {};
+          for (const row of d.subjects) {
+            map[row.subjectSlug] = {
+              displayName: row.displayName,
+              sampleCount: row.sampleCount,
+              baseline: row.baselineRecipeJson,
+              updatedAt: row.updatedAt ? new Date(row.updatedAt).getTime() : Date.now(),
+            };
+          }
+          setSubjects(map);
+          setSource("server");
+          return;
+        }
+      } catch {}
+    }
+    setSubjects(listSubjects());
+    setSource("local");
   };
 
-  const onDelete = (slug) => {
-    if (window.confirm("Delete this subject baseline?")) { deleteSubjectBaseline(slug); refresh(); }
+  useEffect(() => { refresh(); }, [user]);
+
+  const onRename = async (slug, current) => {
+    const next = window.prompt("Display name:", current);
+    if (!next || next === current) return;
+    renameSubjectBaseline(slug, next);
+    if (user) {
+      await fetch("/api/adjust/subject", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subjectSlug: slug, displayName: next }),
+      }).catch(() => {});
+    }
+    refresh();
+  };
+
+  const onDelete = async (slug) => {
+    if (!window.confirm("Delete this subject baseline?")) return;
+    deleteSubjectBaseline(slug);
+    if (user) {
+      await fetch("/api/adjust/subject", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subjectSlug: slug }),
+      }).catch(() => {});
+    }
+    refresh();
   };
 
   const slugs = Object.keys(subjects);
@@ -34,6 +78,11 @@ export default function SubjectsPage() {
     <>
       <h1 className="page-title">Subject baselines</h1>
       <p className="page-sub">Each tagged subject builds a running average across the Light, Color and Detail sliders. Use them as a starting point for a consistent look.</p>
+      <div style={{ marginBottom: 12 }}>
+        <span className={`badge ${source === "server" ? "badge-leaf" : "badge-sun"}`}>
+          {source === "server" ? "Synced across devices" : "On this device only"}
+        </span>
+      </div>
 
       {slugs.length === 0 && (
         <div className="card">

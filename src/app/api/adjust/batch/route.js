@@ -3,6 +3,26 @@ import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { z } from "zod";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES } from "@/lib/adjustment-schema";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getDb, schema } from "@/lib/db";
+
+async function persistBatch({ user, sharedRecipe, perPhoto }) {
+  if (!user) return null;
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const [row] = await db.insert(schema.batchJobs).values({
+      userId: user.id,
+      photoCount: perPhoto.length,
+      sharedRecipeJson: sharedRecipe,
+      perPhotoDeltasJson: perPhoto,
+    }).returning({ id: schema.batchJobs.id });
+    return row?.id || null;
+  } catch (err) {
+    console.error("persistBatch failed", err);
+    return null;
+  }
+}
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -66,9 +86,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "Each image must be a data URL." }, { status: 400 });
   }
 
+  const user = await getCurrentUser().catch(() => null);
+
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ ...stubBatch(images.length), source: "stub" });
+    const out = { ...stubBatch(images.length), source: "stub" };
+    const id = await persistBatch({ user, sharedRecipe: out.shared, perPhoto: out.perPhoto });
+    return NextResponse.json(id ? { ...out, id } : out);
   }
 
   const langName = LOCALE_NAME[locale] || "English";
@@ -101,9 +125,12 @@ export async function POST(req) {
       object.perPhoto = object.perPhoto.slice(0, images.length);
     }
     object.shared = clampRecipe(object.shared, { hasDepth: false });
-    return NextResponse.json({ ...object, source: "groq" });
+    const id = await persistBatch({ user, sharedRecipe: object.shared, perPhoto: object.perPhoto });
+    return NextResponse.json(id ? { ...object, id, source: "groq" } : { ...object, source: "groq" });
   } catch (err) {
     console.error("adjust batch error", err);
-    return NextResponse.json({ ...stubBatch(images.length), source: "fallback", error: String(err?.message || err) }, { status: 200 });
+    const out = { ...stubBatch(images.length), source: "fallback", error: String(err?.message || err) };
+    const id = await persistBatch({ user, sharedRecipe: out.shared, perPhoto: out.perPhoto });
+    return NextResponse.json(id ? { ...out, id } : out, { status: 200 });
   }
 }

@@ -75,7 +75,14 @@ export default function AdjustPage() {
         recipe: data,
       };
       setHistory(pushHistory(entry));
-      if (subjectSlug) updateSubjectBaseline(subjectSlug, subject.trim(), data);
+      if (subjectSlug) {
+        const baseline = updateSubjectBaseline(subjectSlug, subject.trim(), data);
+        fetch("/api/adjust/subject", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subjectSlug, displayName: subject.trim(), baseline: baseline?.baseline ?? data }),
+        }).catch(() => {});
+      }
     } catch (err) { setError(err.message); }
     finally { setLoading(false); }
   };
