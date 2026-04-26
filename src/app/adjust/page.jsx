@@ -9,6 +9,7 @@ import { listHistory, pushHistory, clearHistory, slugify, updateSubjectBaseline,
 import { getQuota, consumeUpload } from "@/lib/adjust-quota";
 import { detectDeviceProfile } from "@/data/devices/iphone-profiles";
 import { fileToDownscaledDataUrl } from "@/lib/image-decode";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import RecipeCard, { recipeToText, recipeToShortcutsList } from "./_components/RecipeCard";
 
 export default function AdjustPage() {
@@ -26,8 +27,23 @@ export default function AdjustPage() {
   const [copied, setCopied] = useState(null);
   const [history, setHistory] = useState([]);
   const [quota, setQuota] = useState(null);
+  const [serverQuota, setServerQuota] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => { setHistory(listHistory()); setQuota(getQuota()); }, []);
+
+  const refreshServerQuota = async () => {
+    try {
+      const r = await fetch("/api/adjust/quota", { cache: "no-store" });
+      const d = await r.json();
+      setServerQuota(d.authed ? d : null);
+    } catch { setServerQuota(null); }
+  };
+
+  useEffect(() => {
+    if (user) refreshServerQuota();
+    else setServerQuota(null);
+  }, [user]);
 
   const device = useMemo(() => detectDeviceProfile(exif), [exif]);
   const subjectSlug = useMemo(() => slugify(subject), [subject]);
@@ -49,12 +65,14 @@ export default function AdjustPage() {
 
   const submit = async () => {
     if (!previewUrl) return;
-    if (!consumeUpload()) {
-      setError(`Daily free limit reached (${getQuota().uploads.max}/day). Try again tomorrow.`);
+    if (!user) {
+      if (!consumeUpload()) {
+        setError(`Daily free limit reached (${getQuota().uploads.max}/day). Try again tomorrow.`);
+        setQuota(getQuota());
+        return;
+      }
       setQuota(getQuota());
-      return;
     }
-    setQuota(getQuota());
     setLoading(true); setError(null); setRecipe(null);
     try {
       const res = await fetch("/api/adjust/recipe", {
@@ -75,6 +93,7 @@ export default function AdjustPage() {
         recipe: data,
       };
       setHistory(pushHistory(entry));
+      if (user) refreshServerQuota();
       if (subjectSlug) {
         const baseline = updateSubjectBaseline(subjectSlug, subject.trim(), data);
         fetch("/api/adjust/subject", {
@@ -112,11 +131,11 @@ export default function AdjustPage() {
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
         <Link href="/adjust/batch" className="btn btn-ghost">Batch mode</Link>
         <Link href="/adjust/subjects" className="btn btn-ghost">Subject baselines</Link>
-        {quota && (
-          <span className="recipe-stat-label" style={{ marginLeft: "auto" }}>
-            Free: {quota.uploads.remaining}/{quota.uploads.max} uploads left today
-          </span>
-        )}
+        <span className="recipe-stat-label" style={{ marginLeft: "auto" }}>
+          {serverQuota?.premium && "Premium · unlimited"}
+          {serverQuota && !serverQuota.premium && `${serverQuota.remaining}/${serverQuota.max} uploads left today`}
+          {!serverQuota && quota && `Free: ${quota.uploads.remaining}/${quota.uploads.max} uploads left today`}
+        </span>
       </div>
 
       <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
