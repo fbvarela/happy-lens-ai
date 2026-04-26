@@ -21,11 +21,11 @@ export const AdjustmentRecipeSchema = z.object({
     headline: z.string().describe("One-line verdict on the photo as shot. Specific, no platitudes."),
   }),
   diagnosis: z.string().describe("One paragraph: what is in the frame and what hurts it."),
-  strengths: z.array(z.string()).max(4).default([]).describe("What the shot already does well. Empty array allowed."),
+  strengths: z.array(z.string()).max(4).describe("What the shot already does well. May be empty, but include the field."),
   issues: z.array(z.object({
     area: z.enum(["composition", "light", "focus", "exposure", "color", "motion", "subject", "technical"]),
     observation: z.string(),
-  })).max(5).default([]).describe("Concrete issues visible in the frame."),
+  })).max(5).describe("Concrete issues visible in the frame. May be empty."),
   photographicStyle: z.object({
     preset: z.enum(PHOTOGRAPHIC_STYLES),
     tone: f(-1, 1).describe("−1.0 to +1.0, step 0.1. Null for B&W."),
@@ -62,7 +62,7 @@ export const AdjustmentRecipeSchema = z.object({
     slider: z.string(),
     why: z.string(),
   })).max(12).describe("One short why per non-zero slider, in display order."),
-  warnings: z.array(z.string()).default([]),
+  warnings: z.array(z.string()).describe("Schema clamps & device-capability notes. May be empty."),
 });
 
 const clampInt = (v, min, max) => {
