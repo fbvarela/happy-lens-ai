@@ -108,7 +108,7 @@ function CoachPageInner() {
     };
     const storageKey = offlineKey(payload);
     try {
-      const res = await fetch("/api/coach/recipe", {
+      const res = await fetch("/api/coach/advice", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -325,9 +325,9 @@ function Results({ result, subjectId, t, lensLabel }) {
           </div>
         </div>
       )}
-      <div className="recipe-grid">
-        {result.recipes.map((r, i) => (
-          <RecipeCard key={i} recipe={r} subjectId={subjectId} t={t} lensLabel={lensLabel} />
+      <div className="advice-grid">
+        {result.advice.map((a, i) => (
+          <AdviceCard key={i} advice={a} subjectId={subjectId} t={t} lensLabel={lensLabel} />
         ))}
       </div>
       {result.source && <SourceBadge source={result.source} t={t} />}
@@ -335,7 +335,7 @@ function Results({ result, subjectId, t, lensLabel }) {
   );
 }
 
-function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
+function AdviceCard({ advice: r, subjectId, t, lensLabel }) {
   const feedbackKey = `hl.coach.fb.${subjectId}.${r.label}`;
   const [vote, setVote] = useState(() => {
     if (typeof window === "undefined") return null;
@@ -356,14 +356,14 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
     const text = [
       `${r.label} — ${r.cameraMode}`,
       `${lensLabel(r.lens)} · f/${r.fNumber} · ${r.shutter} · ISO ${r.iso} · EV ${r.ev > 0 ? "+" : ""}${r.ev}`,
-      `${t("coach.recipe.position")}: ${r.position}`,
-      `${t("coach.recipe.focus")}: ${r.focus}`,
-      `${t("coach.recipe.stabilization")}: ${r.stabilization}`,
-      r.flash?.use ? `${t("coach.recipe.flash")}: ${r.flash.notes}` : null,
-      r.iphone?.format ? `${t("coach.recipe.iphone.format")}: ${r.iphone.format}` : null,
-      r.iphone?.photographicStyle ? `${t("coach.recipe.iphone.style")}: ${r.iphone.photographicStyle}` : null,
-      r.iphone?.cameraControlHint ? `${t("coach.recipe.iphone.cameraControl")}: ${r.iphone.cameraControlHint}` : null,
-      r.iphone?.aeAfLockHint ? `${t("coach.recipe.iphone.aeAfLock")}: ${r.iphone.aeAfLockHint}` : null,
+      `${t("coach.advice.position")}: ${r.position}`,
+      `${t("coach.advice.focus")}: ${r.focus}`,
+      `${t("coach.advice.stabilization")}: ${r.stabilization}`,
+      r.flash?.use ? `${t("coach.advice.flash")}: ${r.flash.notes}` : null,
+      r.iphone?.format ? `${t("coach.advice.iphone.format")}: ${r.iphone.format}` : null,
+      r.iphone?.photographicStyle ? `${t("coach.advice.iphone.style")}: ${r.iphone.photographicStyle}` : null,
+      r.iphone?.cameraControlHint ? `${t("coach.advice.iphone.cameraControl")}: ${r.iphone.cameraControlHint}` : null,
+      r.iphone?.aeAfLockHint ? `${t("coach.advice.iphone.aeAfLock")}: ${r.iphone.aeAfLockHint}` : null,
       ...r.compositionTips.map((x) => `• ${x}`),
     ].filter(Boolean).join("\n");
     try {
@@ -375,49 +375,49 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
 
   return (
     <article className="card">
-      <div className="recipe-head">
+      <div className="advice-head">
         <div className="card-title" style={{ margin: 0 }}>{r.label}</div>
         <span className="badge badge-sun">{r.cameraMode}</span>
       </div>
-      <div className="recipe-stats">
-        <Stat icon={<LensRingIcon lens={r.lens} title={t("coach.icons.lens")} />} label={t("coach.recipe.lens")} value={lensLabel(r.lens)} />
-        <Stat icon={<ApertureIcon title={t("coach.icons.aperture")} />} label={t("coach.recipe.aperture")} value={`f/${r.fNumber}`} />
-        <Stat icon={<ShutterIcon title={t("coach.icons.shutter")} />} label={t("coach.recipe.shutter")} value={r.shutter} />
-        <Stat icon={<IsoIcon title={t("coach.icons.iso")} />} label={t("coach.recipe.iso")} value={r.iso} />
-        <Stat icon={<EvIcon title={t("coach.icons.ev")} />} label={t("coach.recipe.ev")} value={r.ev > 0 ? `+${r.ev}` : r.ev} />
+      <div className="advice-stats">
+        <Stat icon={<LensRingIcon lens={r.lens} title={t("coach.icons.lens")} />} label={t("coach.advice.lens")} value={lensLabel(r.lens)} />
+        <Stat icon={<ApertureIcon title={t("coach.icons.aperture")} />} label={t("coach.advice.aperture")} value={`f/${r.fNumber}`} />
+        <Stat icon={<ShutterIcon title={t("coach.icons.shutter")} />} label={t("coach.advice.shutter")} value={r.shutter} />
+        <Stat icon={<IsoIcon title={t("coach.icons.iso")} />} label={t("coach.advice.iso")} value={r.iso} />
+        <Stat icon={<EvIcon title={t("coach.icons.ev")} />} label={t("coach.advice.ev")} value={r.ev > 0 ? `+${r.ev}` : r.ev} />
       </div>
-      <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {r.position}</p>
-      <p className="recipe-line"><strong><FocusIcon size={14} className="inline-icon" /> {t("coach.recipe.focus")}.</strong> {r.focus}</p>
-      <p className="recipe-line"><strong><StabIcon size={14} className="inline-icon" /> {t("coach.recipe.stabilization")}.</strong> {r.stabilization}</p>
+      <p className="advice-line"><strong>{t("coach.advice.position")}.</strong> {r.position}</p>
+      <p className="advice-line"><strong><FocusIcon size={14} className="inline-icon" /> {t("coach.advice.focus")}.</strong> {r.focus}</p>
+      <p className="advice-line"><strong><StabIcon size={14} className="inline-icon" /> {t("coach.advice.stabilization")}.</strong> {r.stabilization}</p>
       {r.flash && (
-        <p className="recipe-line">
+        <p className="advice-line">
           <strong>
             {r.flash.use
               ? <FlashOnIcon size={14} className="inline-icon flash-on" title={t("coach.icons.flashOn")} />
               : <FlashOffIcon size={14} className="inline-icon" title={t("coach.icons.flashOff")} />}
-            {" "}{t("coach.recipe.flash")}.
+            {" "}{t("coach.advice.flash")}.
           </strong>{" "}
           {r.flash.use ? <span className="flash-on">{r.flash.notes}</span> : <span style={{ color: "var(--text-muted)" }}>{r.flash.notes}</span>}
         </p>
       )}
       {r.iphone && <IphoneStrip iphone={r.iphone} t={t} />}
-      <ul className="recipe-tips">
+      <ul className="advice-tips">
         {r.compositionTips.map((x, j) => <li key={j}>{x}</li>)}
       </ul>
       {r.warnings?.length > 0 && (
-        <div className="recipe-warning">
+        <div className="advice-warning">
           {r.warnings.map((w, j) => <div key={j}>⚠️ {w}</div>)}
         </div>
       )}
-      <div className="recipe-actions">
-        <div className="recipe-vote" role="group" aria-label="rate">
+      <div className="advice-actions">
+        <div className="advice-vote" role="group" aria-label="rate">
           <button type="button" className={`vote-btn ${vote === "up" ? "vote-on" : ""}`}
-            onClick={() => rate("up")} aria-pressed={vote === "up"} aria-label={t("coach.recipe.voteUp")}>👍</button>
+            onClick={() => rate("up")} aria-pressed={vote === "up"} aria-label={t("coach.advice.voteUp")}>👍</button>
           <button type="button" className={`vote-btn ${vote === "down" ? "vote-on" : ""}`}
-            onClick={() => rate("down")} aria-pressed={vote === "down"} aria-label={t("coach.recipe.voteDown")}>👎</button>
+            onClick={() => rate("down")} aria-pressed={vote === "down"} aria-label={t("coach.advice.voteDown")}>👎</button>
         </div>
         <button type="button" className="copy-btn" onClick={copy}>
-          {copied ? t("coach.recipe.copied") : `📋 ${t("coach.recipe.copy")}`}
+          {copied ? t("coach.advice.copied") : `📋 ${t("coach.advice.copy")}`}
         </button>
       </div>
     </article>
@@ -436,36 +436,36 @@ function IphoneStrip({ iphone, t }) {
         )}
         {iphone.photographicStyle && (
           <span className="badge badge-sun">
-            <StyleSwatchIcon style={iphone.photographicStyle} size={14} className="inline-icon" title={t("coach.recipe.iphone.style")} />
+            <StyleSwatchIcon style={iphone.photographicStyle} size={14} className="inline-icon" title={t("coach.advice.iphone.style")} />
             {iphone.photographicStyle}
           </span>
         )}
         {iphone.frontCamera && (
           <span className="badge badge-sun">
-            <LensRingIcon lens="truedepth" size={14} className="inline-icon" title={t("coach.recipe.iphone.selfie")} />
-            {t("coach.recipe.iphone.selfie")}
+            <LensRingIcon lens="truedepth" size={14} className="inline-icon" title={t("coach.advice.iphone.selfie")} />
+            {t("coach.advice.iphone.selfie")}
           </span>
         )}
         {iphone.macroOverride && (
           <span className="badge badge-leaf">
-            <MacroIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.macro")} />
-            {t("coach.recipe.iphone.macro")}
+            <MacroIcon size={14} className="inline-icon" title={t("coach.advice.iphone.macro")} />
+            {t("coach.advice.iphone.macro")}
           </span>
         )}
       </div>
       {iphone.cameraControlHint && (
-        <p className="recipe-line" style={{ margin: "8px 0 0" }}>
+        <p className="advice-line" style={{ margin: "8px 0 0" }}>
           <strong>
-            <CameraControlIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.cameraControl")} />
-            {" "}{t("coach.recipe.iphone.cameraControl")}.
+            <CameraControlIcon size={14} className="inline-icon" title={t("coach.advice.iphone.cameraControl")} />
+            {" "}{t("coach.advice.iphone.cameraControl")}.
           </strong>{" "}{iphone.cameraControlHint}
         </p>
       )}
       {iphone.aeAfLockHint && (
-        <p className="recipe-line" style={{ margin: "4px 0 0" }}>
+        <p className="advice-line" style={{ margin: "4px 0 0" }}>
           <strong>
-            <LockIcon size={14} className="inline-icon" title={t("coach.recipe.iphone.aeAfLock")} />
-            {" "}{t("coach.recipe.iphone.aeAfLock")}.
+            <LockIcon size={14} className="inline-icon" title={t("coach.advice.iphone.aeAfLock")} />
+            {" "}{t("coach.advice.iphone.aeAfLock")}.
           </strong>{" "}{iphone.aeAfLockHint}
         </p>
       )}
@@ -493,9 +493,9 @@ function FormatGlyph({ format }) {
 function Stat({ icon, label, value }) {
   return (
     <div style={{ minWidth: 0 }}>
-      <div className="recipe-stat-label">{label}</div>
-      <div className="recipe-stat-value stat-with-icon">
-        {icon ? <span className="recipe-stat-icon">{icon}</span> : null}
+      <div className="advice-stat-label">{label}</div>
+      <div className="advice-stat-value stat-with-icon">
+        {icon ? <span className="advice-stat-icon">{icon}</span> : null}
         <span>{value}</span>
       </div>
     </div>

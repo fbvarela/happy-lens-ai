@@ -132,7 +132,7 @@ The subject preset's `contexts` / `animals` are strings referencing these maps â
 
 Non-Pets subjects omit the extra fields; the server treats them as ignored.
 
-### API route change ([api/coach/recipe/route.js](../../src/app/api/coach/recipe/route.js))
+### API route change ([api/coach/advice/route.js](../../src/app/api/coach/advice/route.js))
 
 - Accept `petContext` and `animal` on the request body.
 - When `subjectId === "pets"`, resolve the `PET_CONTEXTS[petContext]` entry and merge it into the subject preset the prompt sees â€” the context's `shutterFloorSec`/`isoCeiling`/`preferredLens`/`cameraMode` override the pet-generic defaults.

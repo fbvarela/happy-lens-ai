@@ -13,7 +13,7 @@ export const CritiqueSchema = z.object({
     }),
   ).max(5),
   tryNext: z.array(z.string()).min(1).max(5).describe("Concrete, actionable tweaks for next time."),
-  recipeTweaks: z.object({
+  adviceTweaks: z.object({
     lens: z.string().nullable().describe("Lens suggestion if switching helps. null if no change."),
     fNumber: z.number().nullable(),
     shutter: z.string().nullable(),

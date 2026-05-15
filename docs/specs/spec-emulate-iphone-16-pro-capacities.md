@@ -8,7 +8,7 @@ The Shot Coach MVP ([spec-shot-coach-iphone-16-pro.md](spec-shot-coach-iphone-16
 
 Grounding the coach in the real device is also what we need before the `/gear` feature generalises to non-phone bodies: if the iPhone 16 Pro profile isn't faithful, nothing else will be.
 
-Related: [spec-shot-coach-iphone-16-pro.md](spec-shot-coach-iphone-16-pro.md) · [src/data/gear/iphone-16-pro.js](../../src/data/gear/iphone-16-pro.js) · [src/app/api/coach/recipe/route.js](../../src/app/api/coach/recipe/route.js).
+Related: [spec-shot-coach-iphone-16-pro.md](spec-shot-coach-iphone-16-pro.md) · [src/data/gear/iphone-16-pro.js](../../src/data/gear/iphone-16-pro.js) · [src/app/api/coach/advice/route.js](../../src/app/api/coach/advice/route.js).
 
 ## Goals
 

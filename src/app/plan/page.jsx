@@ -131,7 +131,7 @@ function PlanResults({ plan, t, locale, form }) {
     <section style={{ marginTop: 20, display: "grid", gap: 14 }}>
       {plan.summary && (
         <div className="card">
-          <p className="recipe-line" style={{ margin: 0 }}>{plan.summary}</p>
+          <p className="advice-line" style={{ margin: 0 }}>{plan.summary}</p>
         </div>
       )}
 
@@ -141,7 +141,7 @@ function PlanResults({ plan, t, locale, form }) {
       {plan.slots?.length > 0 && (
         <div>
           <h2 className="card-title" style={{ fontSize: "1.1rem", marginBottom: 12 }}>{t("plan.slots.title")}</h2>
-          <div className="recipe-grid">
+          <div className="advice-grid">
             {plan.slots.map((slot, i) => (
               <SlotCard key={i} slot={slot} t={t} locale={locale} form={form} />
             ))}
@@ -223,20 +223,20 @@ function SlotCard({ slot, t, locale, form }) {
   const coachUrl = `/coach?subject=${slot.subjectId}&lat=${form.lat}&lng=${form.lng}&dateTime=${encodeURIComponent(localDT)}`;
   return (
     <article className="card">
-      <div className="recipe-head">
+      <div className="advice-head">
         <div className="card-title" style={{ margin: 0 }}>{fmtTime(slot.time, locale)} · {t(`subject.${slot.subjectId}`)}</div>
         <span className="badge badge-sun">{slot.cameraMode}</span>
       </div>
-      <p className="recipe-line"><strong>{slot.headline}</strong></p>
-      <p className="recipe-line" style={{ color: "var(--text-muted)" }}>{slot.rationale}</p>
-      <div className="recipe-stats" style={{ gridTemplateColumns: "1fr 1fr" }}>
+      <p className="advice-line"><strong>{slot.headline}</strong></p>
+      <p className="advice-line" style={{ color: "var(--text-muted)" }}>{slot.rationale}</p>
+      <div className="advice-stats" style={{ gridTemplateColumns: "1fr 1fr" }}>
         <div>
-          <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
-          <div className="recipe-stat-value">{t(`lens.${slot.lens}`)}</div>
+          <div className="advice-stat-label">{t("coach.advice.lens")}</div>
+          <div className="advice-stat-value">{t(`lens.${slot.lens}`)}</div>
         </div>
         <div>
-          <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
-          <div className="recipe-stat-value">{slot.cameraMode}</div>
+          <div className="advice-stat-label">{t("coach.advice.mode")}</div>
+          <div className="advice-stat-value">{slot.cameraMode}</div>
         </div>
       </div>
       <Link href={coachUrl} className="btn btn-sun">{t("plan.slots.openInCoach")}</Link>

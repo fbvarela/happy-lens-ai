@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import LastRecipeCard from "./_components/LastRecipeCard";
+import LastAdviceCard from "./_components/LastAdviceCard";
 import { useT } from "@/lib/i18n/LocaleProvider";
 
 const FEATURES = [
@@ -25,7 +25,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <LastRecipeCard />
+      <LastAdviceCard />
 
       <section style={{ marginTop: 32 }}>
         <h2 className="page-title" style={{ fontSize: "1.4rem" }}>{t("home.sectionTitle")}</h2>

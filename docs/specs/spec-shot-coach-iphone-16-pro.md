@@ -46,7 +46,7 @@ Related: [README.md](README.md) module list; existing placeholder [plan/page.jsx
 ### APIs / routes
 
 - `src/app/coach/page.jsx` — the 3-step form + results.
-- `src/app/api/coach/recipe/route.js` — POST `{ subject, scene, gearId }` → `ShotRecipe[]`.
+- `src/app/api/coach/advice/route.js` — POST `{ subject, scene, gearId }` → `ShotAdvice[]`.
   - Server builds a prompt that injects the `GearProfile` capabilities and `SubjectPreset` defaults so the model can only recommend settings the phone can actually achieve.
   - Uses Vercel AI SDK `generateObject` with the `ShotRecipe` Zod schema for type-safe output.
   - Pulls sun/weather from the same providers the existing `/plan` page will use (stub for v1 if not wired yet).

@@ -1,6 +1,6 @@
 export const DICTIONARIES = {
   en: {
-    nav: { home: "Home", coach: "Coach", plan: "Plan", adjust: "Adjust", gear: "Gear", account: "Account" },
+    nav: { home: "Home", coach: "Coach", plan: "Plan", critique: "Critique", gear: "Gear" },
     locale: { label: "Language", en: "English", es: "Español" },
 
     home: {
@@ -11,10 +11,10 @@ export const DICTIONARIES = {
       ctaRoadmap: "About the roadmap",
       sectionTitle: "What you can do",
       sectionSub: "Start with the coach — the rest is on the way.",
-      last: { title: (s) => `Last recipe — ${s}`, saved: "Saved", open: "Open coach →" },
+      last: { title: (s) => `Last advice — ${s}`, saved: "Saved", open: "Open coach →" },
       feature: {
         coach: { title: "Shot coach", body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.", badge: "Live" },
-        plan: { title: "Plan a shoot", body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already does today's recipe.", badge: "Soon" },
+        plan: { title: "Plan a shoot", body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already gives today's advice.", badge: "Soon" },
         critique: { title: "Critique a photo", body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.", badge: "Soon" },
         conditions: { title: "Tonight's conditions", body: "Milky Way visibility, moon phase, Bortle class, golden & blue hour at your location.", badge: "Later" },
       },
@@ -22,7 +22,7 @@ export const DICTIONARIES = {
 
     coach: {
       title: "Shot coach",
-      sub: "Pick a subject, drop a location and time — get a settings-and-position recipe tuned to your iPhone 16 Pro.",
+      sub: "Pick a subject, drop a location and time — get settings-and-position advice tuned to your iPhone 16 Pro.",
       step: { subject: "Subject", scene: "Scene", gear: "Gear" },
       field: { latitude: "Latitude", longitude: "Longitude", dateTime: "Date & time", notes: "Notes (optional)" },
       placeholder: { notes: "backlit, indoors, moving subject…" },
@@ -30,10 +30,10 @@ export const DICTIONARIES = {
       timePreset: { now: "Now", golden: "Golden hour", blue: "Blue hour", astro: "Astro tonight", setTo: (label) => `Set to ${label}.`, needCoords: "Enter a latitude and longitude first." },
       gear: { deviceMeta: "4 lenses · Night · ProRAW · Action" },
       flash: { use: (label) => `Use external flash (${label})` },
-      submit: { idle: "Generate recipe", loading: "Thinking…" },
+      submit: { idle: "Generate advice", loading: "Thinking…" },
       sky: { title: "Sky, light & weather" },
       sceneBlock: { title: "That subject won't work here", hint: "Try a different subject above, or change the date & time." },
-      recipe: {
+      advice: {
         lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
         position: "Position", focus: "Focus", stabilization: "Stabilization", flash: "Flash",
         voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "✓ Copied",
@@ -97,14 +97,14 @@ export const DICTIONARIES = {
       result: { strengths: "What worked", issues: "What to watch", tryNext: "Try next time", tweaks: "Recipe tweaks" },
       placeholder: {
         sub: "The review side of happy lens — drop a photo, it reads the EXIF and compares intent to result.",
-        until: { title: "Until critique lands", body: "Generate a recipe for your next shot, log what worked with 👍 / 👎 on each variant, and copy the settings for the field.", button: "Open Shot coach →" },
+        until: { title: "Until critique lands", body: "Generate advice for your next shot, log what worked with 👍 / 👎 on each variant, and copy the settings for the field.", button: "Open Shot coach →" },
         roadmap: { title: "Coming to /critique", items: ["Drag-and-drop upload (JPEG / HEIC / RAW)", "EXIF parse: camera, lens, ISO, shutter, aperture, GPS, time", "Vision model compares intent vs. result — composition, light, focus", "\"Try next time\" action list tied back to the coach"] },
       },
     },
 
     gear: {
       title: "My gear",
-      sub: "Pick which body the coach uses. Add a DSLR, mirrorless, or any camera — with lenses and an optional flash — and the recipes adapt.",
+      sub: "Pick which body the coach uses. Add a DSLR, mirrorless, or any camera — with lenses and an optional flash — and the advice adapts.",
       active: "Active",
       manage: "Manage gear",
       useThis: "Use this",
@@ -133,9 +133,9 @@ export const DICTIONARIES = {
 
     offline: {
       title: "You're offline",
-      sub: "No network — but the coach still works on recipes you've already generated.",
+      sub: "No network — but the coach still works on advice you've already generated.",
       worksTitle: "What still works",
-      works: ["The last recipe you saved for this location + subject + hour", "👍 / 👎 votes and Copy on recipes you've already loaded"],
+      works: ["The last advice you saved for this location + subject + hour", "👍 / 👎 votes and Copy on advice you've already loaded"],
       back: "Back to Shot coach",
     },
 
@@ -178,7 +178,7 @@ export const DICTIONARIES = {
   },
 
   es: {
-    nav: { home: "Inicio", coach: "Coach", plan: "Plan", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", critique: "Crítica", gear: "Equipo" },
     locale: { label: "Idioma", en: "English", es: "Español" },
 
     home: {
@@ -189,10 +189,10 @@ export const DICTIONARIES = {
       ctaRoadmap: "Ver la hoja de ruta",
       sectionTitle: "Qué puedes hacer",
       sectionSub: "Empieza por el coach — el resto está en camino.",
-      last: { title: (s) => `Última receta — ${s}`, saved: "Guardada", open: "Abrir coach →" },
+      last: { title: (s) => `Último consejo — ${s}`, saved: "Guardado", open: "Abrir coach →" },
       feature: {
         coach: { title: "Shot coach", body: "Elige un sujeto, añade una ubicación. Obtén diafragma, velocidad, ISO, modo de cámara y posición afinados para tu iPhone 16 Pro.", badge: "Activo" },
-        plan: { title: "Planificar sesión", body: "Sol, luna, tiempo y una cronología para tu salida. En la hoja de ruta — el coach ya hace la receta del día.", badge: "Próximo" },
+        plan: { title: "Planificar sesión", body: "Sol, luna, tiempo y una cronología para tu salida. En la hoja de ruta — el coach ya te da el consejo del día.", badge: "Próximo" },
         critique: { title: "Criticar una foto", body: "Sube una JPEG — leemos el EXIF, lo comparamos con la escena y sugerimos qué probar la próxima vez.", badge: "Próximo" },
         conditions: { title: "Condiciones de esta noche", body: "Visibilidad de la Vía Láctea, fase lunar, clase Bortle, hora dorada y azul en tu ubicación.", badge: "Más adelante" },
       },
@@ -200,7 +200,7 @@ export const DICTIONARIES = {
 
     coach: {
       title: "Shot coach",
-      sub: "Elige un sujeto, añade una ubicación y hora — obtén una receta de ajustes y posición afinada a tu iPhone 16 Pro.",
+      sub: "Elige un sujeto, añade una ubicación y hora — obtén un consejo de ajustes y posición afinado a tu iPhone 16 Pro.",
       step: { subject: "Sujeto", scene: "Escena", gear: "Equipo" },
       field: { latitude: "Latitud", longitude: "Longitud", dateTime: "Fecha y hora", notes: "Notas (opcional)" },
       placeholder: { notes: "a contraluz, interior, sujeto en movimiento…" },
@@ -208,10 +208,10 @@ export const DICTIONARIES = {
       timePreset: { now: "Ahora", golden: "Hora dorada", blue: "Hora azul", astro: "Astro esta noche", setTo: (label) => `Puesto a ${label}.`, needCoords: "Introduce primero una latitud y longitud." },
       gear: { deviceMeta: "4 objetivos · Noche · ProRAW · Acción" },
       flash: { use: (label) => `Usar flash externo (${label})` },
-      submit: { idle: "Generar receta", loading: "Pensando…" },
+      submit: { idle: "Generar consejo", loading: "Pensando…" },
       sky: { title: "Cielo, luz y tiempo" },
       sceneBlock: { title: "Ese sujeto no funciona aquí", hint: "Prueba con otro sujeto arriba, o cambia la fecha y la hora." },
-      recipe: {
+      advice: {
         lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
         position: "Posición", focus: "Enfoque", stabilization: "Estabilización", flash: "Flash",
         voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "✓ Copiado",
@@ -227,7 +227,7 @@ export const DICTIONARIES = {
       source: {
         groq: "Recién hecho por la IA",
         cache: "En caché (30 min)",
-        offline: "Sin conexión — última guardada",
+        offline: "Sin conexión — último guardado",
         stub: "Demo — añade GROQ_API_KEY",
         fallback: "IA no disponible — demo",
       },
@@ -272,17 +272,17 @@ export const DICTIONARIES = {
       reset: "Usar otra foto",
       errors: { pickImage: "Elige una imagen JPEG o HEIC.", cantRead: "No pude leer esa imagen.", failed: "Falló la crítica." },
       exif: { camera: "Cámara", lens: "Objetivo", focal: "Focal", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", taken: "Tomada", noExif: "Sin EXIF en esta imagen — la crítica se basará solo en lo que se ve." },
-      result: { strengths: "Qué funcionó", issues: "A vigilar", tryNext: "Próxima vez prueba", tweaks: "Ajustes de receta" },
+      result: { strengths: "Qué funcionó", issues: "A vigilar", tryNext: "Próxima vez prueba", tweaks: "Ajustes del consejo" },
       placeholder: {
         sub: "La parte de revisión de happy lens — sube una foto, lee el EXIF y compara tu intención con el resultado.",
-        until: { title: "Hasta que llegue la crítica", body: "Genera una receta para tu próximo disparo, marca 👍 / 👎 en cada variante y copia los ajustes para el terreno.", button: "Abrir Shot coach →" },
+        until: { title: "Hasta que llegue la crítica", body: "Genera un consejo para tu próximo disparo, marca 👍 / 👎 en cada variante y copia los ajustes para el terreno.", button: "Abrir Shot coach →" },
         roadmap: { title: "Próximamente en /critique", items: ["Subida por arrastrar-y-soltar (JPEG / HEIC / RAW)", "Lectura de EXIF: cámara, objetivo, ISO, velocidad, diafragma, GPS, hora", "Modelo de visión comparando intención vs. resultado — composición, luz, enfoque", "Lista de \"próxima vez prueba\" conectada con el coach"] },
       },
     },
 
     gear: {
       title: "Mi equipo",
-      sub: "Elige qué cuerpo usa el coach. Añade una réflex, sin espejo o cualquier cámara — con objetivos y un flash opcional — y las recetas se adaptan.",
+      sub: "Elige qué cuerpo usa el coach. Añade una réflex, sin espejo o cualquier cámara — con objetivos y un flash opcional — y los consejos se adaptan.",
       active: "Activo",
       manage: "Gestionar equipo",
       useThis: "Usar este",
@@ -311,9 +311,9 @@ export const DICTIONARIES = {
 
     offline: {
       title: "Sin conexión",
-      sub: "Sin red — pero el coach sigue funcionando con las recetas que ya has generado.",
+      sub: "Sin red — pero el coach sigue funcionando con los consejos que ya has generado.",
       worksTitle: "Qué sigue funcionando",
-      works: ["La última receta guardada para esta ubicación + sujeto + hora", "Votos 👍 / 👎 y Copiar en recetas ya cargadas"],
+      works: ["El último consejo guardado para esta ubicación + sujeto + hora", "Votos 👍 / 👎 y Copiar en consejos ya cargados"],
       back: "Volver al Shot coach",
     },
 

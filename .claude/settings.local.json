@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod +x node_modules/.bin/*)",
+      "Bash(npm ls *)",
+      "Bash(npm install *)",
+      "Bash(kill 163855)",
+      "Bash(gh repo *)",
+      "Bash(vercel project *)",
+      "Bash(vercel ls *)",
+      "Bash(gh api *)",
+      "Bash(python3 -c \"import json,sys,base64; d=json.load\\(sys.stdin\\); print\\(base64.b64decode\\(d['content']\\).decode\\(\\)\\)\")",
+      "Bash(git fetch *)",
+      "Bash(git push *)",
+      "Bash(git worktree *)",
+      "Read(//tmp/happy-lens-ai-sync-staging/**)",
+      "Bash(gh pr create --title 'ci: add sync-staging workflow' --body ' *)",
+      "Bash(grep -E '^\\(main|dev|staging\\)$')",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f['name']\\) for f in d]\")",
+      "Bash(gh pr edit 7 --title 'ci: add sync-dev-from-main workflow' --body ' *)",
+      "Bash(git config *)",
+      "Bash(git mv *)"
+    ]
+  }
+}

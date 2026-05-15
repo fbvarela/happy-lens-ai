@@ -8,9 +8,8 @@ const NAV = [
   { href: "/",         key: "home",     icon: "🏠" },
   { href: "/coach",    key: "coach",    icon: "🎯" },
   { href: "/plan",     key: "plan",     icon: "🗺️" },
-  { href: "/adjust",   key: "adjust",   icon: "🎚️" },
+  { href: "/critique", key: "critique", icon: "🔍" },
   { href: "/gear",     key: "gear",     icon: "📷" },
-  { href: "/account",  key: "account",  icon: "👤" },
 ];
 
 function isActive(pathname, href) {

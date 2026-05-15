@@ -1,29 +1,29 @@
 import { NextResponse } from "next/server";
 import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
-import { RecipeResponseSchema } from "@/lib/recipe-schema";
-import { clampRecipeToGear, resolveGear } from "@/lib/gear-validator";
+import { AdviceResponseSchema } from "@/lib/advice-schema";
+import { clampAdviceToGear, resolveGear } from "@/lib/gear-validator";
 import { getSubjectPreset } from "@/data/subjects/presets";
 import { resolvePetContext, resolvePetAnimal, PET_ANIMAL_HINTS } from "@/data/subjects/pet-contexts";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
 import { sceneGuard } from "@/lib/scene-guard";
-import { cacheKey, getCached, setCached } from "@/lib/recipe-cache";
+import { cacheKey, getCached, setCached } from "@/lib/advice-cache";
 
 export const runtime = "nodejs";
 
 const MODEL_ID = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
-const SCHEMA_VERSION = "v2"; // bump when ShotRecipeSchema changes shape
+const SCHEMA_VERSION = "v2"; // bump when ShotAdviceSchema changes shape
 
-function stubRecipes(subject, gear, sky, useFlash) {
+function stubAdvice(subject, gear, sky, useFlash) {
   const lens = gear.lenses[0];
   const fn = lens.fNumberFixed ?? lens.fNumberMin ?? 5.6;
   const night = sky && sky.sun.altitudeDeg < -6;
   const flash = gear.flashes?.[0];
   const isIphone = gear.id === "iphone-16-pro";
   return {
-    recipes: [
+    advice: [
       {
         label: "Primary",
         lens: lens.id,
@@ -36,7 +36,7 @@ function stubRecipes(subject, gear, sky, useFlash) {
         stabilization: night ? "Tripod required; 2s self-timer." : "Handheld; elbows tucked.",
         position: `Stand about 3 m from the subject; place key light at ~45° off-axis.`,
         compositionTips: ["Rule-of-thirds on the strongest line.", "Leave breathing room on the side the subject faces."],
-        warnings: ["Stub recipe — set GROQ_API_KEY to enable the AI coach."],
+        warnings: ["Stub advice — set GROQ_API_KEY to enable the AI coach."],
         flash: useFlash && flash
           ? { use: true, notes: `${flash.label} TTL, -1 EV, bounce ceiling.` }
           : { use: false, notes: "No flash." },
@@ -121,10 +121,10 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
     );
   } else if (gearDesc.builtInFlashes?.length) {
     lines.push(
-      `BUILT-IN FLASHES AVAILABLE (no external): ${JSON.stringify(gearDesc.builtInFlashes)}. The rear Adaptive True Tone Flash is a 9-LED unit that shifts colour temperature and focal-length spread — recipe may set flash.use=true for indoor/low-light fill, but only when it truly helps (don't use for astro, landscape, bright sun). Retina Flash is screen-based and only makes sense with the TrueDepth (front) camera.`,
+      `BUILT-IN FLASHES AVAILABLE (no external): ${JSON.stringify(gearDesc.builtInFlashes)}. The rear Adaptive True Tone Flash is a 9-LED unit that shifts colour temperature and focal-length spread — advice may set flash.use=true for indoor/low-light fill, but only when it truly helps (don't use for astro, landscape, bright sun). Retina Flash is screen-based and only makes sense with the TrueDepth (front) camera.`,
     );
   } else {
-    lines.push("NO FLASH AVAILABLE. Every recipe must set flash.use=false with notes='No flash.'.");
+    lines.push("NO FLASH AVAILABLE. Every advice entry must set flash.use=false with notes='No flash.'.");
   }
 
   if (gear.id === "iphone-16-pro") {
@@ -133,7 +133,7 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
       "IPHONE 16 PRO CAPABILITY BRIEF — use these in the 'iphone' sub-object:",
       `- Photographic Styles: ${JSON.stringify(gearDesc.photographicStyles)}. Recommend one only when it meaningfully changes the look (portrait, product, street); otherwise null.`,
       `- Camera Control button gestures: ${JSON.stringify(gearDesc.cameraControl?.gestures)}. Set iphone.cameraControlHint ONLY when the user would reach the setting faster via the hardware button (e.g. 'Light-press → Depth → slide to f/2.8', 'Light-press → Style → Vibrant'). Otherwise null.`,
-      `- Formats: HEIF (default, efficient), JPEG (compat), ProRAW-12 (standard RAW edits), ProRAW-48 (max dynamic range + editing headroom, use for landscape/product/astro), ProRes (video only — never pick for a photo recipe).`,
+      `- Formats: HEIF (default, efficient), JPEG (compat), ProRAW-12 (standard RAW edits), ProRAW-48 (max dynamic range + editing headroom, use for landscape/product/astro), ProRes (video only — never pick for a photo advice).`,
       "- AE/AF lock: long-press the subject in the viewfinder; set iphone.aeAfLockHint when lock-then-recompose materially helps (backlit, tricky light, reframing).",
       "- Macro: subject 'macro' → lens 'ultrawide', iphone.macroOverride=true, cameraMode 'Macro', and position/focus must mention the 2 cm minimum focus distance. Any other subject keeps macroOverride=false.",
       "- TrueDepth (front / selfie) lens: pick it only when notes mention selfie / front / me / vlog. Set iphone.frontCamera=true and use Retina Flash (screen) for low-light selfies.",
@@ -141,14 +141,14 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
       "- Every other gear: emit iphone: null.",
     );
   } else {
-    lines.push("", "This gear is NOT an iPhone 16 Pro — set iphone: null on every recipe.");
+    lines.push("", "This gear is NOT an iPhone 16 Pro — set iphone: null on every advice entry.");
   }
 
   const petsBrief = buildPetsBrief(subject);
   if (petsBrief) lines.push(petsBrief);
   lines.push(
     "",
-    "Produce 1–3 shot recipes. The PRIMARY recipe is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
+    "Produce 1–3 shot advice entries. The PRIMARY entry is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
     "Hard rules:",
     "- lens MUST be one of the gear's lens ids.",
     "- fNumber MUST be achievable on the chosen lens. For fixed-aperture lenses use exactly that f-number. For variable-aperture zooms stay within [fNumberMin, fNumberMax]; note variableAperture + apertureAtWide/apertureAtTele constraints.",
@@ -156,7 +156,7 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
     "- Shutter in realistic human format (e.g. '1/250s' or '6s').",
     "- cameraMode must come from the gear's modes (or exposureModes for DSLRs like 'Av', 'Tv', 'M').",
     "- Position must be concrete: direction relative to subject and light, approximate distance, height.",
-    "- If the pre-check flagged a block/warn issue, include it verbatim in the primary recipe's warnings.",
+    "- If the pre-check flagged a block/warn issue, include it verbatim in the primary entry's warnings.",
     "- flash.use must be a boolean. If flash is attached and useful, set use=true and describe TTL/manual, FEC, bounce direction, sync type in flash.notes.",
   );
   return lines.join("\n");
@@ -206,7 +206,7 @@ export async function POST(req) {
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "stub" });
+    return NextResponse.json({ ...stubAdvice(subject, gear, sky, hasFlash), sky, weather, source: "stub" });
   }
 
   const petKeyPart = subjectId === "pets" ? `|pets:${subject.petContextId}:${subject.animal}` : "";
@@ -218,13 +218,13 @@ export async function POST(req) {
     const groq = createGroq({ apiKey });
     const { object } = await generateObject({
       model: groq(MODEL_ID),
-      schema: RecipeResponseSchema,
+      schema: AdviceResponseSchema,
       prompt: buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, useFlash: hasFlash }),
     });
     const isIphone = gear.id === "iphone-16-pro";
     const clamped = {
-      recipes: object.recipes.map((r) => {
-        const c = clampRecipeToGear(r, gear);
+      advice: object.advice.map((r) => {
+        const c = clampAdviceToGear(r, gear);
         if (guardIssues.length) {
           const existing = new Set((c.warnings || []).map((w) => w.trim()));
           const extra = guardIssues
@@ -242,9 +242,9 @@ export async function POST(req) {
     setCached(key, clamped);
     return NextResponse.json({ ...clamped, source: "groq" });
   } catch (err) {
-    console.error("coach/recipe error", err);
+    console.error("coach/advice error", err);
     return NextResponse.json(
-      { ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "fallback", error: String(err?.message || err) },
+      { ...stubAdvice(subject, gear, sky, hasFlash), sky, weather, source: "fallback", error: String(err?.message || err) },
       { status: 200 },
     );
   }

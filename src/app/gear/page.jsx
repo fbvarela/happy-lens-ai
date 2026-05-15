@@ -86,16 +86,16 @@ export default function GearPage() {
           const active = g.id === store.activeId;
           return (
             <article key={g.id} className={`card gear-card ${active ? "gear-card-active" : ""}`}>
-              <div className="recipe-head">
+              <div className="advice-head">
                 <div className="card-title" style={{ margin: 0 }}>
                   <span aria-hidden style={{ marginRight: 8 }}>{g.kind === "phone" ? "📱" : g.kind === "dslr" ? "📷" : "🎥"}</span>
                   {g.label}
                 </div>
                 {active && <span className="badge badge-leaf">{t("gear.active")}</span>}
               </div>
-              {g.bodyNotes && <p className="recipe-line" style={{ color: "var(--text-muted)" }}>{g.bodyNotes}</p>}
-              <div className="recipe-stat-label" style={{ marginTop: 8 }}>{t("gear.lenses")}</div>
-              <ul className="recipe-tips gear-lens-list">
+              {g.bodyNotes && <p className="advice-line" style={{ color: "var(--text-muted)" }}>{g.bodyNotes}</p>}
+              <div className="advice-stat-label" style={{ marginTop: 8 }}>{t("gear.lenses")}</div>
+              <ul className="advice-tips gear-lens-list">
                 {g.lenses.map((l) => {
                   const ap = l.fNumberFixed != null ? `f/${l.fNumberFixed}`
                            : l.apertureAtWide != null && l.apertureAtTele != null ? `f/${l.apertureAtWide}–${l.apertureAtTele}`
@@ -112,8 +112,8 @@ export default function GearPage() {
               </ul>
               {g.flashes?.length > 0 && (
                 <>
-                  <div className="recipe-stat-label" style={{ marginTop: 10 }}>{t("gear.flashes")}</div>
-                  <ul className="recipe-tips">
+                  <div className="advice-stat-label" style={{ marginTop: 10 }}>{t("gear.flashes")}</div>
+                  <ul className="advice-tips">
                     {g.flashes.map((f) => (
                       <li key={f.id} className="gear-lens-row">
                         <FlashOnIcon size={16} className="gear-lens-icon" style={{ color: "var(--sun)" }} />
@@ -126,7 +126,7 @@ export default function GearPage() {
                   </ul>
                 </>
               )}
-              <div className="recipe-actions">
+              <div className="advice-actions">
                 {!active && <button type="button" className="btn btn-primary btn-sm" onClick={() => store.setActiveId(g.id)}>{t("gear.useThis")}</button>}
                 {g.custom && <button type="button" className="btn btn-ghost btn-sm" onClick={() => store.removeCustom(g.id)}>{t("gear.remove")}</button>}
               </div>

@@ -16,7 +16,7 @@ function stubCritique(intent, exif) {
     strengths: ["Image received and EXIF parsed."],
     issues: [{ area: "technical", observation: "AI vision not available in this environment." }],
     tryNext: ["Add GROQ_API_KEY to .env.local to unlock real critique."],
-    recipeTweaks: { lens: null, fNumber: null, shutter: null, iso: null, ev: null, note: intent ? `Intent noted: ${intent}` : null },
+    adviceTweaks: { lens: null, fNumber: null, shutter: null, iso: null, ev: null, note: intent ? `Intent noted: ${intent}` : null },
   };
 }
 
@@ -40,7 +40,7 @@ function buildPromptParts({ intent, exif, locale }) {
     : "EXIF: unavailable.";
   return [
     `You are a photo critique coach. The photographer is using an iPhone 16 Pro unless EXIF says otherwise.`,
-    `IMPORTANT: Write every human-readable field (verdict.headline, strengths, issues[].observation, tryNext, recipeTweaks.note) in ${langName}. Keep technical tokens (f-numbers, shutter strings, lens names, ISO, EV values) unchanged. The 'area' enum in issues must stay in English.`,
+    `IMPORTANT: Write every human-readable field (verdict.headline, strengths, issues[].observation, tryNext, adviceTweaks.note) in ${langName}. Keep technical tokens (f-numbers, shutter strings, lens names, ISO, EV values) unchanged. The 'area' enum in issues must stay in English.`,
     intent ? `Stated intent for this shot: ${intent}` : "Intent not provided — infer it from the image.",
     exifSummary,
     "Look at the attached photo. Produce a critique grounded in what you actually see plus the EXIF.",
@@ -48,7 +48,7 @@ function buildPromptParts({ intent, exif, locale }) {
     "- Do not hallucinate metadata. If EXIF says null, don't invent numbers.",
     "- `issues` must reference something visible in the image or measurable from EXIF.",
     "- `tryNext` must be concrete tweaks, not platitudes.",
-    "- `recipeTweaks`: set fields to null if no change; otherwise propose values that are achievable on the iPhone 16 Pro.",
+    "- `adviceTweaks`: set fields to null if no change; otherwise propose values that are achievable on the iPhone 16 Pro.",
     "- `verdict.headline` must be specific (no 'nice photo').",
   ].join("\n");
 }
