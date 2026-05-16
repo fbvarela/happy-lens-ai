@@ -1,6 +1,5 @@
 import "./globals.css";
 import AppShell from "./_components/AppShell";
-import FloatingChatButton from "./_components/FloatingChatButton";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 
@@ -38,7 +37,6 @@ export default function RootLayout({ children }) {
             <AppShell>{children}</AppShell>
           </AuthProvider>
         </LocaleProvider>
-        <FloatingChatButton />
       </body>
     </html>
   );
