@@ -21,4 +21,4 @@ jobs:
           fetch-depth: 0
 
       - name: Push main onto dev
-        run: git push origin HEAD:dev
+        run: git push --force origin HEAD:dev
