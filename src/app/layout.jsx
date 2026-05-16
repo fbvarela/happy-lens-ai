@@ -1,6 +1,7 @@
 import "./globals.css";
 import AppShell from "./_components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import FloatingChatButton from "./_components/FloatingChatButton";
 
 export const metadata = {
   title: "Happy Lens AI — Shot coach",
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
         <LocaleProvider>
           <AppShell>{children}</AppShell>
         </LocaleProvider>
+        <FloatingChatButton />
       </body>
     </html>
   );
