@@ -1,14 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { Target, Map, Search, Stars } from "lucide-react";
 import LastRecipeCard from "./_components/LastRecipeCard";
 import { useT } from "@/lib/i18n/LocaleProvider";
 
 const FEATURES = [
-  { href: "/coach",      key: "coach",      icon: "🎯", badgeClass: "badge-leaf" },
-  { href: "/plan",       key: "plan",       icon: "🗺️", badgeClass: "badge-sun" },
-  { href: "/critique",   key: "critique",   icon: "🔍", badgeClass: "badge-sun" },
-  { href: "/conditions", key: "conditions", icon: "🌌", badgeClass: "badge-clay" },
+  { href: "/coach",      key: "coach",      Icon: Target, badgeClass: "badge-leaf" },
+  { href: "/plan",       key: "plan",       Icon: Map,    badgeClass: "badge-sun" },
+  { href: "/critique",   key: "critique",   Icon: Search, badgeClass: "badge-sun" },
+  { href: "/conditions", key: "conditions", Icon: Stars,  badgeClass: "badge-clay" },
 ];
 
 export default function HomePage() {
@@ -20,7 +21,7 @@ export default function HomePage() {
         <h1>{t("home.title")}</h1>
         <p>{t("home.body")}</p>
         <div style={{ marginTop: 24, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link className="btn btn-primary" href="/coach">{t("home.ctaCoach")}</Link>
+          <Link className="btn btn-primary" href="/coach" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Target size={16} aria-hidden /> {t("home.ctaCoach")}</Link>
           <Link className="btn btn-ghost" href="/plan">{t("home.ctaRoadmap")}</Link>
         </div>
       </header>
@@ -35,7 +36,7 @@ export default function HomePage() {
           {FEATURES.map((f) => (
             <Link key={f.href} href={f.href} className="card feature-card">
               <div className="feature-head">
-                <span className="feature-icon" aria-hidden>{f.icon}</span>
+                <span className="feature-icon" aria-hidden><f.Icon size={26} /></span>
                 <span className={`badge ${f.badgeClass}`}>{t(`home.feature.${f.key}.badge`)}</span>
               </div>
               <div className="card-title">{t(`home.feature.${f.key}.title`)}</div>

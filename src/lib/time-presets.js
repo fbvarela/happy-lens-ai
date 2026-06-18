@@ -1,4 +1,5 @@
 import SunCalc from "suncalc";
+import { Clock, Sunset, CloudMoon, Stars } from "lucide-react";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -15,10 +16,10 @@ function nextAfter(times, after, key) {
 
 export function TIME_PRESETS() {
   return [
-    { id: "now", label: "Now", icon: "⏱️" },
-    { id: "golden", label: "Golden hour", icon: "🌇" },
-    { id: "blue", label: "Blue hour", icon: "🌆" },
-    { id: "astro", label: "Astro tonight", icon: "🌌" },
+    { id: "now", label: "Now", icon: Clock },
+    { id: "golden", label: "Golden hour", icon: Sunset },
+    { id: "blue", label: "Blue hour", icon: CloudMoon },
+    { id: "astro", label: "Astro tonight", icon: Stars },
   ];
 }
 

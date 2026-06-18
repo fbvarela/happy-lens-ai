@@ -8,11 +8,21 @@ import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
 import {
+  Smartphone, Camera, Video, Settings, Zap, MapPin,
+  Cat, Dog, PawPrint, CloudSun, Thermometer, Cloud, Wind, CloudRain,
+  TriangleAlert, ThumbsUp, ThumbsDown, Copy, Check, WifiOff, FlaskConical,
+} from "lucide-react";
+import {
   ApertureIcon, ShutterIcon, IsoIcon, EvIcon, ModeDialIcon,
   FocusIcon, StabIcon, FlashOnIcon, FlashOffIcon,
   StyleSwatchIcon, CameraControlIcon, LockIcon,
   MacroIcon, NightIcon, LensRingIcon, SunCompassIcon,
 } from "@/components/icons";
+
+function GearKindIcon({ kind, ...props }) {
+  const Icon = kind === "phone" ? Smartphone : kind === "dslr" ? Camera : Video;
+  return <Icon {...props} />;
+}
 
 export default function CoachPage() {
   return (
@@ -147,7 +157,7 @@ function CoachPageInner() {
             {SUBJECT_PRESETS.map((s) => (
               <button key={s.id} type="button" onClick={() => setSubjectId(s.id)}
                 className="chip" aria-pressed={subjectId === s.id}>
-                <span aria-hidden>{s.icon}</span>
+                <s.icon size={16} aria-hidden />
                 <span>{t(`subject.${s.id}`)}</span>
               </button>
             ))}
@@ -159,7 +169,7 @@ function CoachPageInner() {
                 {Object.values(PET_CONTEXTS).map((c) => (
                   <button key={c.id} type="button" onClick={() => setPetContext(c.id)}
                     className="chip chip-sm" aria-pressed={petContext === c.id}>
-                    <span aria-hidden>{c.icon}</span>
+                    <c.icon size={15} aria-hidden />
                     <span>{t(`pets.context.${c.id}`)}</span>
                   </button>
                 ))}
@@ -167,13 +177,13 @@ function CoachPageInner() {
               <div className="input-label" style={{ marginTop: 10 }}>{t("pets.animalLabel")}</div>
               <div className="chip-row" role="radiogroup" aria-label={t("pets.animalLabel")}>
                 {[
-                  { id: "cat", icon: "🐈" },
-                  { id: "dog", icon: "🐕" },
-                  { id: "other", icon: "🐾" },
+                  { id: "cat", icon: Cat },
+                  { id: "dog", icon: Dog },
+                  { id: "other", icon: PawPrint },
                 ].map((a) => (
                   <button key={a.id} type="button" role="radio" onClick={() => changeAnimal(a.id)}
                     className="chip chip-sm" aria-checked={animal === a.id} aria-pressed={animal === a.id}>
-                    <span aria-hidden>{a.icon}</span>
+                    <a.icon size={15} aria-hidden />
                     <span>{t(`pets.animal.${a.id}`)}</span>
                   </button>
                 ))}
@@ -219,7 +229,7 @@ function CoachPageInner() {
                     setScene((s) => ({ ...s, dateTime: r.dateTime }));
                     setTimeHint({ kind: "ok", text: t("coach.timePreset.setTo", t(`coach.timePreset.${p.id}`)) });
                   }}>
-                  <span aria-hidden>{p.icon}</span>
+                  <p.icon size={16} aria-hidden />
                   <span>{t(`coach.timePreset.${p.id}`)}</span>
                 </button>
               ))}
@@ -227,7 +237,7 @@ function CoachPageInner() {
             {timeHint && <p className={`full time-hint ${timeHint.kind}`}>{timeHint.text}</p>}
             <div className="full">
               <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
-                <span aria-hidden>📍</span>
+                <MapPin size={16} aria-hidden />
                 <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
               </button>
             </div>
@@ -249,17 +259,17 @@ function CoachPageInner() {
             {gearStore.all.map((g) => (
               <button key={g.id} type="button" onClick={() => gearStore.setActiveId(g.id)}
                 className="chip" aria-pressed={g.id === active.id}>
-                <span aria-hidden>{g.kind === "phone" ? "📱" : g.kind === "dslr" ? "📷" : "🎥"}</span>
+                <GearKindIcon kind={g.kind} size={16} aria-hidden />
                 <span>{g.label}</span>
               </button>
             ))}
             <a href="/gear" className="chip" aria-label={t("gear.manage")}>
-              <span aria-hidden>⚙️</span>
+              <Settings size={16} aria-hidden />
               <span>{t("gear.manage")}</span>
             </a>
           </div>
           <div className="gear-pill" style={{ marginTop: 10 }}>
-            <span className="gear-icon" aria-hidden>{active.kind === "phone" ? "📱" : "📷"}</span>
+            <span className="gear-icon" aria-hidden><GearKindIcon kind={active.kind} size={18} /></span>
             <div className="gear-text">
               <span className="gear-label">{active.label}</span>
               <span className="gear-meta">
@@ -271,7 +281,7 @@ function CoachPageInner() {
             <label className="flash-toggle">
               <input type="checkbox" checked={useFlash} onChange={(e) => setUseFlash(e.target.checked)} />
               <span className="flash-toggle-label">
-                <span aria-hidden>⚡</span> {t("coach.flash.use", active.flashes[0].label)}
+                <Zap size={15} aria-hidden /> {t("coach.flash.use", active.flashes[0].label)}
               </span>
             </label>
           )}
@@ -316,11 +326,11 @@ function Results({ result, subjectId, t, lensLabel }) {
               </span>
             </>)}
             {result.weather && (<>
-              {result.weather.label && <span>⛅ {result.weather.label}</span>}
-              {result.weather.tempC != null && <span>🌡 {Math.round(result.weather.tempC)}°C</span>}
-              {result.weather.cloudCoverPct != null && <span>☁️ {result.weather.cloudCoverPct}%</span>}
-              {result.weather.windKph != null && <span>💨 {result.weather.windKph} km/h</span>}
-              {result.weather.precipMm > 0 && <span>🌧 {result.weather.precipMm} mm</span>}
+              {result.weather.label && <span className="sky-item"><CloudSun size={16} aria-hidden /> {result.weather.label}</span>}
+              {result.weather.tempC != null && <span className="sky-item"><Thermometer size={16} aria-hidden /> {Math.round(result.weather.tempC)}°C</span>}
+              {result.weather.cloudCoverPct != null && <span className="sky-item"><Cloud size={16} aria-hidden /> {result.weather.cloudCoverPct}%</span>}
+              {result.weather.windKph != null && <span className="sky-item"><Wind size={16} aria-hidden /> {result.weather.windKph} km/h</span>}
+              {result.weather.precipMm > 0 && <span className="sky-item"><CloudRain size={16} aria-hidden /> {result.weather.precipMm} mm</span>}
             </>)}
           </div>
         </div>
@@ -406,18 +416,18 @@ function RecipeCard({ recipe: r, subjectId, t, lensLabel }) {
       </ul>
       {r.warnings?.length > 0 && (
         <div className="recipe-warning">
-          {r.warnings.map((w, j) => <div key={j}>⚠️ {w}</div>)}
+          {r.warnings.map((w, j) => <div key={j} style={{ display: "flex", alignItems: "center", gap: 6 }}><TriangleAlert size={14} aria-hidden /> {w}</div>)}
         </div>
       )}
       <div className="recipe-actions">
         <div className="recipe-vote" role="group" aria-label="rate">
           <button type="button" className={`vote-btn ${vote === "up" ? "vote-on" : ""}`}
-            onClick={() => rate("up")} aria-pressed={vote === "up"} aria-label={t("coach.recipe.voteUp")}>👍</button>
+            onClick={() => rate("up")} aria-pressed={vote === "up"} aria-label={t("coach.recipe.voteUp")}><ThumbsUp size={16} /></button>
           <button type="button" className={`vote-btn ${vote === "down" ? "vote-on" : ""}`}
-            onClick={() => rate("down")} aria-pressed={vote === "down"} aria-label={t("coach.recipe.voteDown")}>👎</button>
+            onClick={() => rate("down")} aria-pressed={vote === "down"} aria-label={t("coach.recipe.voteDown")}><ThumbsDown size={16} /></button>
         </div>
-        <button type="button" className="copy-btn" onClick={copy}>
-          {copied ? t("coach.recipe.copied") : `📋 ${t("coach.recipe.copy")}`}
+        <button type="button" className="copy-btn" onClick={copy} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          {copied ? <><Check size={14} aria-hidden /> {t("coach.recipe.copied")}</> : <><Copy size={14} aria-hidden /> {t("coach.recipe.copy")}</>}
         </button>
       </div>
     </article>
@@ -506,13 +516,13 @@ function SourceBadge({ source, t }) {
   const tone = source === "groq" || source === "cache" ? "leaf"
              : source === "offline" || source === "fallback" ? "clay"
              : "sun";
-  const icon = source === "groq" || source === "cache" ? "⚡"
-             : source === "offline" ? "📴"
-             : source === "stub" ? "🧪"
-             : "⚠️";
+  const Icon = source === "groq" || source === "cache" ? Zap
+             : source === "offline" ? WifiOff
+             : source === "stub" ? FlaskConical
+             : TriangleAlert;
   return (
     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <span className={`badge badge-${tone}`}>{icon} {t(`coach.source.${source}`)}</span>
+      <span className={`badge badge-${tone}`} style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><Icon size={13} aria-hidden /> {t(`coach.source.${source}`)}</span>
     </div>
   );
 }

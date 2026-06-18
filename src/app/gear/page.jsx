@@ -2,9 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Smartphone, Camera, Video } from "lucide-react";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
 import { LensRingIcon, FlashOnIcon } from "@/components/icons";
+
+function GearKindIcon({ kind, ...props }) {
+  const Icon = kind === "phone" ? Smartphone : kind === "dslr" ? Camera : Video;
+  return <Icon {...props} />;
+}
 
 function slug(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
@@ -87,8 +93,8 @@ export default function GearPage() {
           return (
             <article key={g.id} className={`card gear-card ${active ? "gear-card-active" : ""}`}>
               <div className="recipe-head">
-                <div className="card-title" style={{ margin: 0 }}>
-                  <span aria-hidden style={{ marginRight: 8 }}>{g.kind === "phone" ? "📱" : g.kind === "dslr" ? "📷" : "🎥"}</span>
+                <div className="card-title" style={{ margin: 0, display: "inline-flex", alignItems: "center", gap: 8 }}>
+                  <GearKindIcon kind={g.kind} size={18} aria-hidden />
                   {g.label}
                 </div>
                 {active && <span className="badge badge-leaf">{t("gear.active")}</span>}

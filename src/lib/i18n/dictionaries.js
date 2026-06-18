@@ -7,7 +7,7 @@ export const DICTIONARIES = {
       kicker: "happy lens",
       title: "Shoot with a plan. Leave with the photo.",
       body: "A shot coach tuned to your iPhone 16 Pro. Tell happy lens what you want to shoot and where — it gives you lens, settings and position for the light you'll actually have.",
-      ctaCoach: "🎯 Open Shot coach",
+      ctaCoach: "Open Shot coach",
       ctaRoadmap: "About the roadmap",
       sectionTitle: "What you can do",
       sectionSub: "Start with the coach — the rest is on the way.",
@@ -36,7 +36,7 @@ export const DICTIONARIES = {
       recipe: {
         lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
         position: "Position", focus: "Focus", stabilization: "Stabilization", flash: "Flash",
-        voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "✓ Copied",
+        voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "Copied",
         iphone: {
           format: "Format",
           style: "Photographic Style",
@@ -185,7 +185,7 @@ export const DICTIONARIES = {
       kicker: "happy lens",
       title: "Dispara con un plan. Vuelve con la foto.",
       body: "Un coach de disparo afinado para tu iPhone 16 Pro. Dile a happy lens qué quieres fotografiar y dónde — te da objetivo, ajustes y posición para la luz que realmente vas a tener.",
-      ctaCoach: "🎯 Abrir Shot coach",
+      ctaCoach: "Abrir Shot coach",
       ctaRoadmap: "Ver la hoja de ruta",
       sectionTitle: "Qué puedes hacer",
       sectionSub: "Empieza por el coach — el resto está en camino.",
@@ -214,7 +214,7 @@ export const DICTIONARIES = {
       recipe: {
         lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
         position: "Posición", focus: "Enfoque", stabilization: "Estabilización", flash: "Flash",
-        voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "✓ Copiado",
+        voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "Copiado",
         iphone: {
           format: "Formato",
           style: "Estilo fotográfico",

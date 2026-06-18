@@ -1,8 +1,13 @@
+import {
+  User, Mountain, Stars, Sprout, Bird, PersonStanding,
+  Package, Flame, Activity, PawPrint,
+} from "lucide-react";
+
 export const SUBJECT_PRESETS = [
   {
     id: "portrait",
     label: "Portrait",
-    icon: "👤",
+    icon: User,
     preferredLens: ["tele2x", "tele5x"],
     shutterFloorSec: 1 / 125,
     isoCeiling: 800,
@@ -12,7 +17,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "landscape",
     label: "Landscape",
-    icon: "🏔️",
+    icon: Mountain,
     preferredLens: ["main", "ultrawide"],
     shutterFloorSec: 1 / 60,
     isoCeiling: 200,
@@ -22,7 +27,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "astro",
     label: "Astro / Milky Way",
-    icon: "🌌",
+    icon: Stars,
     preferredLens: ["main", "ultrawide"],
     shutterFloorSec: 10,
     isoCeiling: 6400,
@@ -32,7 +37,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "macro",
     label: "Macro",
-    icon: "🌱",
+    icon: Sprout,
     preferredLens: ["ultrawide"],
     shutterFloorSec: 1 / 125,
     isoCeiling: 400,
@@ -42,7 +47,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "wildlife",
     label: "Wildlife",
-    icon: "🦌",
+    icon: Bird,
     preferredLens: ["tele5x"],
     shutterFloorSec: 1 / 500,
     isoCeiling: 3200,
@@ -52,7 +57,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "street",
     label: "Street",
-    icon: "🚶",
+    icon: PersonStanding,
     preferredLens: ["main", "tele2x"],
     shutterFloorSec: 1 / 250,
     isoCeiling: 1600,
@@ -62,7 +67,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "product",
     label: "Product",
-    icon: "📦",
+    icon: Package,
     preferredLens: ["tele2x", "main"],
     shutterFloorSec: 1 / 60,
     isoCeiling: 200,
@@ -72,7 +77,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "lowlight",
     label: "Low-light indoor",
-    icon: "🕯️",
+    icon: Flame,
     preferredLens: ["main"],
     shutterFloorSec: 1 / 30,
     isoCeiling: 6400,
@@ -82,7 +87,7 @@ export const SUBJECT_PRESETS = [
   {
     id: "action",
     label: "Action / Sports",
-    icon: "🏃",
+    icon: Activity,
     preferredLens: ["tele2x", "tele5x"],
     shutterFloorSec: 1 / 1000,
     isoCeiling: 3200,
@@ -98,7 +103,7 @@ export function getSubjectPreset(id) {
 SUBJECT_PRESETS.push({
   id: "pets",
   label: "Pets",
-  icon: "🐾",
+  icon: PawPrint,
   preferredLens: ["main", "tele2x"],
   shutterFloorSec: 1 / 250,
   isoCeiling: 3200,
