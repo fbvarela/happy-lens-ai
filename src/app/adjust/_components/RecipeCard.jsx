@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { Star, TriangleAlert } from "lucide-react";
 
 const LABELS = {
   exposure: "Exposure", brilliance: "Brilliance", highlights: "Highlights", shadows: "Shadows",
@@ -81,8 +82,14 @@ export default function RecipeCard({ recipe, previewUrl, deviceProfile, deviceWa
         <div className="card">
           <div className="recipe-head">
             <div className="card-title" style={{ margin: 0 }}>{recipe.verdict.headline}</div>
-            <span className={`badge ${recipe.verdict.score >= 4 ? "badge-leaf" : recipe.verdict.score >= 3 ? "badge-sun" : "badge-clay"}`}>
-              {"★".repeat(recipe.verdict.score)}{"☆".repeat(5 - recipe.verdict.score)}
+            <span
+              className={`badge ${recipe.verdict.score >= 4 ? "badge-leaf" : recipe.verdict.score >= 3 ? "badge-sun" : "badge-clay"}`}
+              style={{ display: "inline-flex", alignItems: "center", gap: 1 }}
+              aria-label={`${recipe.verdict.score} out of 5`}
+            >
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={13} fill={i < recipe.verdict.score ? "currentColor" : "none"} />
+              ))}
             </span>
           </div>
           {recipe.strengths?.length > 0 && (
@@ -167,8 +174,12 @@ export default function RecipeCard({ recipe, previewUrl, deviceProfile, deviceWa
       {(recipe.warnings?.length || deviceWarnings?.length) > 0 && (
         <div className="card">
           <div className="recipe-warning">
-            {(recipe.warnings || []).map((w, i) => <div key={`r${i}`}>⚠ {w}</div>)}
-            {(deviceWarnings || []).map((w, i) => <div key={`d${i}`}>⚠ {w}</div>)}
+            {(recipe.warnings || []).map((w, i) => (
+              <div key={`r${i}`} style={{ display: "flex", alignItems: "center", gap: 6 }}><TriangleAlert size={14} aria-hidden /> {w}</div>
+            ))}
+            {(deviceWarnings || []).map((w, i) => (
+              <div key={`d${i}`} style={{ display: "flex", alignItems: "center", gap: 6 }}><TriangleAlert size={14} aria-hidden /> {w}</div>
+            ))}
           </div>
         </div>
       )}

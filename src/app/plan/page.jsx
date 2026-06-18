@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import {
+  MapPin, Sunrise, Sparkles, Sun, Sunset, CloudMoon, Stars, Moon, Cloud, Wind,
+} from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 function todayDateLocal() {
@@ -88,7 +91,7 @@ export default function PlanPage() {
             </label>
             <div className="full">
               <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
-                <span aria-hidden>📍</span>
+                <MapPin size={16} aria-hidden />
                 <span>{locating ? t("plan.form.locating") : t("plan.form.locate")}</span>
               </button>
             </div>
@@ -154,38 +157,38 @@ function PlanResults({ plan, t, locale, form }) {
 
 function TimelineCard({ windows, t, locale }) {
   const rows = [
-    ["plan.timeline.sunrise",    windows.sun.sunrise,        "🌅"],
-    ["plan.timeline.goldenMorn", windows.sun.goldenHourMorn, "✨"],
-    ["plan.timeline.noon",       windows.sun.solarNoon,      "☀️"],
-    ["plan.timeline.goldenEve",  windows.sun.goldenHourEve,  "🌇"],
-    ["plan.timeline.sunset",     windows.sun.sunset,         "🌄"],
-    ["plan.timeline.blue",       windows.sun.blueHourStart,  "🌆"],
-    ["plan.timeline.astroStart", windows.sun.astroDarkStart, "🌌"],
+    ["plan.timeline.sunrise",    windows.sun.sunrise,        Sunrise],
+    ["plan.timeline.goldenMorn", windows.sun.goldenHourMorn, Sparkles],
+    ["plan.timeline.noon",       windows.sun.solarNoon,      Sun],
+    ["plan.timeline.goldenEve",  windows.sun.goldenHourEve,  Sunset],
+    ["plan.timeline.sunset",     windows.sun.sunset,         Sunset],
+    ["plan.timeline.blue",       windows.sun.blueHourStart,  CloudMoon],
+    ["plan.timeline.astroStart", windows.sun.astroDarkStart, Stars],
   ].filter(([, v]) => !!v);
   const moonRows = [
-    ["plan.timeline.moonRise", windows.moon.rise, "🌙"],
-    ["plan.timeline.moonSet",  windows.moon.set,  "🌑"],
+    ["plan.timeline.moonRise", windows.moon.rise, Moon],
+    ["plan.timeline.moonSet",  windows.moon.set,  Moon],
   ].filter(([, v]) => !!v);
   return (
     <div className="card">
       <div className="card-title">{t("plan.timeline.title")}</div>
       <ul className="timeline">
-        {rows.map(([k, v, icon]) => (
+        {rows.map(([k, v, Icon]) => (
           <li key={k} className="timeline-row">
-            <span className="timeline-icon" aria-hidden>{icon}</span>
+            <span className="timeline-icon" aria-hidden><Icon size={18} /></span>
             <span className="timeline-label">{t(k)}</span>
             <span className="timeline-value">{fmtTime(v, locale)}</span>
           </li>
         ))}
-        {moonRows.map(([k, v, icon]) => (
+        {moonRows.map(([k, v, Icon]) => (
           <li key={k} className="timeline-row">
-            <span className="timeline-icon" aria-hidden>{icon}</span>
+            <span className="timeline-icon" aria-hidden><Icon size={18} /></span>
             <span className="timeline-label">{t(k)}</span>
             <span className="timeline-value">{fmtTime(v, locale)}</span>
           </li>
         ))}
         <li className="timeline-row">
-          <span className="timeline-icon" aria-hidden>🌙</span>
+          <span className="timeline-icon" aria-hidden><Moon size={18} /></span>
           <span className="timeline-label">{t("plan.timeline.moon")}</span>
           <span className="timeline-value">{Math.round(windows.moon.fraction * 100)}%</span>
         </li>
@@ -207,8 +210,8 @@ function WeatherStrip({ hours, t, locale }) {
           <div key={h.time} className="weather-col">
             <div className="weather-time">{fmtTime(h.time, locale)}</div>
             <div className="weather-temp">{h.tempC != null ? `${Math.round(h.tempC)}°` : "—"}</div>
-            <div className="weather-meta">☁️ {h.cloudCoverPct ?? "—"}%</div>
-            <div className="weather-meta">💨 {h.windKph ?? "—"}</div>
+            <div className="weather-meta" style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><Cloud size={13} aria-hidden /> {h.cloudCoverPct ?? "—"}%</div>
+            <div className="weather-meta" style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><Wind size={13} aria-hidden /> {h.windKph ?? "—"}</div>
           </div>
         ))}
       </div>

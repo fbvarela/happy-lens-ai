@@ -1,7 +1,9 @@
+import { Camera, Leaf, Sofa, Activity, BedDouble } from "lucide-react";
+
 export const PET_CONTEXTS = {
   portrait: {
     id: "portrait",
-    icon: "📷",
+    icon: Camera,
     preferredLens: ["tele2x", "tele5x"],
     shutterFloorSec: 1 / 250,
     isoCeiling: 1600,
@@ -10,7 +12,7 @@ export const PET_CONTEXTS = {
   },
   garden: {
     id: "garden",
-    icon: "🌿",
+    icon: Leaf,
     preferredLens: ["main", "tele2x"],
     shutterFloorSec: 1 / 500,
     isoCeiling: 800,
@@ -19,7 +21,7 @@ export const PET_CONTEXTS = {
   },
   indoor: {
     id: "indoor",
-    icon: "🛋️",
+    icon: Sofa,
     preferredLens: ["main"],
     shutterFloorSec: 1 / 200,
     isoCeiling: 3200,
@@ -28,7 +30,7 @@ export const PET_CONTEXTS = {
   },
   action: {
     id: "action",
-    icon: "🏃",
+    icon: Activity,
     preferredLens: ["tele2x", "tele5x"],
     shutterFloorSec: 1 / 1000,
     isoCeiling: 6400,
@@ -37,7 +39,7 @@ export const PET_CONTEXTS = {
   },
   sleeping: {
     id: "sleeping",
-    icon: "😴",
+    icon: BedDouble,
     preferredLens: ["main", "tele2x"],
     shutterFloorSec: 1 / 125,
     isoCeiling: 1600,

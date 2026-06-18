@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, Target, Map, SlidersHorizontal, Camera, User } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV = [
-  { href: "/",         key: "home",     icon: "🏠" },
-  { href: "/coach",    key: "coach",    icon: "🎯" },
-  { href: "/plan",     key: "plan",     icon: "🗺️" },
-  { href: "/adjust",   key: "adjust",   icon: "🎚️" },
-  { href: "/gear",     key: "gear",     icon: "📷" },
-  { href: "/account",  key: "account",  icon: "👤" },
+  { href: "/",         key: "home",     Icon: Home },
+  { href: "/coach",    key: "coach",    Icon: Target },
+  { href: "/plan",     key: "plan",     Icon: Map },
+  { href: "/adjust",   key: "adjust",   Icon: SlidersHorizontal },
+  { href: "/gear",     key: "gear",     Icon: Camera },
+  { href: "/account",  key: "account",  Icon: User },
 ];
 
 function isActive(pathname, href) {
@@ -54,7 +55,7 @@ export default function AppShell({ children }) {
               className={`sideitem ${isActive(pathname, item.href) ? "active" : ""}`}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
             >
-              <span aria-hidden>{item.icon}</span>
+              <item.Icon size={18} aria-hidden />
               <span>{t(`nav.${item.key}`)}</span>
             </Link>
           ))}
@@ -82,7 +83,7 @@ export default function AppShell({ children }) {
             className={`bottom-nav-item ${isActive(pathname, item.href) ? "active" : ""}`}
             aria-current={isActive(pathname, item.href) ? "page" : undefined}
           >
-            <span className="bottom-nav-item-icon" aria-hidden>{item.icon}</span>
+            <span className="bottom-nav-item-icon" aria-hidden><item.Icon size={20} /></span>
             <span>{t(`nav.${item.key}`)}</span>
           </Link>
         ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { X } from "lucide-react";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { fileToDownscaledDataUrl } from "@/lib/image-decode";
 
@@ -85,7 +86,7 @@ export default function BatchPage() {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
                   <span className="recipe-stat-label" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</span>
-                  <button type="button" className="btn btn-ghost" onClick={() => removeAt(i)} style={{ padding: "4px 8px" }}>×</button>
+                  <button type="button" className="btn btn-ghost" onClick={() => removeAt(i)} style={{ padding: "4px 8px" }} aria-label="Remove photo"><X size={16} /></button>
                 </div>
               </div>
             ))}
