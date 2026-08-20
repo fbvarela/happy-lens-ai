@@ -48,3 +48,9 @@ export const adjustmentQuota = pgTable("adjustment_quota", {
 }));
 
 export const subjectBaselinesUnique = ["user_id", "subject_slug"];
+
+export const engagementExamples = pgTable("engagement_examples", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  imageDataUrl: text("image_data_url").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});

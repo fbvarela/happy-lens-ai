@@ -1,6 +1,6 @@
 import {
   User, Mountain, Stars, Sprout, Bird, PersonStanding,
-  Package, Flame, Activity, PawPrint,
+  Package, Flame, Activity, PawPrint, Heart,
 } from "lucide-react";
 
 export const SUBJECT_PRESETS = [
@@ -13,6 +13,17 @@ export const SUBJECT_PRESETS = [
     isoCeiling: 800,
     cameraMode: "Portrait",
     intent: "Flattering compression, subject separation, soft background.",
+  },
+  {
+    id: "engagement",
+    label: "Engagement / Couple",
+    icon: Heart,
+    preferredLens: ["tele2x", "main"],
+    shutterFloorSec: 1 / 200,
+    isoCeiling: 800,
+    cameraMode: "Portrait",
+    intent: "Natural-light couple session; keep both faces in focus (f/2.8–f/4 equivalent), candid between poses.",
+    tips: ["hill", "road", "trees", "pasture", "timing"],
   },
   {
     id: "landscape",

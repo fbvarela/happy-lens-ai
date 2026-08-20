@@ -11,7 +11,9 @@ import {
   Smartphone, Camera, Video, Settings, Zap, MapPin,
   Cat, Dog, PawPrint, CloudSun, Thermometer, Cloud, Wind, CloudRain,
   TriangleAlert, ThumbsUp, ThumbsDown, Copy, Check, WifiOff, FlaskConical,
+  Plus, X,
 } from "lucide-react";
+import { fileToDownscaledDataUrl } from "@/lib/image-decode";
 import {
   ApertureIcon, ShutterIcon, IsoIcon, EvIcon, ModeDialIcon,
   FocusIcon, StabIcon, FlashOnIcon, FlashOffIcon,
@@ -52,6 +54,8 @@ function CoachPageInner() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [examples, setExamples] = useState([]);
+  const [addingExamples, setAddingExamples] = useState(false);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -84,6 +88,42 @@ function CoachPageInner() {
   const changeAnimal = (a) => {
     setAnimal(a);
     try { localStorage.setItem("hl.coach.pet.animal.v1", a); } catch {}
+  };
+
+  const loadExamples = async () => {
+    try {
+      const res = await fetch("/api/coach/examples");
+      const data = await res.json();
+      setExamples((data.examples || []).map((e) => ({ id: e.id, dataUrl: e.imageDataUrl })));
+    } catch {}
+  };
+
+  useEffect(() => { loadExamples(); }, []);
+
+  const addExamples = async (files) => {
+    if (!files?.length) return;
+    setAddingExamples(true); setError(null);
+    try {
+      for (const f of files) {
+        const dataUrl = await fileToDownscaledDataUrl(f, 900, 0.75);
+        const res = await fetch("/api/coach/examples", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dataUrl }),
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Upload failed.");
+      }
+      await loadExamples();
+    } catch (err) {
+      setError(err.message);
+    } finally { setAddingExamples(false); }
+  };
+
+  const deleteExample = async (id) => {
+    setExamples(examples.filter((x) => x.id !== id));
+    await fetch("/api/coach/examples", {
+      method: "DELETE", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
   };
 
   const useMyLocation = () => {
@@ -188,6 +228,41 @@ function CoachPageInner() {
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+          {subjectId === "engagement" && (
+            <div className="pets-subpicker">
+              <div className="input-label" style={{ marginTop: 10 }}>{t("engagement.tipsTitle")}</div>
+              <ul className="engagement-tips">
+                {getSubjectPreset("engagement").tips.map((k) => (
+                  <li key={k}>{t(`engagement.tip.${k}`)}</li>
+                ))}
+              </ul>
+              <div className="input-label" style={{ marginTop: 10 }}>{t("engagement.examplesTitle")}</div>
+              <label className="chip chip-sm engagement-add">
+                <Plus size={15} aria-hidden />
+                <span>{addingExamples ? t("engagement.examplesAdding") : t("engagement.examplesAdd")}</span>
+                <input type="file" accept="image/*" multiple disabled={addingExamples}
+                  onChange={(e) => { addExamples(e.target.files); e.target.value = ""; }}
+                  style={{ display: "none" }} />
+              </label>
+              {examples.length === 0 ? (
+                <p className="engagement-empty">{t("engagement.examplesEmpty")}</p>
+              ) : (
+                <div className="engagement-grid">
+                  {examples.map((ex) => (
+                    <div key={ex.id} className="engagement-thumb">
+                      <a href={ex.dataUrl} target="_blank" rel="noreferrer">
+                        <img src={ex.dataUrl} alt={t("engagement.examplesTitle")} />
+                      </a>
+                      <button type="button" aria-label={t("engagement.delete")}
+                        onClick={() => deleteExample(ex.id)}>
+                        <X size={12} aria-hidden />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

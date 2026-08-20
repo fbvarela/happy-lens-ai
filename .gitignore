@@ -8,6 +8,8 @@ node_modules
 public/sw.js
 public/workbox-*.js
 public/worker-*.js
+public/fallback-*.js
+public/swe-worker-*.js
 public/sw.js.map
 public/workbox-*.js.map
 .vercel
