@@ -233,11 +233,40 @@ export const DICTIONARIES = {
         save: "Save to examples",
         saving: "Saving…",
         noKey: "Set REPLICATE_API_TOKEN to generate example photos with AI.",
+        explainLabel: "How to shoot it",
         explain: {
-          hill: "Golden-hour backlight puts a rim around the couple and drops the background to soft haze. Shoot on the ridge with the sky behind, expose for the faces and nudge +0.3 to +0.7 EV so the backlit skin stays open. Tele2x compresses the pair; f/2.8–f/4 keeps both faces sharp.",
-          road: "The road is a natural leading line that pulls the eye to the couple. Walk them toward or away from the camera, drop to a low angle and center the road. Tele2x flattens perspective so the trees on both sides frame them. Candid walking shots read best — burst mode and review later.",
-          trees: "Open shade turns the harsh light even, which is the most forgiving for skin tones. Put the couple just inside the shadow line; backlit leaves make a subtle rim at sunset. Watch dappled light crossing the faces and shift them a step if it does. Main lens, f/2.8–f/4.",
-          pasture: "A wide environmental shot — the couple small in the frame against the pasture gives the story scale. Ultrawide or main from a distance, keep the horizon level and the sky clear. In wind, push 1/250s or faster so hair and dress read crisp instead of smeared.",
+          hill: {
+            title: "Golden-hour rim light",
+            points: [
+              "Place the couple on the ridge with the sun low and behind them — it rims them and drops the background to haze.",
+              "Expose for the faces, +0.3 to +0.7 EV, so backlit skin stays open.",
+              "Tele2x compresses the pair; f/2.8–f/4 keeps both faces sharp.",
+            ],
+          },
+          road: {
+            title: "Leading lines down the road",
+            points: [
+              "Walk them toward or away from the camera, drop to a low angle and center the road.",
+              "Tele2x flattens perspective so the trees on both sides frame them.",
+              "Candid walking shots read best — use burst mode and review later.",
+            ],
+          },
+          trees: {
+            title: "Soft, even shade",
+            points: [
+              "Put the couple just inside the shadow line; backlit leaves rim them at sunset.",
+              "Even open shade is the most forgiving light for skin tones.",
+              "Watch dappled light on the faces and shift them a step if it lands there.",
+            ],
+          },
+          pasture: {
+            title: "Wide environmental scale",
+            points: [
+              "Couple small in frame against the pasture gives the story scale.",
+              "Ultrawide or main from a distance; keep the horizon level and the sky clear.",
+              "In wind, push 1/250s or faster so hair and dress read crisp.",
+            ],
+          },
         },
       },
     },
@@ -501,11 +530,40 @@ export const DICTIONARIES = {
         save: "Guardar en ejemplos",
         saving: "Guardando…",
         noKey: "Configura REPLICATE_API_TOKEN para generar fotos de ejemplo con IA.",
+        explainLabel: "Cómo hacerlo",
         explain: {
-          hill: "El contraluz de la hora dorada dibuja un halo alrededor de la pareja y deja el fondo en una neblina suave. Dispara en la cresta con el cielo detrás, expón para las caras y sube +0,3 a +0,7 EV para que la piel a contraluz no quede oscura. El tele2x comprime a la pareja; con f/2,8–f/4 las dos caras salen nítidas.",
-          road: "El camino es una línea guía natural que lleva la mirada hacia la pareja. Hazlos caminar hacia o desde la cámara, baja el ángulo y centra el camino. El tele2x aplana la perspectiva para que los árboles de ambos lados los enmarquen. Las fotos cándidas caminando funcionan mejor — usa ráfaga y revisa después.",
-          trees: "La sombra abierta vuelve la luz dura en uniforme, lo más favorecedor para la piel. Coloca a la pareja justo dentro de la línea de sombra; las hojas a contraluz dan un halo sutil al atardecer. Vigila la luz moteada sobre las caras y muévelos un paso si aparece. Objetivo principal, f/2,8–f/4.",
-          pasture: "Una toma ambiental amplia — la pareja pequeña en el encuadre frente al prado da escala a la historia. Ultrawide o principal desde lejos, horizonte nivelado y cielo despejado. Con viento, sube a 1/250s o más para que el pelo y el vestido salgan nítidos.",
+          hill: {
+            title: "Contraluz de la hora dorada",
+            points: [
+              "Coloca a la pareja en la cresta con el sol bajo detrás — les dibuja un halo y deja el fondo en neblina.",
+              "Expón para las caras, +0,3 a +0,7 EV, para que la piel a contraluz no quede oscura.",
+              "El tele2x comprime a la pareja; con f/2,8–f/4 las dos caras salen nítidas.",
+            ],
+          },
+          road: {
+            title: "Líneas guía por el camino",
+            points: [
+              "Hazlos caminar hacia o desde la cámara, baja el ángulo y centra el camino.",
+              "El tele2x aplana la perspectiva para que los árboles de ambos lados los enmarquen.",
+              "Las fotos cándidas caminando funcionan mejor — usa ráfaga y revisa después.",
+            ],
+          },
+          trees: {
+            title: "Sombra abierta y suave",
+            points: [
+              "Coloca a la pareja justo dentro de la línea de sombra; las hojas a contraluz les dan un halo al atardecer.",
+              "La sombra abierta y uniforme es la luz más favorecedora para la piel.",
+              "Vigila la luz moteada en las caras y muévelos un paso si cae sobre ellas.",
+            ],
+          },
+          pasture: {
+            title: "Escala ambiental amplia",
+            points: [
+              "La pareja pequeña en el encuadre frente al prado da escala a la historia.",
+              "Ultrawide o principal desde lejos; horizonte nivelado y cielo despejado.",
+              "Con viento, sube a 1/250s o más para que el pelo y el vestido salgan nítidos.",
+            ],
+          },
         },
       },
     },

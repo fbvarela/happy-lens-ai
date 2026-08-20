@@ -136,7 +136,15 @@ function CoachPageInner() {
     try {
       const res = await fetch("/api/coach/examples/generate", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ spotId }),
+        body: JSON.stringify({
+          spotId,
+          gear: active,
+          scene: {
+            lat: scene.lat ? +scene.lat : null,
+            lng: scene.lng ? +scene.lng : null,
+            date: scene.dateTime,
+          },
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "AI generation failed.");
@@ -297,7 +305,7 @@ function CoachPageInner() {
                         aria-label={t("engagement.view")}>
                         <img src={ex.dataUrl} alt={t("engagement.examplesTitle")} />
                       </button>
-                      <button type="button" aria-label={t("engagement.delete")}
+                      <button type="button" className="engagement-thumb-del" aria-label={t("engagement.delete")}
                         onClick={() => deleteExample(ex.id)}>
                         <X size={12} aria-hidden />
                       </button>
@@ -319,18 +327,24 @@ function CoachPageInner() {
               {generatingAi && <p className="engagement-empty">{t("engagement.ai.generating")}</p>}
               {aiExample?.source === "stub" && <p className="engagement-empty">{t("engagement.ai.noKey")}</p>}
               {aiExample?.imageUrl && (
-                <div className="ai-example" style={{ marginTop: 8 }}>
+                <div className="ai-example" style={{ marginTop: 10 }}>
                   <button type="button" className="ai-example-open"
                     onClick={() => setViewer({ urls: [aiExample.imageUrl], index: 0 })}
                     aria-label={t("engagement.view")}>
                     <img src={aiExample.imageUrl} alt={t("engagement.ai.generated")} className="ai-example-img" />
                   </button>
-                  <p className="subject-tips" style={{ paddingLeft: 0, marginTop: 8 }}>
-                    {t(`engagement.ai.explain.${aiExample.spotId}`)}
-                  </p>
-                  <button type="button" className="btn btn-primary btn-sm" onClick={saveAiExample} disabled={savingAi}>
-                    {savingAi ? t("engagement.ai.saving") : t("engagement.ai.save")}
-                  </button>
+                  <div className="ai-example-text">
+                    <div className="ai-example-label">{t("engagement.ai.explainLabel")}</div>
+                    <div className="ai-example-title">{t(`engagement.ai.explain.${aiExample.spotId}`).title}</div>
+                    <ul className="ai-example-points">
+                      {t(`engagement.ai.explain.${aiExample.spotId}`).points.map((p, i) => (
+                        <li key={i}>{p}</li>
+                      ))}
+                    </ul>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={saveAiExample} disabled={savingAi}>
+                      {savingAi ? t("engagement.ai.saving") : t("engagement.ai.save")}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
