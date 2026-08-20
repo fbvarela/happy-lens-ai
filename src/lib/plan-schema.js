@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const PlanSlotSchema = z.object({
   time: z.string().describe("ISO datetime within the requested day."),
-  subjectId: z.enum(["portrait", "landscape", "astro", "macro", "wildlife", "street", "product", "lowlight", "action"]),
+  subjectId: z.enum(["portrait", "engagement", "landscape", "astro", "macro", "wildlife", "street", "product", "lowlight", "action"]),
   headline: z.string().describe("Short, specific. What to shoot at this moment."),
   rationale: z.string().describe("Why this time + place matters. One sentence."),
   lens: z.enum(["ultrawide", "main", "tele2x", "tele5x"]),

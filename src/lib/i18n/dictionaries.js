@@ -150,6 +150,23 @@ export const DICTIONARIES = {
       lowlight: "Low-light indoor",
       action: "Action / Sports",
       pets: "Pets",
+      engagement: "Engagement / Couple",
+    },
+
+    engagement: {
+      tipsTitle: "Session tips",
+      examplesTitle: "Example photos",
+      examplesAdd: "Add examples",
+      examplesAdding: "Adding…",
+      examplesEmpty: "No examples yet — add reference photos from the location.",
+      delete: "Delete example",
+      tip: {
+        hill: "Hill with the view — go at golden hour, couple on the ridge with sky behind; expose for faces, +0.3–0.7 EV if backlit.",
+        road: "Paved road — leading lines: couple walking toward or away from camera, tele2x compression, low angle centered on the road.",
+        trees: "Trees — open shade at midday; backlight through leaves near sunset for rim light. Watch dappled light on faces.",
+        pasture: "Pasture — ultrawide or main, couple small in frame for scale. Windy? 1/250s or faster for hair and dress.",
+        timing: "Timing — first hour after sunrise or last 1.5h before sunset. Burst mode for laughs and walks; shoot wide and tight (hands, ring, glances).",
+      },
     },
 
     pets: {
@@ -328,6 +345,23 @@ export const DICTIONARIES = {
       lowlight: "Poca luz (interior)",
       action: "Acción / Deporte",
       pets: "Mascotas",
+      engagement: "Compromiso / Pareja",
+    },
+
+    engagement: {
+      tipsTitle: "Consejos de la sesión",
+      examplesTitle: "Fotos de ejemplo",
+      examplesAdd: "Añadir ejemplos",
+      examplesAdding: "Añadiendo…",
+      examplesEmpty: "Aún no hay ejemplos — añade fotos de referencia del lugar.",
+      delete: "Borrar ejemplo",
+      tip: {
+        hill: "Colina con vistas — ve a la hora dorada, la pareja en la cresta con el cielo detrás; expón para las caras, +0,3–0,7 EV si están a contraluz.",
+        road: "Camino pavimentado — líneas guía: la pareja caminando hacia o desde la cámara, compresión con tele2x, ángulo bajo centrado en el camino.",
+        trees: "Árboles — sombra abierta al mediodía; contraluz entre las hojas cerca del atardecer para luz de contorno. Cuidado con la luz moteada en las caras.",
+        pasture: "Prado — ultrawide o principal, pareja pequeña en el encuadre para dar escala. ¿Viento? 1/250s o más para el pelo y el vestido.",
+        timing: "Cuándo — primera hora tras el amanecer o última hora y media antes del atardecer. Ráfagas para risas y paseos; abre y cierra (manos, anillo, miradas).",
+      },
     },
 
     pets: {
