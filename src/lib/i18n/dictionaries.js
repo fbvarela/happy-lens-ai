@@ -214,6 +214,10 @@ export const DICTIONARIES = {
       examplesAdding: "Adding…",
       examplesEmpty: "No examples yet — add reference photos from the location.",
       delete: "Delete example",
+      view: "View example",
+      close: "Close",
+      prev: "Previous",
+      next: "Next",
       tip: {
         hill: "Hill with the view — go at golden hour, couple on the ridge with sky behind; expose for faces, +0.3–0.7 EV if backlit.",
         road: "Paved road — leading lines: couple walking toward or away from camera, tele2x compression, low angle centered on the road.",
@@ -478,6 +482,10 @@ export const DICTIONARIES = {
       examplesAdding: "Añadiendo…",
       examplesEmpty: "Aún no hay ejemplos — añade fotos de referencia del lugar.",
       delete: "Borrar ejemplo",
+      view: "Ver ejemplo",
+      close: "Cerrar",
+      prev: "Anterior",
+      next: "Siguiente",
       tip: {
         hill: "Colina con vistas — ve a la hora dorada, la pareja en la cresta con el cielo detrás; expón para las caras, +0,3–0,7 EV si están a contraluz.",
         road: "Camino pavimentado — líneas guía: la pareja caminando hacia o desde la cámara, compresión con tele2x, ángulo bajo centrado en el camino.",

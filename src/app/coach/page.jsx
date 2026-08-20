@@ -11,7 +11,7 @@ import {
   Smartphone, Camera, Video, Settings, Zap, MapPin,
   Cat, Dog, PawPrint, CloudSun, Thermometer, Cloud, Wind, CloudRain,
   TriangleAlert, ThumbsUp, ThumbsDown, Copy, Check, WifiOff, FlaskConical,
-  Plus, X, Sparkles,
+  Plus, X, Sparkles, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { fileToDownscaledDataUrl } from "@/lib/image-decode";
 import {
@@ -60,6 +60,7 @@ function CoachPageInner() {
   const [generatingAi, setGeneratingAi] = useState(false);
   const [savingAi, setSavingAi] = useState(false);
   const [aiExample, setAiExample] = useState(null);
+  const [viewer, setViewer] = useState(null);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -289,11 +290,13 @@ function CoachPageInner() {
                 <p className="engagement-empty">{t("engagement.examplesEmpty")}</p>
               ) : (
                 <div className="engagement-grid">
-                  {examples.map((ex) => (
+                  {examples.map((ex, i) => (
                     <div key={ex.id} className="engagement-thumb">
-                      <a href={ex.dataUrl} target="_blank" rel="noreferrer">
+                      <button type="button" className="engagement-thumb-open"
+                        onClick={() => setViewer({ urls: examples.map((e) => e.dataUrl), index: i })}
+                        aria-label={t("engagement.view")}>
                         <img src={ex.dataUrl} alt={t("engagement.examplesTitle")} />
-                      </a>
+                      </button>
                       <button type="button" aria-label={t("engagement.delete")}
                         onClick={() => deleteExample(ex.id)}>
                         <X size={12} aria-hidden />
@@ -317,7 +320,11 @@ function CoachPageInner() {
               {aiExample?.source === "stub" && <p className="engagement-empty">{t("engagement.ai.noKey")}</p>}
               {aiExample?.imageUrl && (
                 <div className="ai-example" style={{ marginTop: 8 }}>
-                  <img src={aiExample.imageUrl} alt={t("engagement.ai.generated")} className="ai-example-img" />
+                  <button type="button" className="ai-example-open"
+                    onClick={() => setViewer({ urls: [aiExample.imageUrl], index: 0 })}
+                    aria-label={t("engagement.view")}>
+                    <img src={aiExample.imageUrl} alt={t("engagement.ai.generated")} className="ai-example-img" />
+                  </button>
                   <p className="subject-tips" style={{ paddingLeft: 0, marginTop: 8 }}>
                     {t(`engagement.ai.explain.${aiExample.spotId}`)}
                   </p>
@@ -462,6 +469,8 @@ function CoachPageInner() {
       )}
 
       {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
+
+      <PhotoViewer viewer={viewer} setViewer={setViewer} t={t} />
     </>
   );
 }
@@ -699,4 +708,46 @@ function readOffline(key) {
   } catch {
     return null;
   }
+}
+
+function PhotoViewer({ viewer, setViewer, t }) {
+  const urls = viewer?.urls || [];
+  const index = viewer?.index || 0;
+  const hasNav = urls.length > 1;
+  const go = (i) => setViewer({ urls, index: (i + urls.length) % urls.length });
+
+  useEffect(() => {
+    if (!viewer) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") setViewer(null);
+      else if (hasNav && e.key === "ArrowRight") go(index + 1);
+      else if (hasNav && e.key === "ArrowLeft") go(index - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [viewer]);
+
+  if (!viewer) return null;
+  return (
+    <div className="photo-viewer" role="dialog" aria-modal="true" onClick={() => setViewer(null)}>
+      <button type="button" className="photo-viewer-close" aria-label={t("engagement.close")} onClick={() => setViewer(null)}>
+        <X size={22} aria-hidden />
+      </button>
+      {hasNav && (
+        <button type="button" className="photo-viewer-nav photo-viewer-prev" aria-label={t("engagement.prev")}
+          onClick={(e) => { e.stopPropagation(); go(index - 1); }}>
+          <ChevronLeft size={28} aria-hidden />
+        </button>
+      )}
+      <img src={urls[index]} alt={t("engagement.examplesTitle")} className="photo-viewer-img" onClick={(e) => e.stopPropagation()} />
+      {hasNav && (
+        <button type="button" className="photo-viewer-nav photo-viewer-next" aria-label={t("engagement.next")}
+          onClick={(e) => { e.stopPropagation(); go(index + 1); }}>
+          <ChevronRight size={28} aria-hidden />
+        </button>
+      )}
+    </div>
+  );
 }
