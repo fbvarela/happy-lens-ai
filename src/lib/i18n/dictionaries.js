@@ -8,15 +8,15 @@ export const DICTIONARIES = {
       title: "Shoot with a plan. Leave with the photo.",
       body: "A shot coach tuned to your iPhone 16 Pro. Tell happy lens what you want to shoot and where — it gives you lens, settings and position for the light you'll actually have.",
       ctaCoach: "Open Shot coach",
-      ctaRoadmap: "About the roadmap",
+      ctaRoadmap: "Plan a shoot",
       sectionTitle: "What you can do",
-      sectionSub: "Start with the coach — the rest is on the way.",
+      sectionSub: "Start with the coach — plan, critique and tonight's sky are all live.",
       last: { title: (s) => `Last recipe — ${s}`, saved: "Saved", open: "Open coach →" },
       feature: {
         coach: { title: "Shot coach", body: "Pick a subject, drop a location. Get f-number, shutter, ISO, camera mode and position tuned to your iPhone 16 Pro.", badge: "Live" },
-        plan: { title: "Plan a shoot", body: "Sun, moon, weather and a timeline across a trip. Roadmap — the coach already does today's recipe.", badge: "Soon" },
-        critique: { title: "Critique a photo", body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.", badge: "Soon" },
-        conditions: { title: "Tonight's conditions", body: "Milky Way visibility, moon phase, Bortle class, golden & blue hour at your location.", badge: "Later" },
+        plan: { title: "Plan a shoot", body: "Sun, moon, weather and a full light timeline for the day, plus an AI shot list that opens in the coach.", badge: "Live" },
+        critique: { title: "Critique a photo", body: "Drop a JPEG — we read EXIF, compare it to the scene, and suggest what to try next time.", badge: "Live" },
+        conditions: { title: "Tonight's conditions", body: "Milky Way visibility, moon phase, golden & blue hour and cloud cover at your location.", badge: "Live" },
       },
     },
 
@@ -83,6 +83,39 @@ export const DICTIONARIES = {
       weather: { title: "Weather through the day" },
       slots: { title: "Shot list", openInCoach: "Open in coach →" },
       empty: "Pick a location and a date to see the plan.",
+    },
+
+    conditions: {
+      title: "Tonight's conditions",
+      sub: "Drop a location. Get tonight's light windows, moon, and a Milky Way verdict for the hours of darkness.",
+      form: {
+        location: "Location", latitude: "Latitude", longitude: "Longitude",
+        locate: "Use my location", locating: "Locating…",
+        submit: "Check tonight", loading: "Reading the sky…",
+      },
+      errors: { coords: "Enter a valid latitude and longitude." },
+      verdict: {
+        title: "Milky Way tonight",
+        level: { good: "Go", fair: "Workable", poor: "Tough", bad: "No-go" },
+        key: {
+          clear: "Dark skies and little moon — a strong window for the Milky Way. Shoot during astro darkness.",
+          someMoon: "Some moonlight will wash the sky a little. Frame the core away from the moon and it's still workable.",
+          brightMoon: "A bright moon dominates the sky tonight. The Milky Way will be faint — consider a moonlit landscape instead.",
+          clouds: "Cloud cover is high through the night. The sky won't cooperate — check again tomorrow.",
+          noDark: "No true astronomical darkness tonight at this latitude. The sky never gets dark enough for the Milky Way.",
+        },
+      },
+      timeline: {
+        title: "Light windows",
+        goldenEve: "Golden hour begins", sunset: "Sunset", blue: "Blue hour",
+        astroStart: "Astro darkness starts", astroEnd: "Astro darkness ends",
+      },
+      moon: { title: "Moon", phase: "Phase", illumination: "Illumination", rise: "Moon rise", set: "Moon set" },
+      moonPhase: {
+        new: "New Moon", waxCrescent: "Waxing Crescent", firstQuarter: "First Quarter", waxGibbous: "Waxing Gibbous",
+        full: "Full Moon", wanGibbous: "Waning Gibbous", lastQuarter: "Last Quarter", wanCrescent: "Waning Crescent",
+      },
+      clouds: { title: "Cloud cover tonight" },
     },
 
     critique: {
@@ -203,15 +236,15 @@ export const DICTIONARIES = {
       title: "Dispara con un plan. Vuelve con la foto.",
       body: "Un coach de disparo afinado para tu iPhone 16 Pro. Dile a happy lens qué quieres fotografiar y dónde — te da objetivo, ajustes y posición para la luz que realmente vas a tener.",
       ctaCoach: "Abrir Shot coach",
-      ctaRoadmap: "Ver la hoja de ruta",
+      ctaRoadmap: "Planificar sesión",
       sectionTitle: "Qué puedes hacer",
-      sectionSub: "Empieza por el coach — el resto está en camino.",
+      sectionSub: "Empieza por el coach — plan, crítica y el cielo de esta noche están activos.",
       last: { title: (s) => `Última receta — ${s}`, saved: "Guardada", open: "Abrir coach →" },
       feature: {
         coach: { title: "Shot coach", body: "Elige un sujeto, añade una ubicación. Obtén diafragma, velocidad, ISO, modo de cámara y posición afinados para tu iPhone 16 Pro.", badge: "Activo" },
-        plan: { title: "Planificar sesión", body: "Sol, luna, tiempo y una cronología para tu salida. En la hoja de ruta — el coach ya hace la receta del día.", badge: "Próximo" },
-        critique: { title: "Criticar una foto", body: "Sube una JPEG — leemos el EXIF, lo comparamos con la escena y sugerimos qué probar la próxima vez.", badge: "Próximo" },
-        conditions: { title: "Condiciones de esta noche", body: "Visibilidad de la Vía Láctea, fase lunar, clase Bortle, hora dorada y azul en tu ubicación.", badge: "Más adelante" },
+        plan: { title: "Planificar sesión", body: "Sol, luna, tiempo y una cronología completa de luz para el día, más una lista de disparos con IA que se abre en el coach.", badge: "Activo" },
+        critique: { title: "Criticar una foto", body: "Sube una JPEG — leemos el EXIF, lo comparamos con la escena y sugerimos qué probar la próxima vez.", badge: "Activo" },
+        conditions: { title: "Condiciones de esta noche", body: "Visibilidad de la Vía Láctea, fase lunar, hora dorada y azul y nubosidad en tu ubicación.", badge: "Activo" },
       },
     },
 
@@ -278,6 +311,39 @@ export const DICTIONARIES = {
       weather: { title: "Tiempo a lo largo del día" },
       slots: { title: "Lista de disparos", openInCoach: "Abrir en coach →" },
       empty: "Elige una ubicación y una fecha para ver el plan.",
+    },
+
+    conditions: {
+      title: "Condiciones de esta noche",
+      sub: "Añade una ubicación. Obtén las ventanas de luz de esta noche, la luna y un veredicto de la Vía Láctea para las horas de oscuridad.",
+      form: {
+        location: "Ubicación", latitude: "Latitud", longitude: "Longitud",
+        locate: "Usar mi ubicación", locating: "Localizando…",
+        submit: "Ver esta noche", loading: "Leyendo el cielo…",
+      },
+      errors: { coords: "Introduce una latitud y longitud válidas." },
+      verdict: {
+        title: "Vía Láctea esta noche",
+        level: { good: "Adelante", fair: "Aprovechable", poor: "Difícil", bad: "Imposible" },
+        key: {
+          clear: "Cielo oscuro y poca luna — una gran ventana para la Vía Láctea. Dispara durante la oscuridad astronómica.",
+          someMoon: "Algo de luz lunar lavará un poco el cielo. Encadra el núcleo lejos de la luna y sigue siendo aprovechable.",
+          brightMoon: "Una luna brillante domina el cielo esta noche. La Vía Láctea estará tenue — considera un paisaje con luna.",
+          clouds: "La nubosidad es alta durante la noche. El cielo no acompañará — vuelve a comprobarlo mañana.",
+          noDark: "Esta noche no hay verdadera oscuridad astronómica en esta latitud. El cielo no oscurece lo suficiente para la Vía Láctea.",
+        },
+      },
+      timeline: {
+        title: "Ventanas de luz",
+        goldenEve: "Empieza la hora dorada", sunset: "Atardecer", blue: "Hora azul",
+        astroStart: "Empieza la oscuridad astronómica", astroEnd: "Termina la oscuridad astronómica",
+      },
+      moon: { title: "Luna", phase: "Fase", illumination: "Iluminación", rise: "Sale la luna", set: "Se pone la luna" },
+      moonPhase: {
+        new: "Luna nueva", waxCrescent: "Luna creciente", firstQuarter: "Cuarto creciente", waxGibbous: "Gibosa creciente",
+        full: "Luna llena", wanGibbous: "Gibosa menguante", lastQuarter: "Cuarto menguante", wanCrescent: "Luna menguante",
+      },
+      clouds: { title: "Nubosidad esta noche" },
     },
 
     critique: {
