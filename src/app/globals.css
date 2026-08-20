@@ -529,7 +529,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .chip-sm { height: 34px; padding: 0 12px; font-size: 0.85rem; }
 .pets-subpicker { margin-top: 6px; }
 .pets-subpicker .input-label { margin-bottom: 4px; }
-.engagement-tips { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.85rem; color: var(--text-muted); }
+.subject-tips { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.85rem; color: var(--text-muted); }
 .engagement-add { width: fit-content; display: inline-flex; cursor: pointer; }
 .engagement-empty { margin: 6px 0 0; font-size: 0.82rem; color: var(--text-muted); }
 .engagement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-top: 8px; }

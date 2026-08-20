@@ -3,7 +3,7 @@ import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { RecipeResponseSchema } from "@/lib/recipe-schema";
 import { clampRecipeToGear, resolveGear } from "@/lib/gear-validator";
-import { getSubjectPreset } from "@/data/subjects/presets";
+import { getSubjectPreset, resolveBwContext } from "@/data/subjects/presets";
 import { resolvePetContext, resolvePetAnimal, PET_ANIMAL_HINTS } from "@/data/subjects/pet-contexts";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
@@ -100,6 +100,23 @@ function buildPetsBrief(subject) {
   ].join("\n");
 }
 
+function buildBwBrief(subject) {
+  if (subject.id !== "bw") return null;
+  const lowkey = subject.bwContextId === "lowkey";
+  return [
+    "",
+    `BLACK & WHITE SUBJECT — context: ${subject.bwContextId}.`,
+    `Context hint: "${subject.bwContextHint}"`,
+    "Rules:",
+    "- Color is gone: build the shot from tone, contrast, texture, shape and line; say so in `compositionTips`.",
+    "- Recommend a B&W capture path: on iPhone prefer Camera Filters (Mono / Silvertone / Noir) or shoot ProRAW-48 and convert later; set iphone.format accordingly. Never set iphone.photographicStyle to a B&W value — it isn't in the gear's list.",
+    "- Expose for the highlights. For low-key, set negative EV (−1 to −2) and give an AE/AF-lock-then-recompose hint in iphone.aeAfLockHint.",
+    lowkey
+      ? "- Low-key: `position` must put the subject against a dark or shadowed background with a single side or back light for rim separation; keep the frame sparse."
+      : "- Classic: side light and strong shadow read best; overcast gives soft, quiet tones.",
+  ].join("\n");
+}
+
 function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, useFlash }) {
   const langName = LOCALE_NAME[locale] || "English";
   const gearDesc = describeGear(gear, useFlash);
@@ -146,6 +163,8 @@ function buildPrompt({ subject, scene, gear, sky, weather, guardIssues, locale, 
 
   const petsBrief = buildPetsBrief(subject);
   if (petsBrief) lines.push(petsBrief);
+  const bwBrief = buildBwBrief(subject);
+  if (bwBrief) lines.push(bwBrief);
   lines.push(
     "",
     "Produce 1–3 shot recipes. The PRIMARY recipe is the best bet; alternates cover 'if the light drops' or 'for a tighter crop'.",
@@ -167,7 +186,7 @@ export async function POST(req) {
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: "Invalid JSON." }, { status: 400 }); }
 
-  const { subjectId, scene = {}, gear: gearInput, gearId = "iphone-16-pro", locale = "en", useFlash = false, petContext: petContextId, animal: animalId } = body || {};
+  const { subjectId, scene = {}, gear: gearInput, gearId = "iphone-16-pro", locale = "en", useFlash = false, petContext: petContextId, animal: animalId, bwContext: bwContextId } = body || {};
 
   const basePreset = getSubjectPreset(subjectId);
   if (!basePreset) return NextResponse.json({ error: "Unknown subject." }, { status: 400 });
@@ -190,6 +209,18 @@ export async function POST(req) {
       animalHint: PET_ANIMAL_HINTS[animal],
     };
   }
+  if (subjectId === "bw") {
+    const bwContext = resolveBwContext(bwContextId || basePreset.defaultContext);
+    subject = {
+      ...basePreset,
+      preferredLens: bwContext.preferredLens,
+      shutterFloorSec: bwContext.shutterFloorSec,
+      isoCeiling: bwContext.isoCeiling,
+      cameraMode: bwContext.cameraMode,
+      bwContextId: bwContext.id,
+      bwContextHint: bwContext.hint,
+    };
+  }
 
   const gear = resolveGear(gearInput || { id: gearId });
   const hasFlash = useFlash && (gear.flashes?.length || 0) > 0;
@@ -210,7 +241,8 @@ export async function POST(req) {
   }
 
   const petKeyPart = subjectId === "pets" ? `|pets:${subject.petContextId}:${subject.animal}` : "";
-  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}${petKeyPart}`;
+  const bwKeyPart = subjectId === "bw" ? `|bw:${subject.bwContextId}` : "";
+  const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}${petKeyPart}${bwKeyPart}`;
   const cached = getCached(key);
   if (cached) return NextResponse.json({ ...cached, source: "cache" });
 

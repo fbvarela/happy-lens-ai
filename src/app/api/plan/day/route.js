@@ -39,7 +39,7 @@ function buildPrompt({ lat, lng, date, notes, windows, weatherKey, locale }) {
     `Weather at key hours: ${JSON.stringify(weatherKey)}`,
     "",
     "Produce 3–5 shot-list slots across the day. Prefer times that match real light windows (golden/blue/astro) and real weather (skip astro under thick cloud, pick overcast for portraits, etc.).",
-    "Each slot picks ONE subjectId from [portrait, engagement, landscape, astro, macro, wildlife, street, product, lowlight, action].",
+    "Each slot picks ONE subjectId from [portrait, engagement, landscape, astro, macro, wildlife, street, product, lowlight, action, bw].",
     "Each slot picks ONE lens from [ultrawide, main, tele2x, tele5x] and a cameraMode that suits it.",
     "Rationale is ONE specific sentence — no platitudes.",
     "Return also a one-paragraph summary of the day's opportunity at this place.",
