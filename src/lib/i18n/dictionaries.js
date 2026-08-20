@@ -221,6 +221,21 @@ export const DICTIONARIES = {
         pasture: "Pasture — ultrawide or main, couple small in frame for scale. Windy? 1/250s or faster for hair and dress.",
         timing: "Timing — first hour after sunrise or last 1.5h before sunset. Burst mode for laughs and walks; shoot wide and tight (hands, ring, glances).",
       },
+      aiSpot: { hill: "Hill", road: "Road", trees: "Trees", pasture: "Pasture" },
+      ai: {
+        title: "Generate an AI example",
+        generating: "Generating…",
+        generated: "AI-generated example",
+        save: "Save to examples",
+        saving: "Saving…",
+        noKey: "Set REPLICATE_API_TOKEN to generate example photos with AI.",
+        explain: {
+          hill: "Golden-hour backlight puts a rim around the couple and drops the background to soft haze. Shoot on the ridge with the sky behind, expose for the faces and nudge +0.3 to +0.7 EV so the backlit skin stays open. Tele2x compresses the pair; f/2.8–f/4 keeps both faces sharp.",
+          road: "The road is a natural leading line that pulls the eye to the couple. Walk them toward or away from the camera, drop to a low angle and center the road. Tele2x flattens perspective so the trees on both sides frame them. Candid walking shots read best — burst mode and review later.",
+          trees: "Open shade turns the harsh light even, which is the most forgiving for skin tones. Put the couple just inside the shadow line; backlit leaves make a subtle rim at sunset. Watch dappled light crossing the faces and shift them a step if it does. Main lens, f/2.8–f/4.",
+          pasture: "A wide environmental shot — the couple small in the frame against the pasture gives the story scale. Ultrawide or main from a distance, keep the horizon level and the sky clear. In wind, push 1/250s or faster so hair and dress read crisp instead of smeared.",
+        },
+      },
     },
 
     pets: {
@@ -469,6 +484,21 @@ export const DICTIONARIES = {
         trees: "Árboles — sombra abierta al mediodía; contraluz entre las hojas cerca del atardecer para luz de contorno. Cuidado con la luz moteada en las caras.",
         pasture: "Prado — ultrawide o principal, pareja pequeña en el encuadre para dar escala. ¿Viento? 1/250s o más para el pelo y el vestido.",
         timing: "Cuándo — primera hora tras el amanecer o última hora y media antes del atardecer. Ráfagas para risas y paseos; abre y cierra (manos, anillo, miradas).",
+      },
+      aiSpot: { hill: "Colina", road: "Camino", trees: "Árboles", pasture: "Prado" },
+      ai: {
+        title: "Generar un ejemplo con IA",
+        generating: "Generando…",
+        generated: "Ejemplo generado con IA",
+        save: "Guardar en ejemplos",
+        saving: "Guardando…",
+        noKey: "Configura REPLICATE_API_TOKEN para generar fotos de ejemplo con IA.",
+        explain: {
+          hill: "El contraluz de la hora dorada dibuja un halo alrededor de la pareja y deja el fondo en una neblina suave. Dispara en la cresta con el cielo detrás, expón para las caras y sube +0,3 a +0,7 EV para que la piel a contraluz no quede oscura. El tele2x comprime a la pareja; con f/2,8–f/4 las dos caras salen nítidas.",
+          road: "El camino es una línea guía natural que lleva la mirada hacia la pareja. Hazlos caminar hacia o desde la cámara, baja el ángulo y centra el camino. El tele2x aplana la perspectiva para que los árboles de ambos lados los enmarquen. Las fotos cándidas caminando funcionan mejor — usa ráfaga y revisa después.",
+          trees: "La sombra abierta vuelve la luz dura en uniforme, lo más favorecedor para la piel. Coloca a la pareja justo dentro de la línea de sombra; las hojas a contraluz dan un halo sutil al atardecer. Vigila la luz moteada sobre las caras y muévelos un paso si aparece. Objetivo principal, f/2,8–f/4.",
+          pasture: "Una toma ambiental amplia — la pareja pequeña en el encuadre frente al prado da escala a la historia. Ultrawide o principal desde lejos, horizonte nivelado y cielo despejado. Con viento, sube a 1/250s o más para que el pelo y el vestido salgan nítidos.",
+        },
       },
     },
 

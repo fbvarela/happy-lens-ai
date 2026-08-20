@@ -11,7 +11,7 @@ import {
   Smartphone, Camera, Video, Settings, Zap, MapPin,
   Cat, Dog, PawPrint, CloudSun, Thermometer, Cloud, Wind, CloudRain,
   TriangleAlert, ThumbsUp, ThumbsDown, Copy, Check, WifiOff, FlaskConical,
-  Plus, X,
+  Plus, X, Sparkles,
 } from "lucide-react";
 import { fileToDownscaledDataUrl } from "@/lib/image-decode";
 import {
@@ -57,6 +57,9 @@ function CoachPageInner() {
   const [error, setError] = useState(null);
   const [examples, setExamples] = useState([]);
   const [addingExamples, setAddingExamples] = useState(false);
+  const [generatingAi, setGeneratingAi] = useState(false);
+  const [savingAi, setSavingAi] = useState(false);
+  const [aiExample, setAiExample] = useState(null);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -125,6 +128,40 @@ function CoachPageInner() {
       method: "DELETE", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     }).catch(() => {});
+  };
+
+  const generateAi = async (spotId) => {
+    setGeneratingAi(true); setError(null); setAiExample(null);
+    try {
+      const res = await fetch("/api/coach/examples/generate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ spotId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "AI generation failed.");
+      setAiExample(data);
+    } catch (err) {
+      setError(err.message);
+    } finally { setGeneratingAi(false); }
+  };
+
+  const saveAiExample = async () => {
+    if (!aiExample?.imageUrl) return;
+    setSavingAi(true); setError(null);
+    try {
+      const blob = await (await fetch(aiExample.imageUrl)).blob();
+      const file = new File([blob], "ai-example.png", { type: blob.type || "image/png" });
+      const dataUrl = await fileToDownscaledDataUrl(file, 900, 0.75);
+      const res = await fetch("/api/coach/examples", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Save failed.");
+      await loadExamples();
+      setAiExample(null);
+    } catch (err) {
+      setError(err.message);
+    } finally { setSavingAi(false); }
   };
 
   const useMyLocation = () => {
@@ -263,6 +300,30 @@ function CoachPageInner() {
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+              <div className="input-label" style={{ marginTop: 14 }}>{t("engagement.ai.title")}</div>
+              <div className="chip-row" role="listbox" aria-label={t("engagement.ai.title")}>
+                {["hill", "road", "trees", "pasture"].map((s) => (
+                  <button key={s} type="button" onClick={() => generateAi(s)}
+                    className="chip chip-sm" disabled={generatingAi}
+                    aria-pressed={aiExample?.spotId === s}>
+                    <Sparkles size={14} aria-hidden />
+                    <span>{t(`engagement.aiSpot.${s}`)}</span>
+                  </button>
+                ))}
+              </div>
+              {generatingAi && <p className="engagement-empty">{t("engagement.ai.generating")}</p>}
+              {aiExample?.source === "stub" && <p className="engagement-empty">{t("engagement.ai.noKey")}</p>}
+              {aiExample?.imageUrl && (
+                <div className="ai-example" style={{ marginTop: 8 }}>
+                  <img src={aiExample.imageUrl} alt={t("engagement.ai.generated")} className="ai-example-img" />
+                  <p className="subject-tips" style={{ paddingLeft: 0, marginTop: 8 }}>
+                    {t(`engagement.ai.explain.${aiExample.spotId}`)}
+                  </p>
+                  <button type="button" className="btn btn-primary btn-sm" onClick={saveAiExample} disabled={savingAi}>
+                    {savingAi ? t("engagement.ai.saving") : t("engagement.ai.save")}
+                  </button>
                 </div>
               )}
             </div>

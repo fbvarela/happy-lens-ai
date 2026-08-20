@@ -31,11 +31,15 @@ Extra coaching tips to surface:
 - Shoot both wide (place) and tight (hands, ring, glances).
 
 Example gallery ("upload to have them as examples"):
-- Upload 1+ photos in the engagement section → downscaled client-side → stored locally → shown as a thumbnail grid of reference shots.
-- Reuse `fileToDownscaledDataUrl` (src/lib/image-decode.js, already HEIC-aware) at `maxPx ~900, quality ~0.75` (~150 KB each).
-- Store in localStorage key `lens.coach.engagement.examples.v1`, array capped at ~15 items (≈2 MB) — same pattern as `adjust-history.js`.
-  ponytail: localStorage quota is the ceiling; move to IndexedDB only if users want full-res or 50+ examples.
-- Click thumbnail → view full-size (existing data URL); small delete button per item. No accounts/server needed — examples are per-device.
+- Upload 1+ photos in the engagement section → downscaled client-side → stored in Postgres (`engagement_examples`) → shown as a thumbnail grid of reference shots.
+- `src/app/api/coach/examples` GET/POST/DELETE; JPEG data URLs, ~550 KB cap, 15-image cap, 401 without session. Migration `0001_conscious_millenium_guard`.
+
+AI example generation ("generate photos with ai as example as well with a whole explanation"):
+- Spot chips (Hill / Road / Trees / Pasture) in the engagement section → `POST /api/coach/examples/generate`.
+- Server posts a per-spot photorealistic prompt to Replicate `black-forest-labs/flux-schnell`, polls the prediction, returns the generated image URL.
+- Each generated photo is shown with a whole explanation (composition, settings, why it works) — localized en/es.
+- "Save to examples" fetches the generated image client-side, downscales it and persists it to the same gallery, so AI examples become permanent like uploads.
+- No `REPLICATE_API_TOKEN` → graceful stub ("Set REPLICATE_API_TOKEN…"), matching the app's fail-soft pattern. Provider documented in `.env.example`.
 
 #### Plan (minimum diff)
 
