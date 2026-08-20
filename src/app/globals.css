@@ -554,3 +554,124 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 @media (min-width: 720px) {
   .recipe-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* Photo-professional usability refresh: compact, touch-first, and system-themed. */
+:root {
+  color-scheme: light;
+  --bg: #f6f8f7;
+  --surface: #ffffff;
+  --cream: #eef3f1;
+  --line: #d5dfdb;
+  --text: #20302b;
+  --text-muted: #64736e;
+  --bark: #203b34;
+  --bark-light: #356156;
+  --leaf: #31745c;
+  --leaf-light: #5d9b7d;
+  --sun: #e7ad3f;
+  --sun-light: #f5ce72;
+  --clay: #b85f47;
+  --clay-light: #dc9077;
+  --shadow: 0 2px 10px rgba(32, 59, 52, 0.08);
+  --shadow-lg: 0 12px 28px rgba(32, 59, 52, 0.14);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+html { background: var(--bg); }
+body { line-height: 1.5; }
+button, a, input, label, .chip, .dropzone, .flash-toggle { touch-action: manipulation; }
+button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--sun) 72%, transparent);
+  outline-offset: 2px;
+}
+.app { padding-left: 232px; }
+.page { max-width: 1180px; padding: 28px 32px 64px; }
+.sidebar-nav { width: 232px; background: var(--bark); }
+.sidebar-logo { padding: 22px 18px 18px; letter-spacing: -0.02em; }
+.sidebar-items { gap: 3px; }
+.sideitem { min-height: 42px; padding: 9px 12px; border-radius: 8px; }
+.page-title { font-size: clamp(1.7rem, 3vw, 2.35rem); letter-spacing: -0.025em; }
+.page-sub { margin-bottom: 22px; max-width: 680px; line-height: 1.55; }
+.card { padding: 18px; border-width: 1px; box-shadow: var(--shadow); }
+.card-title { margin-bottom: 12px; letter-spacing: -0.01em; }
+.card-grid { gap: 12px; }
+.btn { min-height: 40px; padding: 8px 16px; }
+.btn-sm { min-height: 36px; padding: 6px 12px; }
+.input { min-height: 42px; background: var(--surface); }
+.field { margin-bottom: 12px; }
+.chip-row { gap: 6px; }
+.chip { height: 42px; padding-inline: 13px; }
+.coach-form { gap: 16px; }
+.scene-grid { gap: 10px; }
+.recipe-grid { gap: 12px; }
+.recipe-stats { gap: 8px; margin-bottom: 12px; padding: 12px; }
+.recipe-stat-value { font-size: .98rem; }
+.recipe-actions { margin-top: 12px; padding-top: 12px; }
+.recipe-warning { margin-top: 8px; }
+.dropzone { min-height: 170px; padding: 24px 18px; }
+.preview-wrap { background: var(--text); }
+.preview-img { max-height: 380px; }
+.weather-col { padding: 9px 7px; }
+.timeline-row { min-height: 42px; padding: 7px 0; }
+
+@media (max-width: 768px) {
+  .app { padding-left: 0; padding-top: 56px; padding-bottom: 72px; }
+  .page { padding: 18px 14px 24px; }
+  .nav-mobile-bar { height: 56px; padding-inline: 14px; }
+  .bottom-nav { height: 60px; }
+  .bottom-nav-item { min-height: 60px; gap: 2px; }
+  .card { padding: 15px; }
+  .recipe-actions { align-items: stretch; }
+  .recipe-vote, .recipe-actions .copy-btn { min-height: 40px; }
+}
+
+@media (max-width: 480px) {
+  .page { padding-inline: 12px; }
+  .card { border-radius: 10px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .recipe-head { align-items: flex-start; }
+  .recipe-actions { flex-wrap: wrap; }
+  .recipe-actions > * { flex: 1 1 auto; }
+  .recipe-vote { justify-content: stretch; }
+  .recipe-vote .vote-btn { flex: 1; }
+  .copy-btn { width: 100%; }
+  .recipe-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dropzone { min-height: 148px; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #121917;
+    --surface: #1b2421;
+    --cream: #222e2a;
+    --line: #384742;
+    --text: #edf4f1;
+    --text-muted: #a6b6b0;
+    --bark: #d9ebe4;
+    --bark-light: #a7d0c1;
+    --leaf: #6fbd97;
+    --leaf-light: #93d5b3;
+    --sun: #e8b958;
+    --sun-light: #f2cf78;
+    --clay: #e18a70;
+    --clay-light: #efad94;
+    --shadow: 0 2px 12px rgba(0, 0, 0, .24);
+    --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
+  }
+  h1, h2, h3, h4, .page-title, .hero h1, .card-title, .recipe-stat-value, .timeline-value { color: var(--bark); }
+  .sidebar-nav, .nav-mobile-bar, .bottom-nav { background: #0d1412; }
+  .btn-primary { background: var(--bark); color: #12201b; }
+  .btn-primary:hover { background: var(--bark-light); }
+  .btn-leaf { color: #10221a; }
+  .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
+  .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
+  .badge-clay, .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
+  .preview-wrap { background: #0b100f; }
+  .input:focus { background: var(--surface); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
