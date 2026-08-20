@@ -1,6 +1,6 @@
 import {
   User, Mountain, Stars, Sprout, Bird, PersonStanding,
-  Package, Flame, Activity, PawPrint, Heart,
+  Package, Flame, Activity, PawPrint, Heart, Contrast, Moon,
 } from "lucide-react";
 
 export const SUBJECT_PRESETS = [
@@ -110,6 +110,46 @@ export const SUBJECT_PRESETS = [
 export function getSubjectPreset(id) {
   return SUBJECT_PRESETS.find((s) => s.id === id);
 }
+
+export const BW_CONTEXTS = {
+  classic: {
+    id: "classic",
+    icon: Contrast,
+    preferredLens: ["main", "tele2x"],
+    shutterFloorSec: 1 / 125,
+    isoCeiling: 800,
+    cameraMode: "Photo",
+    hint: "Expose for the highlights; shadows recover in RAW, blown highlights don't.",
+    tips: ["tones", "filters", "expose", "composition", "edit"],
+  },
+  lowkey: {
+    id: "lowkey",
+    icon: Moon,
+    preferredLens: ["tele2x", "tele5x"],
+    shutterFloorSec: 1 / 125,
+    isoCeiling: 1600,
+    cameraMode: "Photo",
+    hint: "Subject lit, background black: underexpose −1 to −2 EV, AE/AF lock on the subject's brightest edge, then recompose.",
+    tips: ["lowkeyBg", "lowkeyEv", "lowkeyLight", "lowkeyLens", "lowkeyEdit"],
+  },
+};
+
+export function resolveBwContext(id) {
+  return BW_CONTEXTS[id] || BW_CONTEXTS.classic;
+}
+
+SUBJECT_PRESETS.push({
+  id: "bw",
+  label: "Black & White",
+  icon: Contrast,
+  preferredLens: ["main", "tele2x"],
+  shutterFloorSec: 1 / 125,
+  isoCeiling: 800,
+  cameraMode: "Photo",
+  intent: "Monochrome vision — tone, contrast and texture over color. Expose for the highlights.",
+  contexts: ["classic", "lowkey"],
+  defaultContext: "classic",
+});
 
 SUBJECT_PRESETS.push({
   id: "pets",

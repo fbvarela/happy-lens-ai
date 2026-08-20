@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
+import { SUBJECT_PRESETS, getSubjectPreset, BW_CONTEXTS } from "@/data/subjects/presets";
 import { PET_CONTEXTS } from "@/data/subjects/pet-contexts";
 import { TIME_PRESETS, resolveTimePreset } from "@/lib/time-presets";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
@@ -49,6 +49,7 @@ function CoachPageInner() {
   const [useFlash, setUseFlash] = useState(false);
   const [petContext, setPetContext] = useState("portrait");
   const [animal, setAnimal] = useState("cat");
+  const [bwContext, setBwContext] = useState("classic");
   const [locating, setLocating] = useState(false);
   const [timeHint, setTimeHint] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -155,6 +156,7 @@ function CoachPageInner() {
         notes: scene.notes,
       },
       ...(subjectId === "pets" ? { petContext, animal } : {}),
+      ...(subjectId === "bw" ? { bwContext } : {}),
     };
     const storageKey = offlineKey(payload);
     try {
@@ -233,7 +235,7 @@ function CoachPageInner() {
           {subjectId === "engagement" && (
             <div className="pets-subpicker">
               <div className="input-label" style={{ marginTop: 10 }}>{t("engagement.tipsTitle")}</div>
-              <ul className="engagement-tips">
+              <ul className="subject-tips">
                 {getSubjectPreset("engagement").tips.map((k) => (
                   <li key={k}>{t(`engagement.tip.${k}`)}</li>
                 ))}
@@ -263,6 +265,26 @@ function CoachPageInner() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+          {subjectId === "bw" && (
+            <div className="pets-subpicker">
+              <div className="input-label" style={{ marginTop: 10 }}>{t("bw.contextLabel")}</div>
+              <div className="chip-row" role="listbox" aria-label={t("bw.contextLabel")}>
+                {Object.values(BW_CONTEXTS).map((c) => (
+                  <button key={c.id} type="button" onClick={() => setBwContext(c.id)}
+                    className="chip chip-sm" aria-pressed={bwContext === c.id}>
+                    <c.icon size={15} aria-hidden />
+                    <span>{t(`bw.context.${c.id}`)}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="input-label" style={{ marginTop: 10 }}>{t("engagement.tipsTitle")}</div>
+              <ul className="subject-tips">
+                {BW_CONTEXTS[bwContext].tips.map((k) => (
+                  <li key={k}>{t(`bw.tip.${k}`)}</li>
+                ))}
+              </ul>
             </div>
           )}
         </div>

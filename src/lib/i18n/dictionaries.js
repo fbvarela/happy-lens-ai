@@ -151,6 +151,27 @@ export const DICTIONARIES = {
       action: "Action / Sports",
       pets: "Pets",
       engagement: "Engagement / Couple",
+      bw: "Black & White",
+    },
+
+    bw: {
+      contextLabel: "Style",
+      context: {
+        classic: "Classic B&W",
+        lowkey: "Low-key / black background",
+      },
+      tip: {
+        tones: "See in tones, not colors — side light, texture, shape and strong shadows make the photo.",
+        filters: "Commit in-camera (swipe up → Filters → Mono / Silvertone / Noir) or shoot ProRAW-48 + HEIF to keep the color version.",
+        expose: "Expose for the highlights — shadows recover in editing, blown highlights don't.",
+        composition: "Compose with lines, frames, repetition and silhouettes; move your feet to remove color clutter.",
+        edit: "Finish in the Adjust tab: Muted B&W for soft tones, Stark B&W for punch, plus Contrast and Black Point.",
+        lowkeyBg: "Black background: place the subject against shadow, a dark surface, or space the light doesn't reach.",
+        lowkeyEv: "Underexpose −1 to −2 EV; AE/AF lock on the subject's brightest edge, then recompose.",
+        lowkeyLight: "One light from the side or behind (window, sunset) — rim light separates the subject from the black.",
+        lowkeyLens: "Tele2x/5x compresses and keeps the frame sparse; let most of it fall to black.",
+        lowkeyEdit: "Finish with a Noir look: raise Black Point, add Contrast and a touch of vignette in the Adjust tab.",
+      },
     },
 
     engagement: {
@@ -346,6 +367,27 @@ export const DICTIONARIES = {
       action: "Acción / Deporte",
       pets: "Mascotas",
       engagement: "Compromiso / Pareja",
+      bw: "Blanco y negro",
+    },
+
+    bw: {
+      contextLabel: "Estilo",
+      context: {
+        classic: "B/N clásico",
+        lowkey: "Low-key / fondo negro",
+      },
+      tip: {
+        tones: "Mira en tonos, no en colores — la luz lateral, la textura, la forma y las sombras fuertes hacen la foto.",
+        filters: "Comprométete en cámara (desliza arriba → Filtros → Mono / Silvertone / Noir) o dispara ProRAW-48 + HEIF para conservar la versión en color.",
+        expose: "Expón para las altas luces — las sombras se recuperan al editar, las luces quemadas no.",
+        composition: "Compón con líneas, marcos, repetición y siluetas; muévete para eliminar el desorden de color.",
+        edit: "Remata en la pestaña Ajustes: Muted B&W para tonos suaves, Stark B&W para contraste, más Contraste y Punto negro.",
+        lowkeyBg: "Fondo negro: coloca al sujeto contra sombra, una superficie oscura o un espacio al que no llegue la luz.",
+        lowkeyEv: "Subexpón −1 a −2 EV; bloqueo AE/AF en el borde más luminoso del sujeto y reencuadra.",
+        lowkeyLight: "Una sola luz lateral o trasera (ventana, atardecer) — la luz de contorno separa al sujeto del negro.",
+        lowkeyLens: "Tele2x/5x comprime y mantiene el encuadre despejado; deja que casi todo caiga al negro.",
+        lowkeyEdit: "Remata con estilo Noir: sube el Punto negro, añade Contraste y un toque de viñeta en la pestaña Ajustes.",
+      },
     },
 
     engagement: {
