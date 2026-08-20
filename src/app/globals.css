@@ -647,6 +647,45 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   .dropzone { min-height: 148px; }
 }
 
+/* Professional photographic refinement: restrained corners, tighter density. */
+:root {
+  --radius: 6px;
+  --radius-sm: 4px;
+  --radius-xs: 3px;
+}
+/* Kill the pill shapes — small radii read as camera-tool, not consumer app. */
+.btn, .chip, .badge, .locate-btn, .vote-btn, .copy-btn, .step-num,
+.locale-switch, .locale-btn, .engagement-add {
+  border-radius: var(--radius-sm);
+}
+.coach-step-title .step-num { border-radius: var(--radius-sm); }
+.engagement-thumb button { border-radius: 50%; }
+
+/* Density: use the space, no dead padding. */
+.card { padding: 14px; }
+.card-grid { gap: 10px; }
+.coach-form { gap: 14px; }
+.hero { padding: 30px 16px 22px; }
+.hero h1 { letter-spacing: -0.03em; }
+.page-sub { margin-bottom: 18px; }
+.recipe-stats { padding: 12px; }
+.weather-strip { gap: 8px; }
+.weather-col { padding: 8px; }
+.timeline-row { min-height: 38px; }
+.feature-card { gap: 8px; }
+.sideitem { border-radius: 6px; }
+.recipe-stat-value, .weather-temp, .timeline-value { font-variant-numeric: tabular-nums; }
+/* Consistently sharpen every bordered surface. */
+.input, .recipe-warning, .iphone-strip, .gear-pill, .flash-toggle,
+.preview-wrap, .engagement-thumb, .weather-col, .recipe-stats {
+  border-radius: var(--radius-sm);
+}
+.dropzone { border-radius: var(--radius); }
+
+@media (max-width: 480px) {
+  .card { border-radius: var(--radius); }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
