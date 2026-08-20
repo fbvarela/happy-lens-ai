@@ -11,7 +11,7 @@ import {
   Smartphone, Camera, Video, Settings, Zap, MapPin,
   Cat, Dog, PawPrint, CloudSun, Thermometer, Cloud, Wind, CloudRain,
   TriangleAlert, ThumbsUp, ThumbsDown, Copy, Check, WifiOff, FlaskConical,
-  Plus, X,
+  Plus, X, Sparkles, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { fileToDownscaledDataUrl } from "@/lib/image-decode";
 import {
@@ -57,6 +57,10 @@ function CoachPageInner() {
   const [error, setError] = useState(null);
   const [examples, setExamples] = useState([]);
   const [addingExamples, setAddingExamples] = useState(false);
+  const [generatingAi, setGeneratingAi] = useState(false);
+  const [savingAi, setSavingAi] = useState(false);
+  const [aiExample, setAiExample] = useState(null);
+  const [viewer, setViewer] = useState(null);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -125,6 +129,48 @@ function CoachPageInner() {
       method: "DELETE", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     }).catch(() => {});
+  };
+
+  const generateAi = async (spotId) => {
+    setGeneratingAi(true); setError(null); setAiExample(null);
+    try {
+      const res = await fetch("/api/coach/examples/generate", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          spotId,
+          gear: active,
+          scene: {
+            lat: scene.lat ? +scene.lat : null,
+            lng: scene.lng ? +scene.lng : null,
+            date: scene.dateTime,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "AI generation failed.");
+      setAiExample(data);
+    } catch (err) {
+      setError(err.message);
+    } finally { setGeneratingAi(false); }
+  };
+
+  const saveAiExample = async () => {
+    if (!aiExample?.imageUrl) return;
+    setSavingAi(true); setError(null);
+    try {
+      const blob = await (await fetch(aiExample.imageUrl)).blob();
+      const file = new File([blob], "ai-example.png", { type: blob.type || "image/png" });
+      const dataUrl = await fileToDownscaledDataUrl(file, 900, 0.75);
+      const res = await fetch("/api/coach/examples", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl }),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "Save failed.");
+      await loadExamples();
+      setAiExample(null);
+    } catch (err) {
+      setError(err.message);
+    } finally { setSavingAi(false); }
   };
 
   const useMyLocation = () => {
@@ -252,17 +298,53 @@ function CoachPageInner() {
                 <p className="engagement-empty">{t("engagement.examplesEmpty")}</p>
               ) : (
                 <div className="engagement-grid">
-                  {examples.map((ex) => (
+                  {examples.map((ex, i) => (
                     <div key={ex.id} className="engagement-thumb">
-                      <a href={ex.dataUrl} target="_blank" rel="noreferrer">
+                      <button type="button" className="engagement-thumb-open"
+                        onClick={() => setViewer({ urls: examples.map((e) => e.dataUrl), index: i })}
+                        aria-label={t("engagement.view")}>
                         <img src={ex.dataUrl} alt={t("engagement.examplesTitle")} />
-                      </a>
-                      <button type="button" aria-label={t("engagement.delete")}
+                      </button>
+                      <button type="button" className="engagement-thumb-del" aria-label={t("engagement.delete")}
                         onClick={() => deleteExample(ex.id)}>
                         <X size={12} aria-hidden />
                       </button>
                     </div>
                   ))}
+                </div>
+              )}
+              <div className="input-label" style={{ marginTop: 14 }}>{t("engagement.ai.title")}</div>
+              <div className="chip-row" role="listbox" aria-label={t("engagement.ai.title")}>
+                {["hill", "road", "trees", "pasture"].map((s) => (
+                  <button key={s} type="button" onClick={() => generateAi(s)}
+                    className="chip chip-sm" disabled={generatingAi}
+                    aria-pressed={aiExample?.spotId === s}>
+                    <Sparkles size={14} aria-hidden />
+                    <span>{t(`engagement.aiSpot.${s}`)}</span>
+                  </button>
+                ))}
+              </div>
+              {generatingAi && <p className="engagement-empty">{t("engagement.ai.generating")}</p>}
+              {aiExample?.source === "stub" && <p className="engagement-empty">{t("engagement.ai.noKey")}</p>}
+              {aiExample?.imageUrl && (
+                <div className="ai-example" style={{ marginTop: 10 }}>
+                  <button type="button" className="ai-example-open"
+                    onClick={() => setViewer({ urls: [aiExample.imageUrl], index: 0 })}
+                    aria-label={t("engagement.view")}>
+                    <img src={aiExample.imageUrl} alt={t("engagement.ai.generated")} className="ai-example-img" />
+                  </button>
+                  <div className="ai-example-text">
+                    <div className="ai-example-label">{t("engagement.ai.explainLabel")}</div>
+                    <div className="ai-example-title">{t(`engagement.ai.explain.${aiExample.spotId}`).title}</div>
+                    <ul className="ai-example-points">
+                      {t(`engagement.ai.explain.${aiExample.spotId}`).points.map((p, i) => (
+                        <li key={i}>{p}</li>
+                      ))}
+                    </ul>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={saveAiExample} disabled={savingAi}>
+                      {savingAi ? t("engagement.ai.saving") : t("engagement.ai.save")}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -401,6 +483,8 @@ function CoachPageInner() {
       )}
 
       {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
+
+      <PhotoViewer viewer={viewer} setViewer={setViewer} t={t} />
     </>
   );
 }
@@ -638,4 +722,46 @@ function readOffline(key) {
   } catch {
     return null;
   }
+}
+
+function PhotoViewer({ viewer, setViewer, t }) {
+  const urls = viewer?.urls || [];
+  const index = viewer?.index || 0;
+  const hasNav = urls.length > 1;
+  const go = (i) => setViewer({ urls, index: (i + urls.length) % urls.length });
+
+  useEffect(() => {
+    if (!viewer) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => {
+      if (e.key === "Escape") setViewer(null);
+      else if (hasNav && e.key === "ArrowRight") go(index + 1);
+      else if (hasNav && e.key === "ArrowLeft") go(index - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [viewer]);
+
+  if (!viewer) return null;
+  return (
+    <div className="photo-viewer" role="dialog" aria-modal="true" onClick={() => setViewer(null)}>
+      <button type="button" className="photo-viewer-close" aria-label={t("engagement.close")} onClick={() => setViewer(null)}>
+        <X size={22} aria-hidden />
+      </button>
+      {hasNav && (
+        <button type="button" className="photo-viewer-nav photo-viewer-prev" aria-label={t("engagement.prev")}
+          onClick={(e) => { e.stopPropagation(); go(index - 1); }}>
+          <ChevronLeft size={28} aria-hidden />
+        </button>
+      )}
+      <img src={urls[index]} alt={t("engagement.examplesTitle")} className="photo-viewer-img" onClick={(e) => e.stopPropagation()} />
+      {hasNav && (
+        <button type="button" className="photo-viewer-nav photo-viewer-next" aria-label={t("engagement.next")}
+          onClick={(e) => { e.stopPropagation(); go(index + 1); }}>
+          <ChevronRight size={28} aria-hidden />
+        </button>
+      )}
+    </div>
+  );
 }
