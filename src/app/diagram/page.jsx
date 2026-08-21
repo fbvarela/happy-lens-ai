@@ -41,6 +41,8 @@ function DiagramInner() {
   const [timeHour, setTimeHour] = useState(() => new Date().getHours() + new Date().getMinutes() / 60);
   const [showAerial, setShowAerial] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [place, setPlace] = useState("");
+  const [locateError, setLocateError] = useState(null);
   const [scene, setScene] = useState({
     subjects: [{ dx: -32, dy: -14 }, { dx: 32, dy: -14 }],
     camera: { dx: 0, dy: 62 },
@@ -131,16 +133,36 @@ function DiagramInner() {
   const onPointerUp = () => setDragId(null);
 
   const useMyLocation = () => {
-    if (!navigator.geolocation) return;
-    setLocating(true);
+    if (!navigator.geolocation) { setLocateError(t("coach.locate.unavailable")); return; }
+    setLocating(true); setLocateError(null);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setForm((f) => ({ ...f, lat: pos.coords.latitude.toFixed(4), lng: pos.coords.longitude.toFixed(4) }));
         setLocating(false);
       },
-      () => setLocating(false),
-      { timeout: 10000, maximumAge: 60000 },
+      (err) => { setLocating(false); setLocateError(err.message || t("coach.locate.unavailable")); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
     );
+  };
+
+  const searchPlace = async (e) => {
+    e.preventDefault();
+    const q = place.trim();
+    if (!q) return;
+    setLocateError(null);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`, {
+        headers: { Accept: "application/json" },
+      });
+      const data = await res.json();
+      if (data?.[0]?.lat && data?.[0]?.lon) {
+        setForm((f) => ({ ...f, lat: data[0].lat, lng: data[0].lon }));
+      } else {
+        setLocateError(t("diagram.form.noPlace"));
+      }
+    } catch {
+      setLocateError(t("diagram.form.noPlace"));
+    }
   };
 
   // Camera params from the subject preset + active gear.
@@ -197,6 +219,15 @@ function DiagramInner() {
               <input className="input" inputMode="decimal" autoComplete="off" value={form.lng}
                 onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="-3.7038" />
             </label>
+            <form className="scene-field full" onSubmit={searchPlace} style={{ display: "grid", gap: 6 }}>
+              <span className="input-label">{t("diagram.form.searchPlace")}</span>
+              <div style={{ display: "flex", gap: 6 }}>
+                <input className="input" value={place} onChange={(e) => setPlace(e.target.value)}
+                  placeholder={t("diagram.form.placePlaceholder")} />
+                <button type="submit" className="btn btn-ghost btn-sm">{t("diagram.form.search")}</button>
+              </div>
+              {locateError && <span className="field-error">{locateError}</span>}
+            </form>
             <label className="scene-field">
               <span className="input-label">{t("diagram.form.date")}</span>
               <input type="date" className="input" value={form.date}
