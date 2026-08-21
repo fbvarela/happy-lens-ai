@@ -43,7 +43,7 @@ function CoachPageInner() {
   const [scene, setScene] = useState({
     lat: "",
     lng: "",
-    dateTime: new Date().toISOString().slice(0, 16),
+    dateTime: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
     notes: "",
   });
   const [useFlash, setUseFlash] = useState(false);

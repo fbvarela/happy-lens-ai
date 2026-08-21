@@ -105,8 +105,10 @@ function DiagramInner() {
 
   const sun = useMemo(() => {
     if (lat == null || lng == null) return null;
-    const when = new Date(`${form.date}T00:00:00Z`);
-    when.setUTCHours(Math.floor(timeHour), Math.round((timeHour % 1) * 60));
+    const hh = String(Math.floor(timeHour)).padStart(2, "0");
+    const mm = String(Math.round((timeHour % 1) * 60)).padStart(2, "0");
+    const when = new Date(`${form.date}T${hh}:${mm}`);
+    if (isNaN(when)) return null;
     return sunSnapshot({ lat, lng, date: when.toISOString() });
   }, [lat, lng, form.date, timeHour]);
 
