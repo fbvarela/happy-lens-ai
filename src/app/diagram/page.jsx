@@ -204,7 +204,7 @@ function DiagramInner() {
             <label className="scene-field">
               <span className="input-label">{t("diagram.form.time")} · {timeStr}</span>
               <input type="range" min="0" max="24" step="0.25" value={timeHour}
-                onChange={(e) => setTimeHour(+e.target.value)} style={{ width: "100%" }} />
+                onChange={(e) => setTimeHour(+e.target.value)} style={{ width: "100%", height: 44, accentColor: "var(--sun)" }} />
               <div className="time-hint ok">
                 {t("diagram.form.sun", { alt: sunAltStr, az: sunAzStr })}
               </div>
@@ -239,11 +239,36 @@ function DiagramInner() {
       <div className="diagram-wrap" style={{ marginTop: 18 }}>
         <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
-          style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 6, border: "1.5px solid var(--line)" }}>
+          style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
           {aerial && <image href={aerial.url} width={SVG_SIZE} height={SVG_SIZE} preserveAspectRatio="none" />}
           {!aerial && <circle cx={center.x} cy={center.y} r={SCENE_R} fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 3" />}
-          <text x={center.x} y={center.y - SCENE_R - 6} textAnchor="middle" fontSize="11" fill="var(--text-muted)">N</text>
-          <line x1={center.x} y1={center.y - SCENE_R} x2={center.x} y2={center.y - SCENE_R + 10} stroke="var(--text-muted)" strokeWidth="1.5" />
+
+          {/* day path arc (sunrise → sunset, through south) + cardinal points */}
+          <path d={`M ${center.x + SCENE_R} ${center.y} A ${SCENE_R} ${SCENE_R} 0 0 1 ${center.x - SCENE_R} ${center.y}`}
+            fill="none" stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2 4" opacity="0.5" />
+          {[["N", 0], ["E", 90], ["S", 180], ["W", 270]].map(([label, deg]) => {
+            const rad = (deg * Math.PI) / 180;
+            const x = center.x + SCENE_R * Math.sin(rad);
+            const y = center.y - SCENE_R * Math.cos(rad);
+            return (
+              <text key={label} x={x} y={y + (deg === 180 ? 14 : 4)} textAnchor="middle" fontSize="10" fill="var(--text-muted)" fontWeight="700">{label}</text>
+            );
+          })}
+
+          {/* light direction line + sun marker */}
+          {sunRimPos && sunAlt != null && (
+            <>
+              <line x1={center.x} y1={center.y} x2={sunRimPos.x} y2={sunRimPos.y}
+                stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity="0.4" strokeDasharray="2 3" />
+              <g transform={`translate(${sunRimPos.x},${sunRimPos.y})`} style={{ pointerEvents: "none" }}>
+                <circle r={11} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={sunAlt > 0 ? 0.95 : 0.6} />
+                {sunAlt > 0 && [0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+                  <line key={a} x1={0} y1={-15} x2={0} y2={-21} transform={`rotate(${a})`} stroke="#e8a020" strokeWidth="2.5" strokeLinecap="round" />
+                ))}
+                <circle r={4} fill="#7a4d00" />
+              </g>
+            </>
+          )}
 
           {scene.subjects.map((sub, i) => {
             const sx = center.x + sub.dx;
@@ -259,31 +284,26 @@ function DiagramInner() {
                   return (
                     <polygon
                       points={`${sx + px * w0},${sy + py * w0} ${end.x + px * w1},${end.y + py * w1} ${end.x - px * w1},${end.y - py * w1} ${sx - px * w0},${sy - py * w0}`}
-                      fill="rgba(0,0,0,0.15)"
+                      fill="rgba(0,0,0,0.18)"
                     />
                   );
                 })()}
-                <g transform={`translate(${sx},${sy})`}
-                  onPointerDown={(e) => onPointerDown(e, `s${i}`)} style={{ cursor: "grab" }}>
-                  <circle r={9} fill="var(--leaf)" opacity="0.2" />
+                <g transform={`translate(${sx},${sy})`}>
+                  <circle r={9} fill="var(--leaf)" opacity="0.25" />
                   <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
+                  <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{i + 1}</text>
+                  <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
                 </g>
               </g>
             );
           })}
 
-          {sunRimPos && sunAlt != null && (
-            <g transform={`translate(${sunRimPos.x},${sunRimPos.y})`} style={{ pointerEvents: "none" }}>
-              <circle r={9} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={sunAlt > 0 ? 0.95 : 0.6} />
-              <circle r={3.5} fill={sunAlt > 0 ? "#7a4d00" : "#fff"} />
-            </g>
-          )}
-
           {scene.camera && (
-            <g transform={`translate(${center.x + scene.camera.dx},${center.y + scene.camera.dy})`}
-              onPointerDown={(e) => onPointerDown(e, "camera")} style={{ cursor: "grab" }}>
-              <circle r={9} fill="var(--clay)" opacity="0.2" />
+            <g transform={`translate(${center.x + scene.camera.dx},${center.y + scene.camera.dy})`}>
+              <circle r={9} fill="var(--clay)" opacity="0.25" />
               <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
+              <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
+              <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
             </g>
           )}
         </svg>
@@ -300,6 +320,9 @@ function DiagramInner() {
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--sun)", display: "inline-block" }} />
             {t("diagram.legend.sun")}
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, width: "100%" }}>
+            {t("diagram.form.drag")}
           </span>
         </div>
       </div>
