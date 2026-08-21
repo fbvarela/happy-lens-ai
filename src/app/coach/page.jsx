@@ -531,7 +531,6 @@ function SavedRecipes({ recipes, gearStore, t, locale, lensLabel, onDelete }) {
       <h2 className="card-title" style={{ marginBottom: 12 }}>{t("coach.savedRecipes.title")}</h2>
       <div className="recipe-grid">
         {recipes.map((r) => {
-          const primary = r.recipe?.recipes?.[0];
           const qs = new URLSearchParams();
           if (r.subjectId) qs.set("subject", r.subjectId);
           if (r.lat != null) qs.set("lat", String(r.lat));
@@ -556,35 +555,63 @@ function SavedRecipes({ recipes, gearStore, t, locale, lensLabel, onDelete }) {
                 {" · "}{fmtWhen(r.createdAt)}
                 {r.lat != null && r.lng != null ? ` · ${r.lat.toFixed(2)}, ${r.lng.toFixed(2)}` : ""}
               </p>
-              {primary && (
-                <div className="recipe-stats" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.label")}</div>
-                    <div className="recipe-stat-value">{primary.label}</div>
+              {Array.isArray(r.recipe?.recipes) && r.recipe.recipes.map((rc, i) => (
+                <div key={i} style={{ marginTop: i > 0 ? 12 : 0, paddingTop: i > 0 ? 12 : 0, borderTop: i > 0 ? "1px solid var(--line)" : "none" }}>
+                  {r.recipe.recipes.length > 1 && (
+                    <div className="recipe-head" style={{ marginBottom: 8 }}>
+                      <div className="card-title" style={{ margin: 0, fontSize: "1rem" }}>{rc.label}</div>
+                      <span className="badge badge-sun">{rc.cameraMode}</span>
+                    </div>
+                  )}
+                  <div className="recipe-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
+                      <div className="recipe-stat-value">{lensLabel(rc.lens)}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
+                      <div className="recipe-stat-value">f/{rc.fNumber}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
+                      <div className="recipe-stat-value">{rc.shutter}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
+                      <div className="recipe-stat-value">{rc.iso}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
+                      <div className="recipe-stat-value">{rc.ev > 0 ? `+${rc.ev}` : rc.ev}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
+                      <div className="recipe-stat-value">{rc.cameraMode}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
-                    <div className="recipe-stat-value">{lensLabel(primary.lens)}</div>
-                  </div>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
-                    <div className="recipe-stat-value">f/{primary.fNumber}</div>
-                  </div>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
-                    <div className="recipe-stat-value">{primary.shutter}</div>
-                  </div>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
-                    <div className="recipe-stat-value">{primary.iso}</div>
-                  </div>
-                  <div>
-                    <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
-                    <div className="recipe-stat-value">{primary.cameraMode}</div>
-                  </div>
+                  <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {rc.position}</p>
+                  <p className="recipe-line">
+                    <strong><FocusIcon size={14} className="inline-icon" /> {t("coach.recipe.focus")}.</strong> {rc.focus}
+                  </p>
+                  <p className="recipe-line">
+                    <strong><StabIcon size={14} className="inline-icon" /> {t("coach.recipe.stabilization")}.</strong> {rc.stabilization}
+                  </p>
+                  {rc.flash && (
+                    <p className="recipe-line"><strong>{t("coach.recipe.flash")}.</strong> {rc.flash.notes}</p>
+                  )}
+                  {Array.isArray(rc.compositionTips) && rc.compositionTips.length > 0 && (
+                    <ul className="recipe-tips">{rc.compositionTips.map((x, j) => <li key={j}>{x}</li>)}</ul>
+                  )}
+                  {Array.isArray(rc.warnings) && rc.warnings.length > 0 && (
+                    <div className="recipe-warning">
+                      {rc.warnings.map((w, j) => <div key={j}>{w}</div>)}
+                    </div>
+                  )}
                 </div>
-              )}
-              <a href={`/coach?${qs.toString()}`} className="btn btn-ghost btn-sm">{t("coach.savedRecipes.open")}</a>
+              ))}
+              <a href={`/coach?${qs.toString()}`} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
+                {t("coach.savedRecipes.open")}
+              </a>
             </article>
           );
         })}
