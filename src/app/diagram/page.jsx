@@ -38,7 +38,7 @@ function DiagramInner() {
 
   const [subjectId, setSubjectId] = useState("portrait");
   const [form, setForm] = useState({ lat: "", lng: "", date: todayLocal() });
-  const [timeHour, setTimeHour] = useState(18);
+  const [timeHour, setTimeHour] = useState(() => new Date().getHours() + new Date().getMinutes() / 60);
   const [showAerial, setShowAerial] = useState(false);
   const [locating, setLocating] = useState(false);
   const [scene, setScene] = useState({
