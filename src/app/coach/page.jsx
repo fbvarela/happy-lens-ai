@@ -419,6 +419,11 @@ function CoachPageInner() {
                 <MapPin size={16} aria-hidden />
                 <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
               </button>
+              <a className="locate-btn" style={{ marginLeft: 8, textDecoration: "none" }}
+                href={`/diagram?subject=${encodeURIComponent(subjectId)}&lat=${encodeURIComponent(scene.lat)}&lng=${encodeURIComponent(scene.lng)}&dateTime=${encodeURIComponent(scene.dateTime)}`}>
+                <SunCompassIcon size={16} aria-hidden />
+                <span>{t("coach.entryDiagram")}</span>
+              </a>
             </div>
             <label className="scene-field full">
               <span className="input-label">{t("coach.field.notes")}</span>
