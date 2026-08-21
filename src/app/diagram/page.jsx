@@ -81,11 +81,24 @@ function DiagramInner() {
     const xt = ((lng + 180) / 360) * n;
     const latRad = (lat * Math.PI) / 180;
     const yt = ((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n;
-    const x = Math.floor(xt), y = Math.floor(yt);
-    return {
-      url: `https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
-      center: { x: (xt - x) * SVG_SIZE, y: (yt - y) * SVG_SIZE },
-    };
+    const tx = Math.floor(xt), ty = Math.floor(yt);
+    const fx = xt - tx, fy = yt - ty;
+    // Composite a 3×3 tile block so the location is always centered and the
+    // scene circle never gets clipped by the SVG edge (a single tile can leave
+    // the location near a corner → the old "skewed" cut-off diagram).
+    const baseX = SVG_SIZE / 2 - fx * 256;
+    const baseY = SVG_SIZE / 2 - fy * 256;
+    const tiles = [];
+    for (let dx = -1; dx <= 1; dx++) {
+      for (let dy = -1; dy <= 1; dy++) {
+        tiles.push({
+          url: `https://tile.openstreetmap.org/${z}/${tx + dx}/${ty + dy}.png`,
+          x: baseX + dx * 256,
+          y: baseY + dy * 256,
+        });
+      }
+    }
+    return { tiles, center: { x: SVG_SIZE / 2, y: SVG_SIZE / 2 } };
   }, [showAerial, lat, lng]);
 
   const center = aerial ? aerial.center : { x: SVG_SIZE / 2, y: SVG_SIZE / 2 };
@@ -188,7 +201,7 @@ function DiagramInner() {
   const shadowEnd = (sx, sy) => {
     if (sunAlt == null || sunAlt <= 0) return null;
     const antiAz = (sunAz + 180) * (Math.PI / 180);
-    const L = Math.min((SUBJECT_H_M / Math.tan(sunAlt * (Math.PI / 180))) * PX_PER_M, SCENE_R * 1.6);
+    const L = Math.min((SUBJECT_H_M / Math.tan(sunAlt * (Math.PI / 180))) * PX_PER_M, 90);
     return { x: sx + Math.sin(antiAz) * L, y: sy - Math.cos(antiAz) * L };
   };
 
@@ -289,7 +302,9 @@ function DiagramInner() {
         <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
           style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
-          {aerial && <image href={aerial.url} width={SVG_SIZE} height={SVG_SIZE} preserveAspectRatio="none" />}
+          {aerial && aerial.tiles.map((tile, i) => (
+            <image key={i} href={tile.url} x={tile.x} y={tile.y} width={256} height={256} />
+          ))}
           {!aerial && <circle cx={center.x} cy={center.y} r={SCENE_R} fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 3" />}
 
           {/* day path arc (sunrise → sunset, through south) + cardinal points */}
