@@ -65,10 +65,12 @@ function DiagramInner() {
           ...f,
           date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
         }));
-        setTimeHour(d.getHours() + d.getMinutes() / 60);
       }
     }
-  }, [params]);
+    // Run once on mount only — the current hour stays the default; re-running
+    // on every render was resetting the time slider back to the deep-linked hour.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const lat = form.lat ? +form.lat : null;
   const lng = form.lng ? +form.lng : null;
