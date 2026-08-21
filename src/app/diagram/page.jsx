@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, Smartphone, Camera as CameraIcon } from "lucide-react";
 import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
 import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
@@ -33,7 +33,8 @@ function DiagramInner() {
   const { locale } = useLocale();
   const params = useSearchParams();
   const gearStore = useGearStore();
-  const active = gearStore.active;
+  const [gearId, setGearId] = useState(() => gearStore.active.id);
+  const gear = gearStore.all.find((g) => g.id === gearId) || gearStore.active;
 
   const [subjectId, setSubjectId] = useState("portrait");
   const [form, setForm] = useState({ lat: "", lng: "", date: todayLocal() });
@@ -145,7 +146,7 @@ function DiagramInner() {
   // Camera params from the subject preset + active gear.
   const preset = getSubjectPreset(subjectId);
   const lensId = preset?.preferredLens?.[0];
-  const lens = active.lenses.find((l) => l.id === lensId);
+  const lens = gear.lenses.find((l) => l.id === lensId);
   const fNumber = lens?.fNumberFixed ?? lens?.fNumberMin ?? null;
   const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
 
@@ -232,6 +233,23 @@ function DiagramInner() {
                 <span>{t(`subject.${s.id}`)}</span>
               </button>
             ))}
+          </div>
+        </div>
+
+        <div className="coach-section">
+          <div className="coach-step-title"><span className="step-num">3</span> {t("coach.step.gear")}</div>
+          <div className="chip-row">
+            {gearStore.all.map((g) => (
+              <button key={g.id} type="button" className="chip" aria-pressed={g.id === gearId}
+                onClick={() => setGearId(g.id)}>
+                {g.kind === "phone" ? <Smartphone size={15} aria-hidden /> : <CameraIcon size={15} aria-hidden />}
+                <span>{g.label}</span>
+              </button>
+            ))}
+            <a href="/gear" className="chip" aria-label={t("gear.manage")}>
+              <CameraIcon size={15} aria-hidden />
+              <span>{t("gear.manage")}</span>
+            </a>
           </div>
         </div>
       </div>
