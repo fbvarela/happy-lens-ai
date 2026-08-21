@@ -1,6 +1,6 @@
 export const DICTIONARIES = {
   en: {
-    nav: { home: "Home", coach: "Coach", plan: "Plan", adjust: "Adjust", gear: "Gear", account: "Account" },
+    nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Adjust", gear: "Gear", account: "Account" },
     locale: { label: "Language", en: "English", es: "Español" },
 
     home: {
@@ -61,6 +61,32 @@ export const DICTIONARIES = {
         aeAfLock: "AE/AF lock", macro: "Macro", night: "Night / moon",
         lens: "Lens", sunPosition: "Sun position",
       },
+      entryDiagram: "Light diagram",
+    },
+
+    diagram: {
+      title: "Light diagram",
+      sub: "Place the subjects and the camera on the plan, move the sun through the day and watch the shadows, the light mode and the camera settings update.",
+      form: {
+        scene: "Scene", date: "Date", time: "Time",
+        sun: (p) => `Sun · ${p.alt} altitude, ${p.az} azimuth`,
+        aerial: "Aerial map view",
+        subject: "Subject",
+        drag: "Drag the dots to move the subjects and the camera — the light mode updates live.",
+        searchPlace: "Search a place",
+        placePlaceholder: "e.g. Santiago de Compostela",
+        search: "Search",
+        noPlace: "No place found — enter coordinates manually.",
+      },
+      legend: { subjects: "Subjects", camera: "Camera", sun: "Sun" },
+      sunBelow: "The sun is below the horizon — no shadows.",
+      light: {
+        front: { title: "Front-lit", label: "Front", ev: "+0", advice: "Sun behind the camera — the couple faces the light. Faces are lit and colors pop; watch your own shadow in the frame." },
+        side: { title: "Side-lit", label: "Side", ev: "0", advice: "Sun to one side — strong modeling on the faces. Slightly underexpose the shadow side or add fill." },
+        rim: { title: "Rim light", label: "Rim", ev: "+0.3", advice: "Sun just behind the couple — a bright rim separates them from the background. Expose for the faces and let the rim go." },
+        backlit: { title: "Backlit", label: "Backlit", ev: "+0.7", advice: "Sun directly behind the couple — strong rim/backlight. Raise exposure for the faces and AE/AF-lock on the brightest edge." },
+      },
+      camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live." },
     },
 
     plan: {
@@ -297,7 +323,7 @@ export const DICTIONARIES = {
   },
 
   es: {
-    nav: { home: "Inicio", coach: "Coach", plan: "Plan", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
     locale: { label: "Idioma", en: "English", es: "Español" },
 
     home: {
@@ -358,6 +384,32 @@ export const DICTIONARIES = {
         aeAfLock: "Bloqueo AE/AF", macro: "Macro", night: "Noche / luna",
         lens: "Objetivo", sunPosition: "Posición del sol",
       },
+      entryDiagram: "Diagrama de luz",
+    },
+
+    diagram: {
+      title: "Diagrama de luz",
+      sub: "Coloca a los sujetos y la cámara en el plano, mueve el sol a lo largo del día y mira cómo cambian las sombras, el tipo de luz y los parámetros de cámara.",
+      form: {
+        scene: "Escena", date: "Fecha", time: "Hora",
+        sun: (p) => `Sol · ${p.alt} de altitud, ${p.az} de azimut`,
+        aerial: "Vista aérea (mapa)",
+        subject: "Sujeto",
+        drag: "Arrastra los puntos para mover a los sujetos y la cámara — el modo de luz se actualiza en vivo.",
+        searchPlace: "Buscar un lugar",
+        placePlaceholder: "p. ej. Santiago de Compostela",
+        search: "Buscar",
+        noPlace: "No se encontró el lugar — introduce las coordenadas manualmente.",
+      },
+      legend: { subjects: "Sujetos", camera: "Cámara", sun: "Sol" },
+      sunBelow: "El sol está bajo el horizonte — no hay sombras.",
+      light: {
+        front: { title: "Luz frontal", label: "Frontal", ev: "+0", advice: "El sol está detrás de la cámara — la pareja mira a la luz. Caras iluminadas y colores vivos; vigila tu propia sombra en el encuadre." },
+        side: { title: "Luz lateral", label: "Lateral", ev: "0", advice: "El sol está a un lado — moldeado fuerte en las caras. Subexpón ligeramente la zona de sombra o añade relleno." },
+        rim: { title: "Luz de contorno", label: "Contorno", ev: "+0,3", advice: "El sol está justo detrás de la pareja — un contorno brillante los separa del fondo. Expón para las caras y deja que el contorno se queme." },
+        backlit: { title: "A contraluz", label: "Contraluz", ev: "+0,7", advice: "El sol está directamente detrás de la pareja — fuerte contraluz. Sube la exposición para las caras y bloquea AE/AF en el borde más luminoso." },
+      },
+      camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo." },
     },
 
     plan: {

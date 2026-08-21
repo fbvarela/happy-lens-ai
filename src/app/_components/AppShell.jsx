@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Home, Target, Map, SlidersHorizontal, Camera, User } from "lucide-react";
+import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV = [
   { href: "/",         key: "home",     Icon: Home },
   { href: "/coach",    key: "coach",    Icon: Target },
   { href: "/plan",     key: "plan",     Icon: Map },
+  { href: "/diagram",  key: "diagram",  Icon: Compass },
   { href: "/adjust",   key: "adjust",   Icon: SlidersHorizontal },
   { href: "/gear",     key: "gear",     Icon: Camera },
   { href: "/account",  key: "account",  Icon: User },
@@ -42,6 +44,19 @@ function LocaleSwitcher({ className = "" }) {
 export default function AppShell({ children }) {
   const pathname = usePathname() || "/";
   const t = useT();
+
+  // A service worker from a previous production build can keep controlling the
+  // page during `next dev` (PWA registration is dev-disabled, but an already
+  // registered SW persists). A stale SW mixes old/new bundles → hydration
+  // mismatch + flicker. Kill it outside production.
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      }).catch(() => {});
+    }
+  }, []);
+
   return (
     <>
       <nav className="sidebar-nav" aria-label="Primary">
