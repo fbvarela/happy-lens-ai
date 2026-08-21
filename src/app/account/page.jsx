@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { isPremium } from "@/lib/tier";
 
 export default function AccountPage() {
   const { user, loading, signOut, testLogin } = useAuth();
@@ -26,10 +25,6 @@ export default function AccountPage() {
         <div className="card" style={{ display: "grid", gap: 10 }}>
           <div className="recipe-stat-label">Signed in as</div>
           <div className="recipe-stat-value">{user.email}</div>
-          <div className="recipe-stat-label" style={{ marginTop: 6 }}>Plan</div>
-          <div>
-            <span className={`badge ${isPremium(user.plan) ? "badge-leaf" : "badge-sun"}`}>{user.plan}</span>
-          </div>
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
             <button type="button" className="btn btn-ghost" onClick={signOut}>Sign out</button>
           </div>
@@ -49,45 +44,6 @@ export default function AccountPage() {
           {error && <p className="field-error">{error}</p>}
         </div>
       )}
-
-      <section style={{ marginTop: 20 }}>
-        <h2 className="card-title">Plans</h2>
-        <div className="card-grid" style={{ marginTop: 10 }}>
-          <div className="card">
-            <div className="recipe-head">
-              <div className="card-title" style={{ margin: 0 }}>Free</div>
-              <span className="badge badge-sun">Current</span>
-            </div>
-            <ul className="recipe-tips">
-              <li>5 recipes / day</li>
-              <li>Last 10 in history</li>
-              <li>Standard Photographic Styles</li>
-            </ul>
-          </div>
-          <div className="card">
-            <div className="recipe-head">
-              <div className="card-title" style={{ margin: 0 }}>Premium</div>
-              <span className="badge badge-leaf">$9.99/mo</span>
-            </div>
-            <ul className="recipe-tips">
-              <li>Unlimited recipes</li>
-              <li>Custom Photographic Style tuning</li>
-              <li>Subject memory + batch (up to 12)</li>
-              <li>Cross-device permalinks</li>
-            </ul>
-            <p className="recipe-line" style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>Stripe checkout coming soon.</p>
-          </div>
-          <div className="card">
-            <div className="recipe-head">
-              <div className="card-title" style={{ margin: 0 }}>Bundle</div>
-              <span className="badge badge-leaf">$19.99/mo</span>
-            </div>
-            <ul className="recipe-tips">
-              <li>Premium across every Happy Factory app</li>
-            </ul>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

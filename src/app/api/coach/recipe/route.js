@@ -243,7 +243,7 @@ export async function POST(req) {
   const petKeyPart = subjectId === "pets" ? `|pets:${subject.petContextId}:${subject.animal}` : "";
   const bwKeyPart = subjectId === "bw" ? `|bw:${subject.bwContextId}` : "";
   const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}${petKeyPart}${bwKeyPart}`;
-  const cached = getCached(key);
+  const cached = await getCached(key);
   if (cached) return NextResponse.json({ ...cached, source: "cache" });
 
   try {
@@ -271,7 +271,7 @@ export async function POST(req) {
       sky,
       weather,
     };
-    setCached(key, clamped);
+    await setCached(key, clamped);
     return NextResponse.json({ ...clamped, source: "groq" });
   } catch (err) {
     console.error("coach/recipe error", err);

@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, jsonb, date, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -38,19 +38,17 @@ export const batchJobs = pgTable("batch_jobs", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
-export const adjustmentQuota = pgTable("adjustment_quota", {
-  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  day: date("day").notNull(),
-  uploadsUsed: integer("uploads_used").notNull().default(0),
-  previewsUsed: integer("previews_used").notNull().default(0),
-}, (t) => ({
-  pk: primaryKey({ columns: [t.userId, t.day] }),
-}));
-
 export const subjectBaselinesUnique = ["user_id", "subject_slug"];
 
 export const engagementExamples = pgTable("engagement_examples", {
   id: uuid("id").defaultRandom().primaryKey(),
   imageDataUrl: text("image_data_url").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
+
+export const coachRecipes = pgTable("coach_recipes", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  cacheKey: text("cache_key").notNull().unique(),
+  recipeJson: jsonb("recipe_json").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });

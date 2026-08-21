@@ -1,3 +1,6 @@
+import { eq } from "drizzle-orm";
+import { getDb, schema } from "@/lib/db";
+
 const TTL_MS = 1000 * 60 * 30;
 const MAX_ENTRIES = 200;
 
@@ -11,20 +14,42 @@ export function cacheKey({ subjectId, gearId, scene }) {
   return `${gearId}|${subjectId}|${lat}|${lng}|${hourBucket}|${notesHash}`;
 }
 
-export function getCached(key) {
+// AI recipes persist to Postgres so they survive restarts/instances; the
+// in-memory Map is just a fast layer on top.
+export async function getCached(key) {
   const entry = store.get(key);
-  if (!entry) return null;
-  if (Date.now() - entry.t > TTL_MS) {
-    store.delete(key);
+  if (entry) {
+    if (Date.now() - entry.t > TTL_MS) store.delete(key);
+    else return entry.v;
+  }
+  const db = getDb();
+  if (!db) return null;
+  try {
+    const rows = await db.select().from(schema.coachRecipes).where(eq(schema.coachRecipes.cacheKey, key)).limit(1);
+    if (!rows[0]) return null;
+    if (Date.now() - new Date(rows[0].createdAt).getTime() > TTL_MS) return null;
+    store.set(key, { t: Date.now(), v: rows[0].recipeJson });
+    return rows[0].recipeJson;
+  } catch {
     return null;
   }
-  return entry.v;
 }
 
-export function setCached(key, value) {
+export async function setCached(key, value) {
+  store.set(key, { t: Date.now(), v: value });
   if (store.size >= MAX_ENTRIES) {
     const oldestKey = store.keys().next().value;
     if (oldestKey) store.delete(oldestKey);
   }
-  store.set(key, { t: Date.now(), v: value });
+  const db = getDb();
+  if (!db) return;
+  try {
+    await db.insert(schema.coachRecipes).values({ cacheKey: key, recipeJson: value })
+      .onConflictDoUpdate({
+        target: schema.coachRecipes.cacheKey,
+        set: { recipeJson: value, createdAt: new Date() },
+      });
+  } catch {
+    // Persistence is best-effort; never fail the recipe response over it.
+  }
 }
