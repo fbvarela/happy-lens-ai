@@ -62,7 +62,7 @@ export const DICTIONARIES = {
         lens: "Lens", sunPosition: "Sun position",
       },
 entryDiagram: "Light diagram",
-      savedRecipes: { title: "Saved recipes", unknown: "Unknown subject", open: "Open in coach" },
+      savedRecipes: { title: "Saved recipes", unknown: "Unknown subject", open: "Open in coach", delete: "Delete recipe" },
     },
 
     diagram: {
@@ -386,7 +386,7 @@ entryDiagram: "Light diagram",
         lens: "Objetivo", sunPosition: "Posición del sol",
       },
 entryDiagram: "Diagrama de luz",
-      savedRecipes: { title: "Recetas guardadas", unknown: "Sujeto desconocido", open: "Abrir en el coach" },
+      savedRecipes: { title: "Recetas guardadas", unknown: "Sujeto desconocido", open: "Abrir en el coach", delete: "Borrar receta" },
     },
 
     diagram: {

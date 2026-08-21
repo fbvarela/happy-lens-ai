@@ -106,12 +106,22 @@ function CoachPageInner() {
 
   useEffect(() => { loadExamples(); }, []);
 
-  useEffect(() => {
+  const loadSavedRecipes = () => {
     fetch("/api/coach/recipes")
       .then((r) => r.json())
       .then((d) => setSavedRecipes(d.recipes || []))
       .catch(() => {});
-  }, []);
+  };
+
+  useEffect(() => { loadSavedRecipes(); }, []);
+
+  const deleteSavedRecipe = async (id) => {
+    await fetch("/api/coach/recipes", {
+      method: "DELETE", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+    loadSavedRecipes();
+  };
 
   const addExamples = async (files) => {
     if (!files?.length) return;
@@ -224,6 +234,7 @@ function CoachPageInner() {
         throw new Error(data?.error || "Request failed.");
       }
       setResult(data);
+      loadSavedRecipes();
       try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch {}
     } catch (err) {
       const offline = readOffline(storageKey);
@@ -498,7 +509,7 @@ function CoachPageInner() {
       {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
 
       {savedRecipes.length > 0 && (
-        <SavedRecipes recipes={savedRecipes} gearStore={gearStore} t={t} locale={locale} lensLabel={lensLabel} />
+        <SavedRecipes recipes={savedRecipes} gearStore={gearStore} t={t} locale={locale} lensLabel={lensLabel} onDelete={deleteSavedRecipe} />
       )}
 
       <PhotoViewer viewer={viewer} setViewer={setViewer} t={t} />
@@ -506,7 +517,7 @@ function CoachPageInner() {
   );
 }
 
-function SavedRecipes({ recipes, gearStore, t, locale, lensLabel }) {
+function SavedRecipes({ recipes, gearStore, t, locale, lensLabel, onDelete }) {
   const fmtWhen = (iso) => {
     try {
       return new Date(iso).toLocaleString(locale === "es" ? "es-ES" : "en-GB", {
@@ -530,12 +541,19 @@ function SavedRecipes({ recipes, gearStore, t, locale, lensLabel }) {
             <article key={r.id} className="card">
               <div className="recipe-head">
                 <div className="card-title" style={{ margin: 0 }}>
-                  {r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown")}
+                  {r.recipe?.recipes?.[0]?.label || (r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown"))}
                 </div>
-                <span className="badge badge-sun">{gearLabel(r.gearId)}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="badge badge-sun">{gearLabel(r.gearId)}</span>
+                  <button type="button" className="saved-recipe-del" aria-label={t("coach.savedRecipes.delete")}
+                    onClick={() => onDelete(r.id)}>
+                    <X size={13} aria-hidden />
+                  </button>
+                </div>
               </div>
               <p className="recipe-line" style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
-                {fmtWhen(r.createdAt)}
+                {r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown")}
+                {" · "}{fmtWhen(r.createdAt)}
                 {r.lat != null && r.lng != null ? ` · ${r.lat.toFixed(2)}, ${r.lng.toFixed(2)}` : ""}
               </p>
               {primary && (

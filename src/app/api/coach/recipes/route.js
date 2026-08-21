@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -33,4 +33,13 @@ export async function GET(req) {
     ...parseKey(r.cacheKey),
   }));
   return NextResponse.json({ recipes });
+}
+
+export async function DELETE(req) {
+  const db = getDb();
+  if (!db) return NextResponse.json({ error: "Database not configured." }, { status: 503 });
+  const { id } = await req.json().catch(() => ({}));
+  if (!id) return NextResponse.json({ error: "id required." }, { status: 400 });
+  await db.delete(schema.coachRecipes).where(eq(schema.coachRecipes.id, id));
+  return NextResponse.json({ ok: true });
 }

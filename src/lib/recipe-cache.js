@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 
 const TTL_MS = 1000 * 60 * 30;
@@ -49,6 +49,17 @@ export async function setCached(key, value) {
         target: schema.coachRecipes.cacheKey,
         set: { recipeJson: value, createdAt: new Date() },
       });
+    // Keep at most 3 recipes per subject: evict older ones beyond the latest 3.
+    const subjectId = key.split("|")[1];
+    if (subjectId) {
+      const rows = await db.select({ id: schema.coachRecipes.id, cacheKey: schema.coachRecipes.cacheKey })
+        .from(schema.coachRecipes)
+        .orderBy(desc(schema.coachRecipes.createdAt))
+        .limit(100);
+      const mine = rows.filter((r) => r.cacheKey.split("|")[1] === subjectId);
+      const excess = mine.slice(3).map((r) => r.id);
+      if (excess.length) await db.delete(schema.coachRecipes).where(inArray(schema.coachRecipes.id, excess));
+    }
   } catch {
     // Persistence is best-effort; never fail the recipe response over it.
   }
