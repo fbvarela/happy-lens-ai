@@ -34,7 +34,7 @@ export const DICTIONARIES = {
       sky: { title: "Sky, light & weather" },
       sceneBlock: { title: "That subject won't work here", hint: "Try a different subject above, or change the date & time." },
       recipe: {
-        lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode",
+        lens: "Lens", aperture: "Aperture", shutter: "Shutter", iso: "ISO", ev: "EV", mode: "Mode", label: "Recipe",
         position: "Position", focus: "Focus", stabilization: "Stabilization", flash: "Flash",
         voteUp: "Useful", voteDown: "Not useful", copy: "Copy", copied: "Copied",
         iphone: {
@@ -61,7 +61,8 @@ export const DICTIONARIES = {
         aeAfLock: "AE/AF lock", macro: "Macro", night: "Night / moon",
         lens: "Lens", sunPosition: "Sun position",
       },
-      entryDiagram: "Light diagram",
+entryDiagram: "Light diagram",
+      savedRecipes: { title: "Saved recipes", unknown: "Unknown subject", open: "Open in coach" },
     },
 
     diagram: {
@@ -357,7 +358,7 @@ export const DICTIONARIES = {
       sky: { title: "Cielo, luz y tiempo" },
       sceneBlock: { title: "Ese sujeto no funciona aquí", hint: "Prueba con otro sujeto arriba, o cambia la fecha y la hora." },
       recipe: {
-        lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo",
+        lens: "Objetivo", aperture: "Diafragma", shutter: "Velocidad", iso: "ISO", ev: "EV", mode: "Modo", label: "Receta",
         position: "Posición", focus: "Enfoque", stabilization: "Estabilización", flash: "Flash",
         voteUp: "Útil", voteDown: "No útil", copy: "Copiar", copied: "Copiado",
         iphone: {
@@ -384,7 +385,8 @@ export const DICTIONARIES = {
         aeAfLock: "Bloqueo AE/AF", macro: "Macro", night: "Noche / luna",
         lens: "Objetivo", sunPosition: "Posición del sol",
       },
-      entryDiagram: "Diagrama de luz",
+entryDiagram: "Diagrama de luz",
+      savedRecipes: { title: "Recetas guardadas", unknown: "Sujeto desconocido", open: "Abrir en el coach" },
     },
 
     diagram: {

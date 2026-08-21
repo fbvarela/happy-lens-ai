@@ -61,6 +61,7 @@ function CoachPageInner() {
   const [savingAi, setSavingAi] = useState(false);
   const [aiExample, setAiExample] = useState(null);
   const [viewer, setViewer] = useState(null);
+  const [savedRecipes, setSavedRecipes] = useState([]);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -104,6 +105,13 @@ function CoachPageInner() {
   };
 
   useEffect(() => { loadExamples(); }, []);
+
+  useEffect(() => {
+    fetch("/api/coach/recipes")
+      .then((r) => r.json())
+      .then((d) => setSavedRecipes(d.recipes || []))
+      .catch(() => {});
+  }, []);
 
   const addExamples = async (files) => {
     if (!files?.length) return;
@@ -489,8 +497,81 @@ function CoachPageInner() {
 
       {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
 
+      {savedRecipes.length > 0 && (
+        <SavedRecipes recipes={savedRecipes} gearStore={gearStore} t={t} locale={locale} lensLabel={lensLabel} />
+      )}
+
       <PhotoViewer viewer={viewer} setViewer={setViewer} t={t} />
     </>
+  );
+}
+
+function SavedRecipes({ recipes, gearStore, t, locale, lensLabel }) {
+  const fmtWhen = (iso) => {
+    try {
+      return new Date(iso).toLocaleString(locale === "es" ? "es-ES" : "en-GB", {
+        day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+      });
+    } catch { return ""; }
+  };
+  const gearLabel = (id) => gearStore.all.find((g) => g.id === id)?.label || id;
+  return (
+    <section style={{ marginTop: 20 }}>
+      <h2 className="card-title" style={{ marginBottom: 12 }}>{t("coach.savedRecipes.title")}</h2>
+      <div className="recipe-grid">
+        {recipes.map((r) => {
+          const primary = r.recipe?.recipes?.[0];
+          const qs = new URLSearchParams();
+          if (r.subjectId) qs.set("subject", r.subjectId);
+          if (r.lat != null) qs.set("lat", String(r.lat));
+          if (r.lng != null) qs.set("lng", String(r.lng));
+          if (r.dateTime) qs.set("dateTime", r.dateTime);
+          return (
+            <article key={r.id} className="card">
+              <div className="recipe-head">
+                <div className="card-title" style={{ margin: 0 }}>
+                  {r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown")}
+                </div>
+                <span className="badge badge-sun">{gearLabel(r.gearId)}</span>
+              </div>
+              <p className="recipe-line" style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
+                {fmtWhen(r.createdAt)}
+                {r.lat != null && r.lng != null ? ` · ${r.lat.toFixed(2)}, ${r.lng.toFixed(2)}` : ""}
+              </p>
+              {primary && (
+                <div className="recipe-stats" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.label")}</div>
+                    <div className="recipe-stat-value">{primary.label}</div>
+                  </div>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
+                    <div className="recipe-stat-value">{lensLabel(primary.lens)}</div>
+                  </div>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
+                    <div className="recipe-stat-value">f/{primary.fNumber}</div>
+                  </div>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
+                    <div className="recipe-stat-value">{primary.shutter}</div>
+                  </div>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
+                    <div className="recipe-stat-value">{primary.iso}</div>
+                  </div>
+                  <div>
+                    <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
+                    <div className="recipe-stat-value">{primary.cameraMode}</div>
+                  </div>
+                </div>
+              )}
+              <a href={`/coach?${qs.toString()}`} className="btn btn-ghost btn-sm">{t("coach.savedRecipes.open")}</a>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
