@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Target, Map, SlidersHorizontal, Camera, User } from "lucide-react";
+import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 
 const NAV = [
   { href: "/",         key: "home",     Icon: Home },
   { href: "/coach",    key: "coach",    Icon: Target },
   { href: "/plan",     key: "plan",     Icon: Map },
+  { href: "/diagram",  key: "diagram",  Icon: Compass },
   { href: "/adjust",   key: "adjust",   Icon: SlidersHorizontal },
   { href: "/gear",     key: "gear",     Icon: Camera },
   { href: "/account",  key: "account",  Icon: User },
