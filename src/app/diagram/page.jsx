@@ -375,7 +375,7 @@ function DiagramInner() {
         </div>
       </div>
 
-      <div className="diagram-wrap" style={{ marginTop: 18 }}>
+      <div className="diagram-wrap" style={{ marginTop: 18, maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
         <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
           style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
