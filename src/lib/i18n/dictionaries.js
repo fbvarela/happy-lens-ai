@@ -87,7 +87,8 @@ entryDiagram: "Light diagram",
         rim: { title: "Rim light", label: "Rim", ev: "+0.3", advice: "Sun just behind the couple — a bright rim separates them from the background. Expose for the faces and let the rim go." },
         backlit: { title: "Backlit", label: "Backlit", ev: "+0.7", advice: "Sun directly behind the couple — strong rim/backlight. Raise exposure for the faces and AE/AF-lock on the brightest edge." },
       },
-      camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live." },
+      camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live.",
+        dof: "Depth of field", tripod: "too slow to hand-hold — use a tripod" },
     },
 
     plan: {
@@ -411,7 +412,8 @@ entryDiagram: "Diagrama de luz",
         rim: { title: "Luz de contorno", label: "Contorno", ev: "+0,3", advice: "El sol está justo detrás de la pareja — un contorno brillante los separa del fondo. Expón para las caras y deja que el contorno se queme." },
         backlit: { title: "A contraluz", label: "Contraluz", ev: "+0,7", advice: "El sol está directamente detrás de la pareja — fuerte contraluz. Sube la exposición para las caras y bloquea AE/AF en el borde más luminoso." },
       },
-      camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo." },
+      camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo.",
+        dof: "Profundidad de campo", tripod: "demasiado lento para pulso — usa trípode" },
     },
 
     plan: {

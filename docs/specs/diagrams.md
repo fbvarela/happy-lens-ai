@@ -65,4 +65,6 @@ schematic feels too abstract.
 ### improvements
 - [x] The diagram could be improved, be more elegant and professional at least. (thinner scene ring and strokes, hour ticks on the rim at the sun's azimuth with 6/12/18 labels, slimmer marker labels)
 - [x] Reduce the visor and the circles (halo rings around the subject/camera markers removed — a single dot with white stroke remains; the invisible 18px drag hit-area is kept for touch)
-- [x] Think about making it more interetings (camera view cone derived from the active lens' field of view, aimed at the first subject — wider on the phone's ultrawide, tighter on the Pentax tele end)
+- [x] Think about making it more interesting (camera view cone derived from the active lens' field of view, aimed at the first subject — wider on the phone's ultrawide, tighter on the Pentax tele end)
+- [x] would it be possible to calculate the depth of field with sliders for aperture and speed? (aperture + shutter sliders in the camera card; DoF from aperture, lens focal length and the placed camera→subject distance; tripod warning when the shutter is slower than 1/focal-eq)
+- [x] reduce the sun and the visor itself, less childish circles (sun: cartoon rays removed — thin ring + small disc; FOV cone shortened to 44px and fainter; shadow wedges narrowed and capped at 40px)

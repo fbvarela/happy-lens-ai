@@ -13,6 +13,7 @@ const SVG_SIZE = 300;
 const SCENE_R = 100;
 const PX_PER_M = 7;
 const SUBJECT_H_M = 1.8;
+const SHUTTERS = [30, 60, 125, 250, 500, 1000, 2000, 4000];
 
 export default function DiagramPage() {
   return (
@@ -47,6 +48,8 @@ function DiagramInner() {
     camera: { dx: 0, dy: 62 },
   });
   const [dragId, setDragId] = useState(null);
+  const [fStop, setFStop] = useState(null);
+  const [shutterIdx, setShutterIdx] = useState(2);
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -207,6 +210,27 @@ function DiagramInner() {
   const fNumberTele = lens?.apertureAtTele ?? null;
   const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
 
+  const fMin = lens?.fNumberMin ?? 1.8;
+  const fMax = lens?.fNumberMax ?? 16;
+  const fN = Math.min(Math.max(fStop ?? fMin, fMin), fMax);
+  const focalMm = lens?.focalRangeMm ? (lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2 : 26;
+  const crop = gear.cropFactor || 1;
+  const shutterDen = SHUTTERS[shutterIdx];
+  const needsTripod = shutterDen < focalMm * crop;
+  // Depth of field from aperture, lens focal length and the placed camera→subject distance.
+  const subjectDist = scene.subjects[0] && scene.camera
+    ? Math.hypot(scene.subjects[0].dx - scene.camera.dx, scene.subjects[0].dy - scene.camera.dy) / PX_PER_M
+    : null;
+  let dof = null;
+  if (subjectDist && subjectDist > 0.2) {
+    const coc = 0.03 / crop;
+    const H = (focalMm * focalMm) / (fN * coc) / 1000;
+    dof = {
+      near: (H * subjectDist) / (H + subjectDist),
+      far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
+    };
+  }
+
   // Light mode relative to camera→subject bearing vs sun azimuth.
   let lightMode = null;
   if (sunAz != null && scene.subjects[0] && scene.camera) {
@@ -223,7 +247,7 @@ function DiagramInner() {
   const shadowEnd = (sx, sy) => {
     if (sunAlt == null || sunAlt <= 0) return null;
     const antiAz = (sunAz + 180) * (Math.PI / 180);
-    const L = Math.min((SUBJECT_H_M / Math.tan(sunAlt * (Math.PI / 180))) * PX_PER_M, 90);
+    const L = Math.min((SUBJECT_H_M / Math.tan(sunAlt * (Math.PI / 180))) * PX_PER_M, 40);
     return { x: sx + Math.sin(antiAz) * L, y: sy - Math.cos(antiAz) * L };
   };
 
@@ -234,7 +258,7 @@ function DiagramInner() {
     const dx = end.x - sx, dy = end.y - sy;
     const len = Math.hypot(dx, dy) || 1;
     const px = -dy / len, py = dx / len;
-    const w0 = 2.5, w1 = 7;
+    const w0 = 2, w1 = 4.5;
     return (
       <polygon
         points={`${sx + px * w0},${sy + py * w0} ${end.x + px * w1},${end.y + py * w1} ${end.x - px * w1},${end.y - py * w1} ${sx - px * w0},${sy - py * w0}`}
@@ -252,12 +276,12 @@ function DiagramInner() {
       : 28;
     const half = Math.atan(18 / focal);
     const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
-    const L = 70;
+    const L = 44;
     const p1 = { x: cx + L * Math.sin(bearing - half), y: cy - L * Math.cos(bearing - half) };
     const p2 = { x: cx + L * Math.sin(bearing + half), y: cy - L * Math.cos(bearing + half) };
     return (
       <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
-        fill="var(--clay)" opacity="0.08" stroke="var(--clay)" strokeOpacity="0.25" strokeWidth="0.75" strokeDasharray="3 3" />
+        fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
     );
   };
 
@@ -394,11 +418,8 @@ function DiagramInner() {
               <line x1={center.x} y1={center.y} x2={sunRimPos.x} y2={sunRimPos.y}
                 stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity="0.4" strokeDasharray="2 3" />
               <g transform={`translate(${sunRimPos.x},${sunRimPos.y})`} style={{ pointerEvents: "none" }}>
-                <circle r={11} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={sunAlt > 0 ? 0.95 : 0.6} />
-                {sunAlt > 0 && [0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
-                  <line key={a} x1={0} y1={-15} x2={0} y2={-21} transform={`rotate(${a})`} stroke="#e8a020" strokeWidth="2.5" strokeLinecap="round" />
-                ))}
-                <circle r={4} fill="#7a4d00" />
+                <circle r={8} fill="none" stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity="0.65" />
+                <circle r={4} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={sunAlt > 0 ? 0.95 : 0.6} />
               </g>
             </>
           )}
@@ -497,6 +518,24 @@ function DiagramInner() {
                 <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
                 <div className="recipe-stat-value">{t(`diagram.light.${lightMode}.ev`)}</div>
               </div>
+            </div>
+            <div className="scene-grid" style={{ marginTop: 12 }}>
+              <label className="scene-field">
+                <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
+                <input type="range" min={fMin} max={fMax} step="0.1" value={fN}
+                  onChange={(e) => setFStop(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+              </label>
+              <label className="scene-field">
+                <span className="input-label">{t("coach.recipe.shutter")} · 1/{shutterDen}</span>
+                <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
+                  onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+              </label>
+              {dof && (
+                <div className="time-hint ok" style={{ gridColumn: "1 / -1" }}>
+                  {t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m
+                  {needsTripod ? ` · ${t("diagram.camera.tripod")}` : ""}
+                </div>
+              )}
             </div>
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
               {t("diagram.camera.hint")}
