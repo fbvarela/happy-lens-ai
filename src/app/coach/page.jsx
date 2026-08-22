@@ -459,13 +459,6 @@ function CoachPageInner() {
             <span className="step-num">3</span> {t("coach.step.gear")}
           </div>
           <div className="chip-row">
-            {gearStore.all.map((g) => (
-              <button key={g.id} type="button" onClick={() => gearStore.setActiveId(g.id)}
-                className="chip" aria-pressed={g.id === active.id}>
-                <GearKindIcon kind={g.kind} size={16} aria-hidden />
-                <span>{g.label}</span>
-              </button>
-            ))}
             <a href="/gear" className="chip" aria-label={t("gear.manage")}>
               <Settings size={16} aria-hidden />
               <span>{t("gear.manage")}</span>

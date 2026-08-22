@@ -33,8 +33,7 @@ function DiagramInner() {
   const { locale } = useLocale();
   const params = useSearchParams();
   const gearStore = useGearStore();
-  const [gearId, setGearId] = useState(() => gearStore.active.id);
-  const gear = gearStore.all.find((g) => g.id === gearId) || gearStore.active;
+  const gear = gearStore.active;
 
   const [subjectId, setSubjectId] = useState("portrait");
   const [form, setForm] = useState({ lat: "", lng: "", date: todayLocal() });
@@ -182,11 +181,14 @@ function DiagramInner() {
     }
   };
 
-  // Camera params from the subject preset + active gear.
+  // Camera params from the subject preset + active gear. The preset's
+  // preferredLens ids are phone-lens ids; fall back to the gear's own lens
+  // when the preset lens isn't available (e.g. Pentax K-5 + 18-55).
   const preset = getSubjectPreset(subjectId);
   const lensId = preset?.preferredLens?.[0];
-  const lens = gear.lenses.find((l) => l.id === lensId);
+  const lens = gear.lenses.find((l) => l.id === lensId) || gear.lenses[0];
   const fNumber = lens?.fNumberFixed ?? lens?.fNumberMin ?? null;
+  const fNumberTele = lens?.apertureAtTele ?? null;
   const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
 
   // Light mode relative to camera→subject bearing vs sun azimuth.
@@ -207,6 +209,22 @@ function DiagramInner() {
     const antiAz = (sunAz + 180) * (Math.PI / 180);
     const L = Math.min((SUBJECT_H_M / Math.tan(sunAlt * (Math.PI / 180))) * PX_PER_M, 90);
     return { x: sx + Math.sin(antiAz) * L, y: sy - Math.cos(antiAz) * L };
+  };
+
+  // Shadow wedge for any scene point (subject or photographer).
+  const shadowWedge = (sx, sy) => {
+    const end = shadowEnd(sx, sy);
+    if (!end) return null;
+    const dx = end.x - sx, dy = end.y - sy;
+    const len = Math.hypot(dx, dy) || 1;
+    const px = -dy / len, py = dx / len;
+    const w0 = 2.5, w1 = 7;
+    return (
+      <polygon
+        points={`${sx + px * w0},${sy + py * w0} ${end.x + px * w1},${end.y + py * w1} ${end.x - px * w1},${end.y - py * w1} ${sx - px * w0},${sy - py * w0}`}
+        fill="rgba(0,0,0,0.18)"
+      />
+    );
   };
 
   const timeStr = `${String(Math.floor(timeHour)).padStart(2, "0")}:${String(Math.round((timeHour % 1) * 60)).padStart(2, "0")}`;
@@ -287,13 +305,10 @@ function DiagramInner() {
         <div className="coach-section">
           <div className="coach-step-title"><span className="step-num">3</span> {t("coach.step.gear")}</div>
           <div className="chip-row">
-            {gearStore.all.map((g) => (
-              <button key={g.id} type="button" className="chip" aria-pressed={g.id === gearId}
-                onClick={() => setGearId(g.id)}>
-                {g.kind === "phone" ? <Smartphone size={15} aria-hidden /> : <CameraIcon size={15} aria-hidden />}
-                <span>{g.label}</span>
-              </button>
-            ))}
+            <span className="chip" aria-disabled="true">
+              {gear.kind === "phone" ? <Smartphone size={15} aria-hidden /> : <CameraIcon size={15} aria-hidden />}
+              <span>{gear.label}</span>
+            </span>
             <a href="/gear" className="chip" aria-label={t("gear.manage")}>
               <CameraIcon size={15} aria-hidden />
               <span>{t("gear.manage")}</span>
@@ -341,21 +356,9 @@ function DiagramInner() {
           {scene.subjects.map((sub, i) => {
             const sx = center.x + sub.dx;
             const sy = center.y + sub.dy;
-            const end = shadowEnd(sx, sy);
             return (
               <g key={i}>
-                {end && (() => {
-                  const dx = end.x - sx, dy = end.y - sy;
-                  const len = Math.hypot(dx, dy) || 1;
-                  const px = -dy / len, py = dx / len;
-                  const w0 = 2.5, w1 = 7;
-                  return (
-                    <polygon
-                      points={`${sx + px * w0},${sy + py * w0} ${end.x + px * w1},${end.y + py * w1} ${end.x - px * w1},${end.y - py * w1} ${sx - px * w0},${sy - py * w0}`}
-                      fill="rgba(0,0,0,0.18)"
-                    />
-                  );
-                })()}
+                {shadowWedge(sx, sy)}
                 <g transform={`translate(${sx},${sy})`}>
                   <circle r={9} fill="var(--leaf)" opacity="0.25" />
                   <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
@@ -366,14 +369,21 @@ function DiagramInner() {
             );
           })}
 
-          {scene.camera && (
-            <g transform={`translate(${center.x + scene.camera.dx},${center.y + scene.camera.dy})`}>
-              <circle r={9} fill="var(--clay)" opacity="0.25" />
-              <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
-              <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
-              <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
-            </g>
-          )}
+          {scene.camera && (() => {
+            const cx = center.x + scene.camera.dx;
+            const cy = center.y + scene.camera.dy;
+            return (
+              <>
+                {shadowWedge(cx, cy)}
+                <g transform={`translate(${cx},${cy})`}>
+                  <circle r={9} fill="var(--clay)" opacity="0.25" />
+                  <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
+                  <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
+                  <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
+                </g>
+              </>
+            );
+          })}
         </svg>
 
         <div className="diagram-legend" style={{ marginTop: 10, display: "flex", gap: 14, flexWrap: "wrap", fontSize: "0.82rem", color: "var(--text-muted)" }}>
@@ -420,7 +430,7 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
-                <div className="recipe-stat-value">{fNumber != null ? `f/${fNumber}` : "—"}</div>
+                <div className="recipe-stat-value">{fNumber != null ? `f/${fNumber}${fNumberTele != null && fNumberTele !== fNumber ? `–${fNumberTele}` : ""}` : "—"}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>

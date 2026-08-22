@@ -91,7 +91,11 @@ export default function GearPage() {
         {store.all.map((g) => {
           const active = g.id === store.activeId;
           return (
-            <article key={g.id} className={`card gear-card ${active ? "gear-card-active" : ""}`}>
+            <article key={g.id} className={`card gear-card ${active ? "gear-card-active" : ""}`}
+              onClick={() => store.setActiveId(g.id)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); store.setActiveId(g.id); } }}
+              role="button" tabIndex={0}
+              style={{ cursor: "pointer" }}>
               <div className="recipe-head">
                 <div className="card-title" style={{ margin: 0, display: "inline-flex", alignItems: "center", gap: 8 }}>
                   <GearKindIcon kind={g.kind} size={18} aria-hidden />
@@ -133,8 +137,7 @@ export default function GearPage() {
                 </>
               )}
               <div className="recipe-actions">
-                {!active && <button type="button" className="btn btn-primary btn-sm" onClick={() => store.setActiveId(g.id)}>{t("gear.useThis")}</button>}
-                {g.custom && <button type="button" className="btn btn-ghost btn-sm" onClick={() => store.removeCustom(g.id)}>{t("gear.remove")}</button>}
+                {g.custom && <button type="button" className="btn btn-ghost btn-sm" onClick={(e) => { e.stopPropagation(); store.removeCustom(g.id); }}>{t("gear.remove")}</button>}
               </div>
             </article>
           );
