@@ -55,3 +55,9 @@ camera advice. Everything it needs already exists in the app (`dayWindows` /
 Skipped: overlaying on a real perspective camera photo (needs projection math),
 a paid map provider, sun-as-draggable, multi-scene editor. Add only if the
 schematic feels too abstract.
+
+
+### issues
+- [x] the photographer can cast a shadow also.
+- [x] when i chose pentax k5 with a manual 18-55mm lens, data of lens and aperture is missing. why? (root cause: the preset's preferredLens ids are phone-lens ids that don't exist on the Pentax → lens lookup fell through to "—"; now falls back to the gear's own lens, and variable-aperture zooms show the f/3.5–5.6 range)
+- [x] also, i want to select the active gear from Gear screen (and use it in all places) and remove the camera selection in all other pages (Gear screen already had the active picker; diagram now uses the active gear directly — its own camera chips were removed)
