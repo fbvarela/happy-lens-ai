@@ -61,3 +61,10 @@ schematic feels too abstract.
 - [x] the photographer can cast a shadow also.
 - [x] when i chose pentax k5 with a manual 18-55mm lens, data of lens and aperture is missing. why? (root cause: the preset's preferredLens ids are phone-lens ids that don't exist on the Pentax → lens lookup fell through to "—"; now falls back to the gear's own lens, and variable-aperture zooms show the f/3.5–5.6 range)
 - [x] also, i want to select the active gear from Gear screen (and use it in all places) and remove the camera selection in all other pages (Gear screen already had the active picker; diagram now uses the active gear directly — its own camera chips were removed)
+
+### improvements
+- [x] The diagram could be improved, be more elegant and professional at least. (thinner scene ring and strokes, hour ticks on the rim at the sun's azimuth with 6/12/18 labels, slimmer marker labels)
+- [x] Reduce the visor and the circles (halo rings around the subject/camera markers removed — a single dot with white stroke remains; the invisible 18px drag hit-area is kept for touch)
+- [x] Think about making it more interesting (camera view cone derived from the active lens' field of view, aimed at the first subject — wider on the phone's ultrawide, tighter on the Pentax tele end)
+- [x] would it be possible to calculate the depth of field with sliders for aperture and speed? (aperture + shutter sliders in the camera card; DoF from aperture, lens focal length and the placed camera→subject distance; tripod warning when the shutter is slower than 1/focal-eq)
+- [x] reduce the sun and the visor itself, less childish circles (sun: cartoon rays removed — thin ring + small disc; FOV cone shortened to 44px and fainter; shadow wedges narrowed and capped at 40px)
