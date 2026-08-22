@@ -511,7 +511,7 @@ function DiagramInner() {
 
           <section className="card-grid">
             {lightMode && (
-          <div className="card">
+          <div className="card diagram-light-card">
             <div className="recipe-head">
               <div className="card-title" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.title`)}</div>
               <span className={`badge ${lightMode === "front" ? "badge-sun" : lightMode === "side" ? "badge-leaf" : "badge-clay"}`}>
@@ -522,7 +522,7 @@ function DiagramInner() {
           </div>
             )}
 
-          <div className="card">
+          <div className="card diagram-camera-card">
             <div className="card-title">{t("diagram.camera.title")}</div>
             <div className="recipe-stats">
               <div>
