@@ -276,7 +276,7 @@ function DiagramInner() {
       : 28;
     const half = Math.atan(18 / focal);
     const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
-    const L = 44;
+    const L = 34;
     const p1 = { x: cx + L * Math.sin(bearing - half), y: cy - L * Math.cos(bearing - half) };
     const p2 = { x: cx + L * Math.sin(bearing + half), y: cy - L * Math.cos(bearing + half) };
     return (
