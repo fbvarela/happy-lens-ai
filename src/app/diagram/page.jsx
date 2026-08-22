@@ -245,7 +245,7 @@ function DiagramInner() {
     if (rel > 180) rel = 360 - rel;
     // rel = angular gap between sun and the camera→subject line.
     // 0 = sun behind subject (backlit), 180 = sun behind camera (front-lit).
-    lightMode = rel <= 40 ? "backlit" : rel <= 75 ? "rim" : rel <= 115 ? "side" : "front";
+    lightMode = rel <= 40 ? "backlit" : rel <= 115 ? "side" : "front";
   }
 
   const shadowEnd = (sx, sy) => {
