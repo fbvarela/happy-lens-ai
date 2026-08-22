@@ -50,6 +50,8 @@ function DiagramInner() {
   const [dragId, setDragId] = useState(null);
   const [fStop, setFStop] = useState(null);
   const [shutterIdx, setShutterIdx] = useState(2);
+  const [focusTarget, setFocusTarget] = useState("0");
+  const [customFocusDistance, setCustomFocusDistance] = useState("5");
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -217,10 +219,12 @@ function DiagramInner() {
   const crop = gear.cropFactor || 1;
   const shutterDen = SHUTTERS[shutterIdx];
   const needsTripod = shutterDen < focalMm * crop;
-  // Depth of field from aperture, lens focal length and the placed camera→subject distance.
-  const subjectDist = scene.subjects[0] && scene.camera
-    ? Math.hypot(scene.subjects[0].dx - scene.camera.dx, scene.subjects[0].dy - scene.camera.dy) / PX_PER_M
+  const focusIndex = focusTarget === "custom" ? 0 : Number(focusTarget);
+  const focusSubject = scene.subjects[focusIndex] || scene.subjects[0];
+  const placedFocusDistance = focusSubject && scene.camera
+    ? Math.hypot(focusSubject.dx - scene.camera.dx, focusSubject.dy - scene.camera.dy) / PX_PER_M
     : null;
+  const subjectDist = focusTarget === "custom" ? Number(customFocusDistance) : placedFocusDistance;
   let dof = null;
   if (subjectDist && subjectDist > 0.2) {
     const coc = 0.03 / crop;
@@ -269,13 +273,13 @@ function DiagramInner() {
 
   // Camera view cone from the active lens field of view, aimed at the first subject.
   const fovCone = (cx, cy) => {
-    const s0 = scene.subjects[0];
-    if (!s0 || !scene.camera) return null;
+    const target = focusSubject || scene.subjects[0];
+    if (!target || !scene.camera) return null;
     const focal = lens?.focalRangeEq ? (lens.focalRangeEq[0] + lens.focalRangeEq[1]) / 2
       : lens?.focalRangeMm ? ((lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2) * (gear.cropFactor || 1)
       : 28;
     const half = Math.atan(18 / focal);
-    const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
+    const bearing = Math.atan2(target.dx - scene.camera.dx, -(target.dy - scene.camera.dy));
     const L = 34;
     const pt = (r, a) => ({ x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) });
     const p1 = pt(L, bearing - half);
@@ -542,6 +546,21 @@ function DiagramInner() {
               </div>
             </div>
             <div className="scene-grid" style={{ marginTop: 12 }}>
+              <label className="scene-field">
+                <span className="input-label">{t("diagram.camera.focus")}</span>
+                <select className="input" value={focusTarget} onChange={(e) => setFocusTarget(e.target.value)}>
+                  <option value="0">{t("diagram.camera.subject1")}</option>
+                  <option value="1">{t("diagram.camera.subject2")}</option>
+                  <option value="custom">{t("diagram.camera.custom")}</option>
+                </select>
+              </label>
+              {focusTarget === "custom" && (
+                <label className="scene-field">
+                  <span className="input-label">{t("diagram.camera.focusDistance")}</span>
+                  <input className="input" type="number" min="0.2" step="0.1" value={customFocusDistance}
+                    onChange={(e) => setCustomFocusDistance(e.target.value)} />
+                </label>
+              )}
               <label className="scene-field">
                 <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
                 <input type="range" min={fMin} max={fMax} step="0.1" value={fN}

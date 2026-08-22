@@ -653,7 +653,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   outline-offset: 2px;
 }
 .app { padding-left: 232px; }
-.page { max-width: 1180px; padding: 28px 32px 64px; }
+.page { max-width: 100%; padding: 28px 32px 64px; }
 .sidebar-nav { width: 232px; background: var(--bark); }
 .sidebar-logo { padding: 22px 18px 18px; letter-spacing: -0.02em; }
 .sidebar-items { gap: 3px; }
