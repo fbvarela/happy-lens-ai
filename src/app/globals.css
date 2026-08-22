@@ -342,6 +342,11 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-scene-grid .scene-field { gap: 3px; }
 .diagram-scene-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .diagram-scene-actions .flash-toggle { margin-top: 0 !important; }
+@media (min-width: 900px) {
+  .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .diagram-scene-grid .diagram-place-field,
+  .diagram-scene-grid .diagram-scene-actions { grid-column: 3 / -1; }
+}
 
 .coach-form .input {
   width: 100%; min-width: 0; height: 44px;

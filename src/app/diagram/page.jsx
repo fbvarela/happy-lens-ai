@@ -335,7 +335,7 @@ function DiagramInner() {
               <input className="input" inputMode="decimal" autoComplete="off" value={form.lng}
                 onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="-3.7038" />
             </label>
-            <form className="scene-field full" onSubmit={searchPlace} style={{ display: "grid", gap: 6 }}>
+            <form className="scene-field full diagram-place-field" onSubmit={searchPlace} style={{ display: "grid", gap: 6 }}>
               <span className="input-label">{t("diagram.form.searchPlace")}</span>
               <div style={{ display: "flex", gap: 6 }}>
                 <input className="input" value={place} onChange={(e) => setPlace(e.target.value)}
