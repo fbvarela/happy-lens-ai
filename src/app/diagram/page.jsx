@@ -496,6 +496,12 @@ function DiagramInner() {
             {t("diagram.form.drag")}
           </span>
         </div>
+        {dof && (
+          <div className="diagram-dof">
+            <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
+            {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
+          </div>
+        )}
         </div>
 
         <div className="diagram-info">
@@ -570,12 +576,6 @@ function DiagramInner() {
                 <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
                   onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
-              {dof && (
-                <div className="time-hint ok" style={{ gridColumn: "1 / -1" }}>
-                  {t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m
-                  {needsTripod ? ` · ${t("diagram.camera.tripod")}` : ""}
-                </div>
-              )}
             </div>
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
               {t("diagram.camera.hint")}
