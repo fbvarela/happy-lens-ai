@@ -294,6 +294,12 @@ function DiagramInner() {
               fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
           );
         })()}
+        {dof && dof.far == null && nearPx != null && nearPx < SCENE_R && (() => {
+          const p = pt(SCENE_R, bearing);
+          return (
+            <text x={p.x} y={p.y + 3} textAnchor="middle" fontSize="9" fill="var(--leaf)" opacity="0.75">∞</text>
+          );
+        })()}
       </>
     );
   };
