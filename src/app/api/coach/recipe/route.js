@@ -236,14 +236,17 @@ export async function POST(req) {
   }
 
   const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json({ ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "stub" });
-  }
-
   const petKeyPart = subjectId === "pets" ? `|pets:${subject.petContextId}:${subject.animal}` : "";
   const bwKeyPart = subjectId === "bw" ? `|bw:${subject.bwContextId}` : "";
   const key = cacheKey({ subjectId, gearId: gear.id, scene }) + `|${locale}|f${hasFlash ? 1 : 0}|${SCHEMA_VERSION}${petKeyPart}${bwKeyPart}`;
-  const cached = getCached(key);
+
+  if (!apiKey) {
+    const stub = { ...stubRecipes(subject, gear, sky, hasFlash), sky, weather };
+    await setCached(key, stub);
+    return NextResponse.json({ ...stub, source: "stub" });
+  }
+
+  const cached = await getCached(key);
   if (cached) return NextResponse.json({ ...cached, source: "cache" });
 
   try {
@@ -271,12 +274,14 @@ export async function POST(req) {
       sky,
       weather,
     };
-    setCached(key, clamped);
+    await setCached(key, clamped);
     return NextResponse.json({ ...clamped, source: "groq" });
   } catch (err) {
     console.error("coach/recipe error", err);
+    const fallback = { ...stubRecipes(subject, gear, sky, hasFlash), sky, weather };
+    await setCached(key, fallback);
     return NextResponse.json(
-      { ...stubRecipes(subject, gear, sky, hasFlash), sky, weather, source: "fallback", error: String(err?.message || err) },
+      { ...fallback, source: "fallback", error: String(err?.message || err) },
       { status: 200 },
     );
   }

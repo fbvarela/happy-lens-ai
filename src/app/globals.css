@@ -584,6 +584,12 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .photo-viewer-nav:hover { background: rgba(255, 255, 255, 0.22); }
 .photo-viewer-prev { left: 12px; }
 .photo-viewer-next { right: 12px; }
+.saved-recipe-del {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; padding: 0; border: none; border-radius: 6px;
+  background: rgba(0, 0, 0, 0.08); color: var(--text-muted); cursor: pointer;
+}
+.saved-recipe-del:hover { background: #d94f3d; color: #fff; }
 .time-hint { margin: 0; font-size: 0.82rem; }
 .time-hint.ok    { color: var(--leaf); }
 .time-hint.error { color: var(--clay); }

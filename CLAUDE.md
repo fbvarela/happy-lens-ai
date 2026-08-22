@@ -30,10 +30,10 @@ There is no test script/framework configured in this project.
 - **UI shell**: `src/app/_components/AppShell.jsx` renders a fixed desktop sidebar + mobile bottom nav across all pages (5 primary sections: coach, plan, adjust, gear, account), driven by `src/lib/i18n/LocaleProvider.jsx`.
 - **State/data flow**: Mostly client components calling API routes with `fetch`; no global client state library (no Redux/Zustand). Auth state lives in `src/lib/auth/AuthProvider.jsx` (React Context, polls `/api/auth/me` on mount).
 - **Database**: Neon Postgres via `@neondatabase/serverless` + Drizzle ORM (`drizzle-orm/neon-http`). Connection in `src/lib/db.js` — `getDb()` returns `null` if `DATABASE_URL`/`POSTGRES_URL` is unset, and callers are expected to handle that gracefully (see `getCurrentUser` degrading to a session-only user object).
-  - Schema: `src/db/schema.js` — tables: `users`, `adjustment_recipes`, `subject_baselines`, `batch_jobs`, `adjustment_quota` (composite PK on `user_id`+`day`).
+  - Schema: `src/db/schema.js` — tables: `users`, `adjustment_recipes`, `subject_baselines`, `batch_jobs`, `engagement_examples`, `coach_recipes`.
   - Migrations: `src/db/migrations/` (SQL + drizzle meta snapshots).
 - **AI**: Only Groq is actually wired up (`src/app/api/coach/critique/route.js`, presumably `coach/recipe` too) via `@ai-sdk/groq` + `ai`'s `generateObject` with Zod schemas (`src/lib/critique-schema.js`, `src/lib/recipe-schema.js`, `src/lib/plan-schema.js`, `src/lib/adjustment-schema.js`). When `GROQ_API_KEY` is absent, routes return a stub response (`source: "stub"`) instead of failing — a deliberate no-key dev-mode pattern.
-- **Domain logic**: `src/lib/` — `sun.js`/`sun-day.js` (sun/moon calc via `suncalc`), `weather.js`, `gear-store.js`/`gear-validator.js`, `adjust-quota.js`/`server-quota.js` (usage limits), `adjust-history.js`, `recipe-cache.js`, `scene-guard.js`, `tier.js` (plan/limits logic), `time-presets.js`.
+- **Domain logic**: `src/lib/` — `sun.js`/`sun-day.js` (sun/moon calc via `suncalc`), `weather.js`, `gear-store.js`/`gear-validator.js`, `adjust-history.js`, `recipe-cache.js` (DB-backed AI recipe cache), `scene-guard.js`, `time-presets.js`.
 - **Static domain data**: `src/data/` — camera/device profiles (`data/devices/iphone-profiles.js`, `data/gear/*`), subject presets (`data/subjects/*`).
 - **Image handling**: `exifr` for EXIF parsing, `heic-to` for HEIC conversion, `src/lib/image-decode.js`.
 
@@ -43,7 +43,7 @@ There is no test script/framework configured in this project.
 - `getSession()` / `getCurrentUser()` / `ensureUser(email)` are the core helpers; users are looked up/created by email only (no password) — this is a lightweight/email-only account model, not a full credentials system.
 - **Test-login convention** (cross-app standard): `POST /api/auth/test-login` creates/logs in a user by email. Gated to `localhost`/`127.0.0.1` host or `VERCEL_ENV === "preview"` — returns 404 elsewhere (i.e., in production). See `src/app/api/auth/test-login/route.js`.
 - Client-side: `src/lib/auth/AuthProvider.jsx` exposes `useAuth()` with `{ user, loading, refresh, signOut, testLogin }`.
-- Plan/premium gating: `src/lib/tier.js` (`isPremium`, `FREE_LIMITS`, `PREMIUM_LIMITS`) + `src/components/PremiumGate.jsx` wraps premium-only UI.
+- No premium/quota system: tiers, quotas and the `adjustment_quota` table were removed — everything is free/unlimited.
 
 ## Environment Variables
 

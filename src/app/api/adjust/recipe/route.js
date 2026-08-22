@@ -3,7 +3,6 @@ import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES, PORTRAIT_LIGHTING, DEPTH_FSTOPS } from "@/lib/adjustment-schema";
 import { getCurrentUser } from "@/lib/auth/session";
-import { consumeUploadForUser } from "@/lib/server-quota";
 import { getDb, schema } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -117,12 +116,6 @@ export async function POST(req) {
   const hasDepth = !!(exif && (exif.SubjectArea || /portrait/i.test(exif.SceneCaptureType || "") || exif.HasDepth === true));
 
   const user = await getCurrentUser().catch(() => null);
-  if (user) {
-    const q = await consumeUploadForUser(user);
-    if (!q.ok) {
-      return NextResponse.json({ error: `Daily limit reached (${q.max}/day). Upgrade for unlimited.` }, { status: 429 });
-    }
-  }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {

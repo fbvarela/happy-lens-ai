@@ -61,6 +61,7 @@ function CoachPageInner() {
   const [savingAi, setSavingAi] = useState(false);
   const [aiExample, setAiExample] = useState(null);
   const [viewer, setViewer] = useState(null);
+  const [savedRecipes, setSavedRecipes] = useState([]);
 
   const active = gearStore.active;
   const hasFlash = (active?.flashes?.length || 0) > 0;
@@ -104,6 +105,23 @@ function CoachPageInner() {
   };
 
   useEffect(() => { loadExamples(); }, []);
+
+  const loadSavedRecipes = () => {
+    fetch("/api/coach/recipes")
+      .then((r) => r.json())
+      .then((d) => setSavedRecipes(d.recipes || []))
+      .catch(() => {});
+  };
+
+  useEffect(() => { loadSavedRecipes(); }, []);
+
+  const deleteSavedRecipe = async (id) => {
+    await fetch("/api/coach/recipes", {
+      method: "DELETE", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    }).catch(() => {});
+    loadSavedRecipes();
+  };
 
   const addExamples = async (files) => {
     if (!files?.length) return;
@@ -216,6 +234,7 @@ function CoachPageInner() {
         throw new Error(data?.error || "Request failed.");
       }
       setResult(data);
+      loadSavedRecipes();
       try { localStorage.setItem(storageKey, JSON.stringify(data)); } catch {}
     } catch (err) {
       const offline = readOffline(storageKey);
@@ -489,8 +508,115 @@ function CoachPageInner() {
 
       {result && <Results result={result} subjectId={subjectId} t={t} lensLabel={lensLabel} />}
 
+      {savedRecipes.length > 0 && (
+        <SavedRecipes recipes={savedRecipes} gearStore={gearStore} t={t} locale={locale} lensLabel={lensLabel} onDelete={deleteSavedRecipe} />
+      )}
+
       <PhotoViewer viewer={viewer} setViewer={setViewer} t={t} />
     </>
+  );
+}
+
+function SavedRecipes({ recipes, gearStore, t, locale, lensLabel, onDelete }) {
+  const fmtWhen = (iso) => {
+    try {
+      return new Date(iso).toLocaleString(locale === "es" ? "es-ES" : "en-GB", {
+        day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+      });
+    } catch { return ""; }
+  };
+  const gearLabel = (id) => gearStore.all.find((g) => g.id === id)?.label || id;
+  return (
+    <section style={{ marginTop: 20 }}>
+      <h2 className="card-title" style={{ marginBottom: 12 }}>{t("coach.savedRecipes.title")}</h2>
+      <div className="recipe-grid">
+        {recipes.map((r) => {
+          const qs = new URLSearchParams();
+          if (r.subjectId) qs.set("subject", r.subjectId);
+          if (r.lat != null) qs.set("lat", String(r.lat));
+          if (r.lng != null) qs.set("lng", String(r.lng));
+          if (r.dateTime) qs.set("dateTime", r.dateTime);
+          return (
+            <article key={r.id} className="card">
+              <div className="recipe-head">
+                <div className="card-title" style={{ margin: 0 }}>
+                  {r.recipe?.recipes?.[0]?.label || (r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown"))}
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span className="badge badge-sun">{gearLabel(r.gearId)}</span>
+                  <button type="button" className="saved-recipe-del" aria-label={t("coach.savedRecipes.delete")}
+                    onClick={() => onDelete(r.id)}>
+                    <X size={13} aria-hidden />
+                  </button>
+                </div>
+              </div>
+              <p className="recipe-line" style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
+                {r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown")}
+                {" · "}{fmtWhen(r.createdAt)}
+                {r.lat != null && r.lng != null ? ` · ${r.lat.toFixed(2)}, ${r.lng.toFixed(2)}` : ""}
+              </p>
+              {Array.isArray(r.recipe?.recipes) && r.recipe.recipes.map((rc, i) => (
+                <div key={i} style={{ marginTop: i > 0 ? 12 : 0, paddingTop: i > 0 ? 12 : 0, borderTop: i > 0 ? "1px solid var(--line)" : "none" }}>
+                  {r.recipe.recipes.length > 1 && (
+                    <div className="recipe-head" style={{ marginBottom: 8 }}>
+                      <div className="card-title" style={{ margin: 0, fontSize: "1rem" }}>{rc.label}</div>
+                      <span className="badge badge-sun">{rc.cameraMode}</span>
+                    </div>
+                  )}
+                  <div className="recipe-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
+                      <div className="recipe-stat-value">{lensLabel(rc.lens)}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
+                      <div className="recipe-stat-value">f/{rc.fNumber}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
+                      <div className="recipe-stat-value">{rc.shutter}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
+                      <div className="recipe-stat-value">{rc.iso}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
+                      <div className="recipe-stat-value">{rc.ev > 0 ? `+${rc.ev}` : rc.ev}</div>
+                    </div>
+                    <div>
+                      <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
+                      <div className="recipe-stat-value">{rc.cameraMode}</div>
+                    </div>
+                  </div>
+                  <p className="recipe-line"><strong>{t("coach.recipe.position")}.</strong> {rc.position}</p>
+                  <p className="recipe-line">
+                    <strong><FocusIcon size={14} className="inline-icon" /> {t("coach.recipe.focus")}.</strong> {rc.focus}
+                  </p>
+                  <p className="recipe-line">
+                    <strong><StabIcon size={14} className="inline-icon" /> {t("coach.recipe.stabilization")}.</strong> {rc.stabilization}
+                  </p>
+                  {rc.flash && (
+                    <p className="recipe-line"><strong>{t("coach.recipe.flash")}.</strong> {rc.flash.notes}</p>
+                  )}
+                  {Array.isArray(rc.compositionTips) && rc.compositionTips.length > 0 && (
+                    <ul className="recipe-tips">{rc.compositionTips.map((x, j) => <li key={j}>{x}</li>)}</ul>
+                  )}
+                  {Array.isArray(rc.warnings) && rc.warnings.length > 0 && (
+                    <div className="recipe-warning">
+                      {rc.warnings.map((w, j) => <div key={j}>{w}</div>)}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <a href={`/coach?${qs.toString()}`} className="btn btn-ghost btn-sm" style={{ marginTop: 12 }}>
+                {t("coach.savedRecipes.open")}
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

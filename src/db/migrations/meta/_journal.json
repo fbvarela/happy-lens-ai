@@ -15,6 +15,13 @@
       "when": 1787248579932,
       "tag": "0001_conscious_millenium_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787314416817,
+      "tag": "0002_remove_quota_add_coach_recipes",
+      "breakpoints": true
     }
   ]
 }
