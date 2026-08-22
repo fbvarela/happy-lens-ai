@@ -62,7 +62,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   min-height: 100vh;
 }
 .page {
-  max-width: 1100px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 32px 28px 80px;
 }
@@ -191,6 +191,17 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .card-grid {
   display: grid; gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.diagram-row { display: grid; gap: 16px; }
+.diagram-info { display: grid; gap: 12px; align-content: start; }
+@media (min-width: 900px) {
+  .diagram-row { grid-template-columns: minmax(320px, 480px) 1fr; align-items: start; }
+  .diagram-info,
+  .diagram-info .card-grid { display: contents; }
+  .diagram-light-card { grid-column: 1; grid-row: 2; }
+  .diagram-camera-card { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+  .diagram-info > .field-error { grid-column: 2; grid-row: 1; }
 }
 
 /* Buttons — pill shape per brand spec */
@@ -331,6 +342,18 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 }
 .scene-grid .full { grid-column: 1 / -1; }
 .scene-field { display: grid; gap: 5px; margin: 0; min-width: 0; }
+
+.diagram-scene-grid { gap: 8px; }
+.diagram-scene-grid .scene-field { gap: 3px; }
+.diagram-scene-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.diagram-scene-actions .flash-toggle { margin-top: 0 !important; }
+.diagram-dof { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; color: var(--leaf); font-size: 0.82rem; font-weight: 600; }
+.diagram-info .card-grid { align-items: start; }
+@media (min-width: 900px) {
+  .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .diagram-scene-grid .diagram-place-field,
+  .diagram-scene-grid .diagram-scene-actions { grid-column: 3 / -1; }
+}
 
 .coach-form .input {
   width: 100%; min-width: 0; height: 44px;
@@ -647,7 +670,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   outline-offset: 2px;
 }
 .app { padding-left: 232px; }
-.page { max-width: 1180px; padding: 28px 32px 64px; }
+.page { max-width: 100%; padding: 28px 32px 64px; }
 .sidebar-nav { width: 232px; background: var(--bark); }
 .sidebar-logo { padding: 22px 18px 18px; letter-spacing: -0.02em; }
 .sidebar-items { gap: 3px; }

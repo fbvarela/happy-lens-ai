@@ -50,6 +50,8 @@ function DiagramInner() {
   const [dragId, setDragId] = useState(null);
   const [fStop, setFStop] = useState(null);
   const [shutterIdx, setShutterIdx] = useState(2);
+  const [focusTarget, setFocusTarget] = useState("0");
+  const [customFocusDistance, setCustomFocusDistance] = useState("5");
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -217,18 +219,25 @@ function DiagramInner() {
   const crop = gear.cropFactor || 1;
   const shutterDen = SHUTTERS[shutterIdx];
   const needsTripod = shutterDen < focalMm * crop;
-  // Depth of field from aperture, lens focal length and the placed camera→subject distance.
-  const subjectDist = scene.subjects[0] && scene.camera
-    ? Math.hypot(scene.subjects[0].dx - scene.camera.dx, scene.subjects[0].dy - scene.camera.dy) / PX_PER_M
+  const focusIndex = focusTarget === "custom" ? 0 : Number(focusTarget);
+  const focusSubject = scene.subjects[focusIndex] || scene.subjects[0];
+  const placedFocusDistance = focusSubject && scene.camera
+    ? Math.hypot(focusSubject.dx - scene.camera.dx, focusSubject.dy - scene.camera.dy) / PX_PER_M
     : null;
+  const customDistance = Number(customFocusDistance);
+  const subjectDist = focusTarget === "custom"
+    ? (customDistance >= 50 ? Infinity : customDistance)
+    : placedFocusDistance;
   let dof = null;
   if (subjectDist && subjectDist > 0.2) {
     const coc = 0.03 / crop;
     const H = (focalMm * focalMm) / (fN * coc) / 1000;
-    dof = {
-      near: (H * subjectDist) / (H + subjectDist),
-      far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
-    };
+    dof = subjectDist === Infinity
+      ? { near: H, far: null }
+      : {
+          near: (H * subjectDist) / (H + subjectDist),
+          far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
+        };
   }
 
   // Light mode relative to camera→subject bearing vs sun azimuth.
@@ -241,7 +250,7 @@ function DiagramInner() {
     if (rel > 180) rel = 360 - rel;
     // rel = angular gap between sun and the camera→subject line.
     // 0 = sun behind subject (backlit), 180 = sun behind camera (front-lit).
-    lightMode = rel <= 40 ? "backlit" : rel <= 75 ? "rim" : rel <= 115 ? "side" : "front";
+    lightMode = rel <= 40 ? "backlit" : rel <= 115 ? "side" : "front";
   }
 
   const shadowEnd = (sx, sy) => {
@@ -269,19 +278,38 @@ function DiagramInner() {
 
   // Camera view cone from the active lens field of view, aimed at the first subject.
   const fovCone = (cx, cy) => {
-    const s0 = scene.subjects[0];
-    if (!s0 || !scene.camera) return null;
+    const target = focusSubject || scene.subjects[0];
+    if (!target || !scene.camera) return null;
     const focal = lens?.focalRangeEq ? (lens.focalRangeEq[0] + lens.focalRangeEq[1]) / 2
       : lens?.focalRangeMm ? ((lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2) * (gear.cropFactor || 1)
       : 28;
     const half = Math.atan(18 / focal);
-    const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
-    const L = 44;
-    const p1 = { x: cx + L * Math.sin(bearing - half), y: cy - L * Math.cos(bearing - half) };
-    const p2 = { x: cx + L * Math.sin(bearing + half), y: cy - L * Math.cos(bearing + half) };
+    const bearing = Math.atan2(target.dx - scene.camera.dx, -(target.dy - scene.camera.dy));
+    const L = 34;
+    const pt = (r, a) => ({ x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) });
+    const p1 = pt(L, bearing - half);
+    const p2 = pt(L, bearing + half);
+    const nearPx = dof ? dof.near * PX_PER_M : null;
+    const farPx = dof ? Math.min((dof.far ?? 500) * PX_PER_M, SCENE_R) : null;
     return (
-      <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
-        fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
+      <>
+        <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
+          fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
+        {nearPx != null && farPx != null && nearPx < SCENE_R && farPx > nearPx && (() => {
+          const n1 = pt(nearPx, bearing - half), n2 = pt(nearPx, bearing + half);
+          const f1 = pt(farPx, bearing - half), f2 = pt(farPx, bearing + half);
+          return (
+            <path d={`M ${n1.x} ${n1.y} A ${nearPx} ${nearPx} 0 0 1 ${n2.x} ${n2.y} L ${f2.x} ${f2.y} A ${farPx} ${farPx} 0 0 0 ${f1.x} ${f1.y} Z`}
+              fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
+          );
+        })()}
+        {dof && dof.far == null && (() => {
+          const p = pt(SCENE_R, bearing);
+          return (
+            <text x={p.x} y={p.y + 3} textAnchor="middle" fontSize="9" fill="var(--leaf)" opacity="0.75">∞</text>
+          );
+        })()}
+      </>
     );
   };
 
@@ -296,12 +324,11 @@ function DiagramInner() {
   return (
     <>
       <h1 className="page-title">{t("diagram.title")}</h1>
-      <p className="page-sub">{t("diagram.sub")}</p>
 
       <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
         <div className="coach-section">
           <div className="coach-step-title"><span className="step-num">1</span> {t("diagram.form.scene")}</div>
-          <div className="scene-grid">
+          <div className="scene-grid diagram-scene-grid">
             <label className="scene-field">
               <span className="input-label">{t("coach.field.latitude")}</span>
               <input className="input" inputMode="decimal" autoComplete="off" value={form.lat}
@@ -312,7 +339,7 @@ function DiagramInner() {
               <input className="input" inputMode="decimal" autoComplete="off" value={form.lng}
                 onChange={(e) => setForm({ ...form, lng: e.target.value })} placeholder="-3.7038" />
             </label>
-            <form className="scene-field full" onSubmit={searchPlace} style={{ display: "grid", gap: 6 }}>
+            <form className="scene-field full diagram-place-field" onSubmit={searchPlace} style={{ display: "grid", gap: 6 }}>
               <span className="input-label">{t("diagram.form.searchPlace")}</span>
               <div style={{ display: "flex", gap: 6 }}>
                 <input className="input" value={place} onChange={(e) => setPlace(e.target.value)}
@@ -334,7 +361,7 @@ function DiagramInner() {
                 {t("diagram.form.sun", { alt: sunAltStr, az: sunAzStr })}
               </div>
             </label>
-            <div className="full">
+            <div className="full diagram-scene-actions">
               <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
                 <MapPin size={16} aria-hidden />
                 <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
@@ -375,7 +402,8 @@ function DiagramInner() {
         </div>
       </div>
 
-      <div className="diagram-wrap" style={{ marginTop: 18 }}>
+      <div className="diagram-row" style={{ marginTop: 18 }}>
+        <div className="diagram-wrap" style={{ maxWidth: 520 }}>
         <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
           style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
@@ -473,15 +501,22 @@ function DiagramInner() {
             {t("diagram.form.drag")}
           </span>
         </div>
-      </div>
+        {dof && (
+          <div className="diagram-dof">
+            <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
+            {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
+          </div>
+        )}
+        </div>
 
-      {sunAlt != null && sunAlt <= 0 && (
-        <p className="field-error" style={{ marginTop: 10 }}>{t("diagram.sunBelow")}</p>
-      )}
+        <div className="diagram-info">
+          {sunAlt != null && sunAlt <= 0 && (
+            <p className="field-error" style={{ margin: 0 }}>{t("diagram.sunBelow")}</p>
+          )}
 
-      {lightMode && preset && (
-        <section style={{ marginTop: 18, display: "grid", gap: 12 }}>
-          <div className="card">
+          <section className="card-grid">
+            {lightMode && (
+          <div className="card diagram-light-card">
             <div className="recipe-head">
               <div className="card-title" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.title`)}</div>
               <span className={`badge ${lightMode === "front" ? "badge-sun" : lightMode === "side" ? "badge-leaf" : "badge-clay"}`}>
@@ -490,10 +525,11 @@ function DiagramInner() {
             </div>
             <p className="recipe-line" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.advice`)}</p>
           </div>
+            )}
 
-          <div className="card">
+          <div className="card diagram-camera-card">
             <div className="card-title">{t("diagram.camera.title")}</div>
-            <div className="recipe-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div className="recipe-stats">
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
                 <div className="recipe-stat-value">{lens ? lens.label : "—"}</div>
@@ -516,10 +552,25 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
-                <div className="recipe-stat-value">{t(`diagram.light.${lightMode}.ev`)}</div>
+                <div className="recipe-stat-value">{lightMode ? t(`diagram.light.${lightMode}.ev`) : "—"}</div>
               </div>
             </div>
             <div className="scene-grid" style={{ marginTop: 12 }}>
+              <label className="scene-field">
+                <span className="input-label">{t("diagram.camera.focus")}</span>
+                <select className="input" value={focusTarget} onChange={(e) => setFocusTarget(e.target.value)}>
+                  <option value="0">{t("diagram.camera.subject1")}</option>
+                  <option value="1">{t("diagram.camera.subject2")}</option>
+                  <option value="custom">{t("diagram.camera.custom")}</option>
+                </select>
+              </label>
+              {focusTarget === "custom" && (
+                <label className="scene-field">
+                  <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
+                  <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
+                    onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                </label>
+              )}
               <label className="scene-field">
                 <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
                 <input type="range" min={fMin} max={fMax} step="0.1" value={fN}
@@ -530,19 +581,14 @@ function DiagramInner() {
                 <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
                   onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
-              {dof && (
-                <div className="time-hint ok" style={{ gridColumn: "1 / -1" }}>
-                  {t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m
-                  {needsTripod ? ` · ${t("diagram.camera.tripod")}` : ""}
-                </div>
-              )}
             </div>
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
               {t("diagram.camera.hint")}
             </p>
           </div>
-        </section>
-      )}
+          </section>
+        </div>
+      </div>
     </>
   );
 }
