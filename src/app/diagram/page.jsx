@@ -118,6 +118,22 @@ function DiagramInner() {
     return dayWindows({ lat, lng, date: dateISO });
   }, [lat, lng, dateISO]);
 
+  // Hour ticks on the scene rim at the sun's azimuth for each daylight hour.
+  const hourTicks = useMemo(() => {
+    if (lat == null || lng == null) return [];
+    const ticks = [];
+    for (let h = 3; h <= 23; h++) {
+      const when = new Date(`${form.date}T${String(h).padStart(2, "0")}:00`);
+      if (isNaN(when)) continue;
+      const s = sunSnapshot({ lat, lng, date: when.toISOString() });
+      const alt = s?.sun?.altitudeDeg;
+      const az = s?.sun?.azimuthDeg;
+      if (alt == null || alt <= 0 || az == null) continue;
+      ticks.push({ h, az });
+    }
+    return ticks;
+  }, [lat, lng, form.date]);
+
   const sunAlt = sun?.sun?.altitudeDeg;
   const sunAz = sun?.sun?.azimuthDeg;
 
@@ -227,6 +243,24 @@ function DiagramInner() {
     );
   };
 
+  // Camera view cone from the active lens field of view, aimed at the first subject.
+  const fovCone = (cx, cy) => {
+    const s0 = scene.subjects[0];
+    if (!s0 || !scene.camera) return null;
+    const focal = lens?.focalRangeEq ? (lens.focalRangeEq[0] + lens.focalRangeEq[1]) / 2
+      : lens?.focalRangeMm ? ((lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2) * (gear.cropFactor || 1)
+      : 28;
+    const half = Math.atan(18 / focal);
+    const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
+    const L = 70;
+    const p1 = { x: cx + L * Math.sin(bearing - half), y: cy - L * Math.cos(bearing - half) };
+    const p2 = { x: cx + L * Math.sin(bearing + half), y: cy - L * Math.cos(bearing + half) };
+    return (
+      <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
+        fill="var(--clay)" opacity="0.08" stroke="var(--clay)" strokeOpacity="0.25" strokeWidth="0.75" strokeDasharray="3 3" />
+    );
+  };
+
   const timeStr = `${String(Math.floor(timeHour)).padStart(2, "0")}:${String(Math.round((timeHour % 1) * 60)).padStart(2, "0")}`;
   const sunAzStr = sunAz != null ? `${Math.round(sunAz)}°` : "—";
   const sunAltStr = sunAlt != null ? `${Math.round(sunAlt)}°` : "—";
@@ -324,7 +358,7 @@ function DiagramInner() {
           {aerial && aerial.tiles.map((tile, i) => (
             <image key={i} href={tile.url} x={tile.x} y={tile.y} width={256} height={256} />
           ))}
-          {!aerial && <circle cx={center.x} cy={center.y} r={SCENE_R} fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 3" />}
+          {!aerial && <circle cx={center.x} cy={center.y} r={SCENE_R} fill="none" stroke="var(--line)" strokeWidth="1" strokeDasharray="3 5" opacity="0.8" />}
 
           {/* day path arc (sunrise → sunset, through south) + cardinal points */}
           <path d={`M ${center.x + SCENE_R} ${center.y} A ${SCENE_R} ${SCENE_R} 0 0 1 ${center.x - SCENE_R} ${center.y}`}
@@ -335,6 +369,22 @@ function DiagramInner() {
             const y = center.y - SCENE_R * Math.cos(rad);
             return (
               <text key={label} x={x} y={y + (deg === 180 ? 14 : 4)} textAnchor="middle" fontSize="10" fill="var(--text-muted)" fontWeight="700">{label}</text>
+            );
+          })}
+
+          {/* hour ticks on the rim at the sun's azimuth for each daylight hour */}
+          {hourTicks.map(({ h, az }) => {
+            const rad = (az * Math.PI) / 180;
+            return (
+              <g key={h}>
+                <line x1={center.x + (SCENE_R - 3) * Math.sin(rad)} y1={center.y - (SCENE_R - 3) * Math.cos(rad)}
+                  x2={center.x + (SCENE_R + 3) * Math.sin(rad)} y2={center.y - (SCENE_R + 3) * Math.cos(rad)}
+                  stroke="var(--sun)" strokeWidth="1" opacity="0.45" />
+                {h % 6 === 0 && (
+                  <text x={center.x + (SCENE_R - 12) * Math.sin(rad)} y={center.y - (SCENE_R - 12) * Math.cos(rad) + 3}
+                    textAnchor="middle" fontSize="8" fill="var(--text-muted)" opacity="0.8">{h}</text>
+                )}
+              </g>
             );
           })}
 
@@ -360,9 +410,8 @@ function DiagramInner() {
               <g key={i}>
                 {shadowWedge(sx, sy)}
                 <g transform={`translate(${sx},${sy})`}>
-                  <circle r={9} fill="var(--leaf)" opacity="0.25" />
                   <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
-                  <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{i + 1}</text>
+                  <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{i + 1}</text>
                   <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
                 </g>
               </g>
@@ -374,11 +423,11 @@ function DiagramInner() {
             const cy = center.y + scene.camera.dy;
             return (
               <>
+                {fovCone(cx, cy)}
                 {shadowWedge(cx, cy)}
                 <g transform={`translate(${cx},${cy})`}>
-                  <circle r={9} fill="var(--clay)" opacity="0.25" />
                   <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
-                  <text y={22} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
+                  <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
                   <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
                 </g>
               </>
