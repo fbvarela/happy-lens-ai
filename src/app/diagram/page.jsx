@@ -319,7 +319,6 @@ function DiagramInner() {
   return (
     <>
       <h1 className="page-title">{t("diagram.title")}</h1>
-      <p className="page-sub">{t("diagram.sub")}</p>
 
       <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
         <div className="coach-section">
