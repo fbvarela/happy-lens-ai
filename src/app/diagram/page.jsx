@@ -224,15 +224,20 @@ function DiagramInner() {
   const placedFocusDistance = focusSubject && scene.camera
     ? Math.hypot(focusSubject.dx - scene.camera.dx, focusSubject.dy - scene.camera.dy) / PX_PER_M
     : null;
-  const subjectDist = focusTarget === "custom" ? Number(customFocusDistance) : placedFocusDistance;
+  const customDistance = Number(customFocusDistance);
+  const subjectDist = focusTarget === "custom"
+    ? (customDistance >= 50 ? Infinity : customDistance)
+    : placedFocusDistance;
   let dof = null;
   if (subjectDist && subjectDist > 0.2) {
     const coc = 0.03 / crop;
     const H = (focalMm * focalMm) / (fN * coc) / 1000;
-    dof = {
-      near: (H * subjectDist) / (H + subjectDist),
-      far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
-    };
+    dof = subjectDist === Infinity
+      ? { near: H, far: null }
+      : {
+          near: (H * subjectDist) / (H + subjectDist),
+          far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
+        };
   }
 
   // Light mode relative to camera→subject bearing vs sun azimuth.
@@ -298,7 +303,7 @@ function DiagramInner() {
               fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
           );
         })()}
-        {dof && dof.far == null && nearPx != null && nearPx < SCENE_R && (() => {
+        {dof && dof.far == null && (() => {
           const p = pt(SCENE_R, bearing);
           return (
             <text x={p.x} y={p.y + 3} textAnchor="middle" fontSize="9" fill="var(--leaf)" opacity="0.75">∞</text>
@@ -561,7 +566,7 @@ function DiagramInner() {
               </label>
               {focusTarget === "custom" && (
                 <label className="scene-field">
-                  <span className="input-label">{t("diagram.camera.focusDistance")} · {customFocusDistance} m</span>
+                  <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
                   <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
                     onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
