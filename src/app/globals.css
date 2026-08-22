@@ -193,6 +193,12 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
+.diagram-row { display: grid; gap: 16px; }
+.diagram-info { display: grid; gap: 12px; align-content: start; }
+@media (min-width: 900px) {
+  .diagram-row { grid-template-columns: minmax(320px, 480px) 1fr; align-items: start; }
+}
+
 /* Buttons — pill shape per brand spec */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;

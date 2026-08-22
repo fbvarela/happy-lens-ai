@@ -277,11 +277,24 @@ function DiagramInner() {
     const half = Math.atan(18 / focal);
     const bearing = Math.atan2(s0.dx - scene.camera.dx, -(s0.dy - scene.camera.dy));
     const L = 34;
-    const p1 = { x: cx + L * Math.sin(bearing - half), y: cy - L * Math.cos(bearing - half) };
-    const p2 = { x: cx + L * Math.sin(bearing + half), y: cy - L * Math.cos(bearing + half) };
+    const pt = (r, a) => ({ x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) });
+    const p1 = pt(L, bearing - half);
+    const p2 = pt(L, bearing + half);
+    const nearPx = dof ? dof.near * PX_PER_M : null;
+    const farPx = dof ? Math.min((dof.far ?? 500) * PX_PER_M, SCENE_R) : null;
     return (
-      <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
-        fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
+      <>
+        <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
+          fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
+        {nearPx != null && farPx != null && nearPx < SCENE_R && farPx > nearPx && (() => {
+          const n1 = pt(nearPx, bearing - half), n2 = pt(nearPx, bearing + half);
+          const f1 = pt(farPx, bearing - half), f2 = pt(farPx, bearing + half);
+          return (
+            <path d={`M ${n1.x} ${n1.y} A ${nearPx} ${nearPx} 0 0 1 ${n2.x} ${n2.y} L ${f2.x} ${f2.y} A ${farPx} ${farPx} 0 0 0 ${f1.x} ${f1.y} Z`}
+              fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
+          );
+        })()}
+      </>
     );
   };
 
@@ -375,7 +388,8 @@ function DiagramInner() {
         </div>
       </div>
 
-      <div className="diagram-wrap" style={{ marginTop: 18, maxWidth: 520, marginLeft: "auto", marginRight: "auto" }}>
+      <div className="diagram-row" style={{ marginTop: 18 }}>
+        <div className="diagram-wrap" style={{ maxWidth: 520 }}>
         <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
           style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
@@ -473,14 +487,15 @@ function DiagramInner() {
             {t("diagram.form.drag")}
           </span>
         </div>
-      </div>
+        </div>
 
-      {sunAlt != null && sunAlt <= 0 && (
-        <p className="field-error" style={{ marginTop: 10 }}>{t("diagram.sunBelow")}</p>
-      )}
+        <div className="diagram-info">
+          {sunAlt != null && sunAlt <= 0 && (
+            <p className="field-error" style={{ margin: 0 }}>{t("diagram.sunBelow")}</p>
+          )}
 
-      {lightMode && preset && (
-        <section className="card-grid" style={{ marginTop: 18 }}>
+          <section className="card-grid">
+            {lightMode && (
           <div className="card">
             <div className="recipe-head">
               <div className="card-title" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.title`)}</div>
@@ -490,6 +505,7 @@ function DiagramInner() {
             </div>
             <p className="recipe-line" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.advice`)}</p>
           </div>
+            )}
 
           <div className="card">
             <div className="card-title">{t("diagram.camera.title")}</div>
@@ -516,7 +532,7 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
-                <div className="recipe-stat-value">{t(`diagram.light.${lightMode}.ev`)}</div>
+                <div className="recipe-stat-value">{lightMode ? t(`diagram.light.${lightMode}.ev`) : "—"}</div>
               </div>
             </div>
             <div className="scene-grid" style={{ marginTop: 12 }}>
@@ -541,8 +557,9 @@ function DiagramInner() {
               {t("diagram.camera.hint")}
             </p>
           </div>
-        </section>
-      )}
+          </section>
+        </div>
+      </div>
     </>
   );
 }
