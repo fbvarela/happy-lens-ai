@@ -383,7 +383,7 @@ function DiagramInner() {
                 </g>
               </>
             );
-          })}
+          })()}
         </svg>
 
         <div className="diagram-legend" style={{ marginTop: 10, display: "flex", gap: 14, flexWrap: "wrap", fontSize: "0.82rem", color: "var(--text-muted)" }}>
