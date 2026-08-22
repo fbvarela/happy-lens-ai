@@ -324,7 +324,7 @@ function DiagramInner() {
       <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
         <div className="coach-section">
           <div className="coach-step-title"><span className="step-num">1</span> {t("diagram.form.scene")}</div>
-          <div className="scene-grid">
+          <div className="scene-grid diagram-scene-grid">
             <label className="scene-field">
               <span className="input-label">{t("coach.field.latitude")}</span>
               <input className="input" inputMode="decimal" autoComplete="off" value={form.lat}
@@ -357,7 +357,7 @@ function DiagramInner() {
                 {t("diagram.form.sun", { alt: sunAltStr, az: sunAzStr })}
               </div>
             </label>
-            <div className="full">
+            <div className="full diagram-scene-actions">
               <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
                 <MapPin size={16} aria-hidden />
                 <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
