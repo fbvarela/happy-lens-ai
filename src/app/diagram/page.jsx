@@ -480,7 +480,7 @@ function DiagramInner() {
       )}
 
       {lightMode && preset && (
-        <section style={{ marginTop: 18, display: "grid", gap: 12 }}>
+        <section className="card-grid" style={{ marginTop: 18 }}>
           <div className="card">
             <div className="recipe-head">
               <div className="card-title" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.title`)}</div>
@@ -493,7 +493,7 @@ function DiagramInner() {
 
           <div className="card">
             <div className="card-title">{t("diagram.camera.title")}</div>
-            <div className="recipe-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            <div className="recipe-stats">
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
                 <div className="recipe-stat-value">{lens ? lens.label : "—"}</div>
