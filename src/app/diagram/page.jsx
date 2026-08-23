@@ -403,9 +403,9 @@ function DiagramInner() {
 
         <div className="coach-section">
           <div className="coach-step-title"><span className="step-num">2</span> {t("diagram.form.subject")}</div>
-          <div className="chip-row">
+          <div className="subject-list" role="listbox" aria-label={t("diagram.form.subject")}>
             {SUBJECT_PRESETS.map((s) => (
-              <button key={s.id} type="button" className="chip" aria-pressed={subjectId === s.id}
+              <button key={s.id} type="button" className="subject-list-item" aria-selected={subjectId === s.id}
                 onClick={() => setSubjectId(s.id)}>
                 <s.icon size={15} aria-hidden />
                 <span>{t(`subject.${s.id}`)}</span>

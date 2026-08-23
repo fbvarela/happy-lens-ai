@@ -260,10 +260,10 @@ function CoachPageInner() {
           <div className="coach-step-title">
             <span className="step-num">1</span> {t("coach.step.subject")}
           </div>
-          <div className="chip-row" role="listbox" aria-label={t("coach.step.subject")}>
+          <div className="subject-list" role="listbox" aria-label={t("coach.step.subject")}>
             {SUBJECT_PRESETS.map((s) => (
               <button key={s.id} type="button" onClick={() => setSubjectId(s.id)}
-                className="chip" aria-pressed={subjectId === s.id}>
+                className="subject-list-item" aria-selected={subjectId === s.id}>
                 <s.icon size={16} aria-hidden />
                 <span>{t(`subject.${s.id}`)}</span>
               </button>
