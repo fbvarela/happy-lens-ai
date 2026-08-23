@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Smartphone, Camera, Video } from "lucide-react";
+import { Smartphone, Camera, Video, ExternalLink } from "lucide-react";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
 import { LensRingIcon, FlashOnIcon } from "@/components/icons";
@@ -14,6 +14,15 @@ function GearKindIcon({ kind, ...props }) {
 
 function slug(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(String(value).trim());
+    return ["http:", "https:"].includes(url.protocol) ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 const EMPTY_GEAR = {
@@ -35,6 +44,7 @@ const EMPTY_GEAR = {
   flashGN: "",
   flashTTL: true,
   flashHSS: false,
+  referenceUrl: "",
 };
 
 export default function GearPage() {
@@ -42,16 +52,20 @@ export default function GearPage() {
   const store = useGearStore();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_GEAR);
+  const [urlDrafts, setUrlDrafts] = useState({});
 
   const save = (e) => {
     e.preventDefault();
     if (!form.label || !form.lensLabel) return;
+    const referenceUrl = form.referenceUrl.trim() ? safeUrl(form.referenceUrl) : null;
+    if (form.referenceUrl.trim() && !referenceUrl) return;
     const gearId = `custom-${slug(form.label)}-${Date.now().toString(36)}`;
     const lensId = `lens-${slug(form.lensLabel)}`;
     const gear = {
       id: gearId,
       label: form.label,
       kind: form.kind,
+      referenceUrl,
       bodyNotes: form.bodyNotes || null,
       modes: form.kind === "dslr" ? ["P", "Av", "Tv", "M"] : ["Photo", "Manual"],
       lenses: [{
@@ -82,6 +96,14 @@ export default function GearPage() {
     setShowForm(false);
   };
 
+  const saveReferenceUrl = (e, gearId) => {
+    e.preventDefault();
+    const value = String(new FormData(e.currentTarget).get("referenceUrl") || "").trim();
+    const url = value ? safeUrl(value) : null;
+    if (value && !url) return;
+    store.setReferenceUrl(gearId, url);
+  };
+
   return (
     <>
       <h1 className="page-title">{t("gear.title")}</h1>
@@ -90,6 +112,7 @@ export default function GearPage() {
       <section className="gear-list">
         {store.all.map((g) => {
           const active = g.id === store.activeId;
+          const referenceUrl = safeUrl(g.referenceUrl);
           return (
             <article key={g.id} className={`card gear-card ${active ? "gear-card-active" : ""}`}
               onClick={() => store.setActiveId(g.id)}
@@ -104,6 +127,19 @@ export default function GearPage() {
                 {active && <span className="badge badge-leaf">{t("gear.active")}</span>}
               </div>
               {g.bodyNotes && <p className="recipe-line" style={{ color: "var(--text-muted)" }}>{g.bodyNotes}</p>}
+              <form className="gear-reference-form" onSubmit={(e) => saveReferenceUrl(e, g.id)} onClick={(e) => e.stopPropagation()}>
+                <input className="input" type="url" name="referenceUrl" value={urlDrafts[g.id] ?? g.referenceUrl ?? ""}
+                  onChange={(e) => setUrlDrafts({ ...urlDrafts, [g.id]: e.target.value })}
+                  placeholder={t("gear.form.urlPlaceholder")} aria-label={t("gear.form.url")} />
+                <button type="submit" className="btn btn-ghost btn-sm">{t("gear.form.saveUrl")}</button>
+              </form>
+              {referenceUrl && (
+                <a className="chip chip-sm" href={referenceUrl} target="_blank" rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()}>
+                  <ExternalLink size={14} aria-hidden />
+                  <span>{t("gear.reference")}</span>
+                </a>
+              )}
               <div className="recipe-stat-label" style={{ marginTop: 8 }}>{t("gear.lenses")}</div>
               <ul className="recipe-tips gear-lens-list">
                 {g.lenses.map((l) => {
@@ -183,6 +219,12 @@ export default function GearPage() {
                   <input className="input" value={form.bodyNotes}
                     onChange={(e) => setForm({ ...form, bodyNotes: e.target.value })}
                     placeholder="APS-C, 16 MP, sensor-shift stabilisation…" />
+                </label>
+                <label className="scene-field full">
+                  <span className="input-label">{t("gear.form.url")}</span>
+                  <input className="input" type="url" value={form.referenceUrl}
+                    onChange={(e) => setForm({ ...form, referenceUrl: e.target.value })}
+                    placeholder="https://www.example.com/camera" />
                 </label>
               </div>
             </div>

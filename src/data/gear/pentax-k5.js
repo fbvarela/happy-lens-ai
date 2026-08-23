@@ -1,6 +1,7 @@
 export const PENTAX_K5 = {
   id: "pentax-k5",
   label: "Pentax K-5",
+  referenceUrl: "https://www.ricoh-imaging.co.jp/english/products/k-5/",
   kind: "dslr",
   bodyNotes: "APS-C CMOS, 16 MP, 1.5× crop, built-in sensor-shift stabilisation (SR).",
   cropFactor: 1.5,

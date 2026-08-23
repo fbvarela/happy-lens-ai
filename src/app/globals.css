@@ -390,6 +390,8 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .gear-pill .gear-icon { font-size: 1.5rem; line-height: 1; }
 .gear-pill .gear-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .gear-pill .gear-label { font-weight: 600; font-size: 0.98rem; color: var(--bark); }
+.gear-reference-form { display: flex; gap: 6px; margin-top: 10px; }
+.gear-reference-form .input { min-width: 0; flex: 1; height: 36px; }
 .gear-pill .gear-meta { color: var(--text-muted); font-size: 0.78rem; }
 
 .coach-submit {
