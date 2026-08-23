@@ -2,7 +2,6 @@ export const DICTIONARIES = {
   en: {
     nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Adjust", gear: "Gear", account: "Account" },
     locale: { label: "Language", en: "English", es: "Español" },
-    theme: { label: "Appearance", light: "Light", dark: "Dark", toLight: "Switch to light mode", toDark: "Switch to dark mode" },
 
     home: {
       kicker: "happy lens",
@@ -90,7 +89,7 @@ entryDiagram: "Light diagram",
         backlit: { title: "Backlit", label: "Backlit", ev: "+0.7", advice: "Sun directly behind the couple — strong rim/backlight. Raise exposure for the faces and AE/AF-lock on the brightest edge." },
       },
       camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live.",
-        dof: "Depth of field", tripod: "too slow to hand-hold — use a tripod", focus: "Focus on", subject1: "Subject 1", subject2: "Subject 2", custom: "Custom distance", focusDistance: "Focus distance (m)", focalLength: "Focal length" },
+        auto: "Auto", dof: "Depth of field", tripod: "too slow to hand-hold — use a tripod", focus: "Focus on", subject1: "Subject 1", subject2: "Subject 2", custom: "Custom distance", focusDistance: "Focus distance (m)", focalLength: "Focal length" },
       weather: { sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
     },
 
@@ -332,7 +331,6 @@ entryDiagram: "Light diagram",
   es: {
     nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
     locale: { label: "Idioma", en: "English", es: "Español" },
-    theme: { label: "Apariencia", light: "Claro", dark: "Oscuro", toLight: "Cambiar a modo claro", toDark: "Cambiar a modo oscuro" },
 
     home: {
       kicker: "happy lens",
@@ -420,7 +418,7 @@ entryDiagram: "Diagrama de luz",
         backlit: { title: "A contraluz", label: "Contraluz", ev: "+0,7", advice: "El sol está directamente detrás de la pareja — fuerte contraluz. Sube la exposición para las caras y bloquea AE/AF en el borde más luminoso." },
       },
       camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo.",
-        dof: "Profundidad de campo", tripod: "demasiado lento para pulso — usa trípode", focus: "Enfocar a", subject1: "Sujeto 1", subject2: "Sujeto 2", custom: "Distancia personalizada", focusDistance: "Distancia de enfoque (m)", focalLength: "Distancia focal" },
+        auto: "Auto", dof: "Profundidad de campo", tripod: "demasiado lento para pulso — usa trípode", focus: "Enfocar a", subject1: "Sujeto 1", subject2: "Sujeto 2", custom: "Distancia personalizada", focusDistance: "Distancia de enfoque (m)", focalLength: "Distancia focal" },
       weather: { sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
     },
 
