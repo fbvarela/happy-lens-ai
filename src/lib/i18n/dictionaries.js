@@ -80,6 +80,7 @@ entryDiagram: "Light diagram",
         noPlace: "No place found — enter coordinates manually.",
       },
       legend: { subjects: "Subjects", camera: "Camera", sun: "Sun" },
+      distance: (p) => `C → ${p.subject}: ${p.distance} m`,
       sunBelow: "The sun is below the horizon — no shadows.",
       light: {
         front: { title: "Front-lit", label: "Front", ev: "+0", advice: "Sun behind the camera — the couple faces the light. Faces are lit and colors pop; watch your own shadow in the frame." },
@@ -89,6 +90,7 @@ entryDiagram: "Light diagram",
       },
       camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live.",
         dof: "Depth of field", tripod: "too slow to hand-hold — use a tripod", focus: "Focus on", subject1: "Subject 1", subject2: "Subject 2", custom: "Custom distance", focusDistance: "Focus distance (m)" },
+      weather: { sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
     },
 
     plan: {
@@ -405,6 +407,7 @@ entryDiagram: "Diagrama de luz",
         noPlace: "No se encontró el lugar — introduce las coordenadas manualmente.",
       },
       legend: { subjects: "Sujetos", camera: "Cámara", sun: "Sol" },
+      distance: (p) => `C → ${p.subject}: ${p.distance} m`,
       sunBelow: "El sol está bajo el horizonte — no hay sombras.",
       light: {
         front: { title: "Luz frontal", label: "Frontal", ev: "+0", advice: "El sol está detrás de la cámara — la pareja mira a la luz. Caras iluminadas y colores vivos; vigila tu propia sombra en el encuadre." },
@@ -414,6 +417,7 @@ entryDiagram: "Diagrama de luz",
       },
       camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo.",
         dof: "Profundidad de campo", tripod: "demasiado lento para pulso — usa trípode", focus: "Enfocar a", subject1: "Sujeto 1", subject2: "Sujeto 2", custom: "Distancia personalizada", focusDistance: "Distancia de enfoque (m)" },
+      weather: { sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
     },
 
     plan: {

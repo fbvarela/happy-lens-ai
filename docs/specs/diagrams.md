@@ -68,3 +68,6 @@ schematic feels too abstract.
 - [x] Think about making it more interesting (camera view cone derived from the active lens' field of view, aimed at the first subject — wider on the phone's ultrawide, tighter on the Pentax tele end)
 - [x] would it be possible to calculate the depth of field with sliders for aperture and speed? (aperture + shutter sliders in the camera card; DoF from aperture, lens focal length and an explicit focus target — Subject 1 by default, Subject 2 or custom distance; tripod warning when the shutter is slower than 1/focal-eq)
 - [x] reduce the sun and the visor itself, less childish circles (sun: cartoon rays removed — thin ring + small disc; FOV cone shortened to 34px and fainter; shadow wedges narrowed and capped at 40px)
+- [x] Instead of infinite symbol on diagram, show the DoF band until the scene edge.
+- [x] Take into account the weather conditions: sunny/cloudy (hourly cloud cover from Open-Meteo softens shadows, dims the sun marker and adds a weather note to the light advice)
+- [x] show distances between the photographer and the subjects (subtle dashed measurement lines with midpoint labels in metres)
