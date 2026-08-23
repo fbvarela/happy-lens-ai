@@ -260,15 +260,9 @@ function CoachPageInner() {
           <div className="coach-step-title">
             <span className="step-num">1</span> {t("coach.step.subject")}
           </div>
-          <div className="chip-row" role="listbox" aria-label={t("coach.step.subject")}>
-            {SUBJECT_PRESETS.map((s) => (
-              <button key={s.id} type="button" onClick={() => setSubjectId(s.id)}
-                className="chip" aria-pressed={subjectId === s.id}>
-                <s.icon size={16} aria-hidden />
-                <span>{t(`subject.${s.id}`)}</span>
-              </button>
-            ))}
-          </div>
+          <select className="input" value={subjectId} onChange={(e) => setSubjectId(e.target.value)} aria-label={t("coach.step.subject")}>
+            {SUBJECT_PRESETS.map((s) => <option key={s.id} value={s.id}>{t(`subject.${s.id}`)}</option>)}
+          </select>
           {subjectId === "pets" && (
             <div className="pets-subpicker">
               <div className="input-label" style={{ marginTop: 10 }}>{t("pets.contextLabel")}</div>
