@@ -232,6 +232,7 @@ function DiagramInner() {
   const fNumber = lens?.fNumberFixed ?? lens?.fNumberMin ?? null;
   const fNumberTele = lens?.apertureAtTele ?? null;
   const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
+  const cameraMode = gear.modes?.includes("Av") ? "Av" : gear.modes?.[0] || preset?.cameraMode;
 
   const fMin = lens?.fNumberMin ?? 1.8;
   const fMax = lens?.fNumberMax ?? 16;
@@ -587,7 +588,7 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
-                <div className="recipe-stat-value">{preset?.cameraMode ?? "—"}</div>
+                <div className="recipe-stat-value">{cameraMode ?? "—"}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
