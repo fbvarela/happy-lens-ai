@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Smartphone, Camera, Video, ExternalLink } from "lucide-react";
+import { Smartphone, Camera, Video, ExternalLink, Save } from "lucide-react";
 import { useT } from "@/lib/i18n/LocaleProvider";
 import { useGearStore } from "@/lib/gear-store";
 import { LensRingIcon, FlashOnIcon } from "@/components/icons";
@@ -131,7 +131,9 @@ export default function GearPage() {
                 <input className="input" type="url" name="referenceUrl" value={urlDrafts[g.id] ?? g.referenceUrl ?? ""}
                   onChange={(e) => setUrlDrafts({ ...urlDrafts, [g.id]: e.target.value })}
                   placeholder={t("gear.form.urlPlaceholder")} aria-label={t("gear.form.url")} />
-                <button type="submit" className="btn btn-ghost btn-sm">{t("gear.form.saveUrl")}</button>
+                <button type="submit" className="btn btn-ghost btn-sm icon-btn" aria-label={t("gear.form.saveUrl")} title={t("gear.form.saveUrl")}>
+                  <Save size={16} aria-hidden />
+                </button>
               </form>
               {referenceUrl && (
                 <a className="chip chip-sm" href={referenceUrl} target="_blank" rel="noreferrer"

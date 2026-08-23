@@ -392,6 +392,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .gear-pill .gear-label { font-weight: 600; font-size: 0.98rem; color: var(--bark); }
 .gear-reference-form { display: flex; gap: 6px; margin-top: 10px; }
 .gear-reference-form .input { min-width: 0; flex: 1; height: 36px; }
+.icon-btn { width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .gear-pill .gear-meta { color: var(--text-muted); font-size: 0.78rem; }
 
 .coach-submit {
