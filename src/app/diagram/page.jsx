@@ -313,7 +313,7 @@ function DiagramInner() {
     const nearPx = dof ? dof.near * PX_PER_M : null;
     const farPx = dof ? Math.min((dof.far ?? 500) * PX_PER_M, SCENE_R) : null;
     return (
-      <>
+      <g pointerEvents="none">
         <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
           fill="var(--clay)" opacity="0.06" stroke="var(--clay)" strokeOpacity="0.2" strokeWidth="0.75" strokeDasharray="3 3" />
         {nearPx != null && farPx != null && nearPx < SCENE_R && farPx > nearPx && (() => {
@@ -324,7 +324,7 @@ function DiagramInner() {
               fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
           );
         })()}
-      </>
+      </g>
     );
   };
 
