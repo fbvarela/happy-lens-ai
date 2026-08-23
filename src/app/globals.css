@@ -330,11 +330,6 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   display: flex; flex-wrap: wrap; gap: 8px;
   padding: 2px 0;
 }
-.subject-list { display: grid; gap: 0; max-width: 420px; border-top: 1px solid var(--line); }
-.subject-list-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
-.subject-list-item[aria-selected="true"] { background: var(--bark); color: #fff; padding-left: 10px; padding-right: 10px; }
-.subject-list-item:hover { background: var(--cream); }
-.subject-list-item[aria-selected="true"]:hover { background: var(--bark); }
 .chip {
   flex: 0 0 auto;
   display: inline-flex; align-items: center; gap: 6px;
