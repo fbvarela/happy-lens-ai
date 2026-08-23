@@ -805,7 +805,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   --clay-light: #efad94;
   --shadow: 0 2px 12px rgba(0, 0, 0, .24);
   --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
-  --nav-bg: #0d1412;
 }
 [data-theme="dark"] h1,
 [data-theme="dark"] h2,
@@ -816,8 +815,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 [data-theme="dark"] .card-title,
 [data-theme="dark"] .recipe-stat-value,
 [data-theme="dark"] .timeline-value { color: var(--bark); }
-[data-theme="dark"] .btn-primary { background: var(--bark); color: #12201b; }
-[data-theme="dark"] .btn-primary:hover { background: var(--bark-light); }
+/* The bark token is near-white in dark mode, so the primary button uses the
+   leaf accent instead of reading as a pale slab. */
+[data-theme="dark"] .btn { background: transparent; }
+[data-theme="dark"] .btn-primary { background: var(--leaf); color: #0c1a13; }
+[data-theme="dark"] .btn-primary:hover { background: var(--leaf-light); }
+[data-theme="dark"] .btn-ghost { border-color: var(--line); }
+[data-theme="dark"] .btn-ghost:hover { color: var(--bark); border-color: var(--bark-light); }
 [data-theme="dark"] .btn-leaf { color: #10221a; }
 [data-theme="dark"] .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
 [data-theme="dark"] .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
@@ -833,7 +837,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
    Workspace layout: dense, wide-screen aware, no oversized fields or cards.
    ========================================================================== */
 :root { --nav-bg: #203b34; --nav-w: 204px; }
-[data-theme="dark"] { --nav-bg: #0d1412; }
+[data-theme="dark"] { --nav-bg: #18211f; }
+[data-theme="dark"] .sidebar-nav { border-right: 1px solid var(--line); box-shadow: none; }
+[data-theme="dark"] .nav-mobile-bar { border-bottom-color: var(--line); }
+[data-theme="dark"] .bottom-nav { border-top-color: var(--line); }
 
 .sidebar-nav, .nav-mobile-bar, .bottom-nav { background: var(--nav-bg); }
 
@@ -878,8 +885,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 .hero h1 { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.3rem); margin-bottom: 6px; }
 .hero p { margin: 0; font-size: 0.92rem; max-width: 62ch; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.home-layout { display: grid; gap: 20px; align-items: start; }
-.home-main { display: grid; gap: 4px; align-content: start; }
+.home-layout { display: block; }
 .home-section { margin-top: 22px; }
 .home-section-title { font-size: 1.05rem; margin: 0 0 2px; }
 .feature-card { padding: 13px 14px; gap: 6px; }
@@ -912,6 +918,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 .flash-toggle-label { font-size: 0.84rem; }
 .coach-submit { height: 38px; font-size: 0.9rem; }
 .dropzone { min-height: 132px; padding: 18px 16px; }
+.upload-card { max-width: 620px; }
 
 /* Recipes */
 .recipe-stats { padding: 10px; gap: 6px 10px; }
@@ -952,11 +959,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 }
 
 @media (min-width: 1100px) {
-  /* Home reads as a workspace: intro on the left, entry points beside it. */
-  .home-layout { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 28px; }
-  .home-aside { margin-top: 4px; }
-  .home-aside .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hero { padding-top: 0; }
+  /* All four entry points sit on one row so the page reads at a glance. */
+  .home-layout .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (min-width: 1360px) {

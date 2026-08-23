@@ -16,8 +16,7 @@ export default function HomePage() {
   const t = useT();
   return (
     <div className="home-layout">
-      <div className="home-main">
-        <header className="hero">
+      <header className="hero">
         <div className="accent">{t("home.kicker")}</div>
         <h1 className="text-balance">{t("home.title")}</h1>
         <p className="text-pretty">{t("home.body")}</p>
@@ -25,12 +24,11 @@ export default function HomePage() {
           <Link className="btn btn-primary" href="/coach"><Target size={15} aria-hidden /> {t("home.ctaCoach")}</Link>
           <Link className="btn btn-ghost" href="/plan">{t("home.ctaRoadmap")}</Link>
         </div>
-        </header>
+      </header>
 
-        <LastRecipeCard />
-      </div>
+      <LastRecipeCard />
 
-      <section className="home-section home-aside">
+      <section className="home-section">
         <h2 className="page-title home-section-title">{t("home.sectionTitle")}</h2>
         <p className="page-sub">{t("home.sectionSub")}</p>
 

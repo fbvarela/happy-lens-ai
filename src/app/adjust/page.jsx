@@ -109,7 +109,7 @@ export default function AdjustPage() {
         <Link href="/adjust/subjects" className="btn btn-ghost">Subject baselines</Link>
       </div>
 
-      <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
+      <div className="card coach-card upload-card" style={{ display: "grid", gap: 16 }}>
         {!previewUrl && (
           <div
             className={`dropzone ${dragging ? "dropzone-active" : ""}`}
