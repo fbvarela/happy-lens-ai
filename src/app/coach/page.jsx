@@ -255,7 +255,7 @@ function CoachPageInner() {
       <h1 className="page-title">{t("coach.title")}</h1>
       <p className="page-sub">{t("coach.sub")}</p>
 
-      <form onSubmit={submit} className="card coach-card coach-form coach-form-split">
+      <form onSubmit={submit} className="card coach-card coach-form">
         <div className="coach-section">
           <div className="coach-step-title">
             <span className="step-num">1</span> {t("coach.step.subject")}

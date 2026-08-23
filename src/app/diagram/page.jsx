@@ -53,6 +53,7 @@ function DiagramInner() {
   const [fStop, setFStop] = useState(null);
   const [focalLength, setFocalLength] = useState(null);
   const [shutterIdx, setShutterIdx] = useState(2);
+  const [exposureAuto, setExposureAuto] = useState(true);
   const [focusTarget, setFocusTarget] = useState("0");
   const [customFocusDistance, setCustomFocusDistance] = useState("5");
   const svgRef = useRef(null);
@@ -231,8 +232,6 @@ function DiagramInner() {
   const lensId = preset?.preferredLens?.[0];
   const lens = gear.lenses.find((l) => l.id === lensId) || gear.lenses[0];
   const fNumber = lens?.fNumberFixed ?? lens?.fNumberMin ?? null;
-  const fNumberTele = lens?.apertureAtTele ?? null;
-  const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
   const cameraMode = gear.modes?.includes("Av") ? "Av" : gear.modes?.[0] || preset?.cameraMode;
 
   const fMin = lens?.fNumberMin ?? 1.8;
@@ -244,7 +243,6 @@ function DiagramInner() {
   const hasFocalSlider = focalMax > focalMin;
   const crop = gear.cropFactor || 1;
   const shutterDen = SHUTTERS[shutterIdx];
-  const needsTripod = shutterDen < focalMm * crop;
   const focusIndex = focusTarget === "custom" ? 0 : Number(focusTarget);
   const focusSubject = scene.subjects[focusIndex] || scene.subjects[0];
   const placedFocusDistance = focusSubject && scene.camera
@@ -255,17 +253,50 @@ function DiagramInner() {
     ? (customDistance >= 50 ? Infinity : customDistance)
     : placedFocusDistance;
   const coc = lens?.circleOfConfusionMm ?? gear.circleOfConfusionMm ?? 0.03 / crop;
-  let dof = null;
-  if (subjectDist && subjectDist > 0.2) {
-    const H = (focalMm * focalMm) / (fN * coc) / 1000;
-    dof = subjectDist === Infinity
+  const calculateDof = (aperture, distance) => {
+    if (!distance || distance <= 0.2) return null;
+    const H = (focalMm * focalMm) / (aperture * coc) / 1000;
+    return distance === Infinity
       ? { near: H, far: null, hyperfocal: H }
       : {
-          near: (H * subjectDist) / (H + subjectDist),
-          far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
+          near: (H * distance) / (H + distance),
+          far: distance < H ? (H * distance) / (H - distance) : null,
           hyperfocal: H,
         };
+  };
+  const subjectDistances = scene.subjects
+    .map((s) => Math.hypot(s.dx - scene.camera.dx, s.dy - scene.camera.dy) / PX_PER_M)
+    .filter((distance) => distance > 0.2);
+  const nearestSubject = Math.min(...subjectDistances);
+  const farthestSubject = Math.max(...subjectDistances);
+  let autoFNumber = fMin;
+  for (let candidate = fMin; candidate <= fMax; candidate += 0.1) {
+    const candidateDof = calculateDof(candidate, subjectDist);
+    if (candidateDof && candidateDof.near <= nearestSubject && (candidateDof.far == null || candidateDof.far >= farthestSubject)) {
+      autoFNumber = +candidate.toFixed(1);
+      break;
+    }
   }
+  let exposureLightMode = null;
+  if (sunAz != null && scene.subjects[0] && scene.camera) {
+    const bearing = ((Math.atan2(scene.subjects[0].dx - scene.camera.dx, -(scene.subjects[0].dy - scene.camera.dy)) * 180) / Math.PI + 360) % 360;
+    let rel = Math.abs(sunAz - bearing) % 360;
+    if (rel > 180) rel = 360 - rel;
+    exposureLightMode = rel <= 40 ? "backlit" : rel <= 115 ? "side" : "front";
+  }
+  const lightCompensation = exposureLightMode === "backlit" ? 1 : exposureLightMode === "side" ? 0.3 : 0;
+  const lightEv = Math.max(5, Math.min(15, 8 + Math.max(0, sunAlt ?? 20) * 0.1 - (cloudCoverPct ?? 0) * 0.025 - lightCompensation));
+  const minShutterDen = Math.max(1, Math.round(1 / (preset?.shutterFloorSec || 1 / 125)), Math.ceil(focalMm * crop));
+  const targetShutterDen = Math.max(minShutterDen, (200 * 2 ** lightEv) / (100 * autoFNumber ** 2));
+  const autoShutterDen = SHUTTERS.reduce((best, den) => (
+    Math.abs(Math.log2(den) - Math.log2(targetShutterDen)) < Math.abs(Math.log2(best) - Math.log2(targetShutterDen)) ? den : best
+  ), SHUTTERS[0]);
+  const isoMax = Math.min(gear.iso?.max ?? 6400, preset?.isoCeiling ?? 6400);
+  const activeFNumber = exposureAuto ? autoFNumber : fN;
+  const activeShutterDen = exposureAuto ? autoShutterDen : shutterDen;
+  const autoIso = Math.max(gear.iso?.min ?? 100, Math.min(isoMax, Math.round(100 * activeFNumber ** 2 * activeShutterDen / 2 ** lightEv)));
+  const needsTripod = activeShutterDen < focalMm * crop;
+  const dof = calculateDof(activeFNumber, subjectDist);
 
   // Light mode relative to camera→subject bearing vs sun azimuth.
   let lightMode = null;
@@ -574,7 +605,12 @@ function DiagramInner() {
             )}
 
           <div className="card diagram-camera-card">
-            <div className="card-title">{t("diagram.camera.title")}</div>
+            <div className="recipe-head">
+              <div className="card-title" style={{ margin: 0 }}>{t("diagram.camera.title")}</div>
+              <button type="button" className="chip chip-sm" aria-pressed={exposureAuto} onClick={() => setExposureAuto(true)}>
+                {t("diagram.camera.auto")}
+              </button>
+            </div>
             <div className="recipe-stats">
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
@@ -582,15 +618,15 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
-                <div className="recipe-stat-value">{fNumber != null ? `f/${fNumber}${fNumberTele != null && fNumberTele !== fNumber ? `–${fNumberTele}` : ""}` : "—"}</div>
+                <div className="recipe-stat-value">{activeFNumber != null ? `f/${activeFNumber.toFixed(1)}` : "—"}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
-                <div className="recipe-stat-value">{shutter || "—"}</div>
+                <div className="recipe-stat-value">1/{activeShutterDen}s</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
-                <div className="recipe-stat-value">{preset?.isoCeiling ?? "—"}</div>
+                <div className="recipe-stat-value">{autoIso}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
@@ -625,14 +661,16 @@ function DiagramInner() {
                 </label>
               )}
               <label className="scene-field diagram-aperture-field">
-                <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
-                <input type="range" min={fMin} max={fMax} step="0.1" value={fN}
-                  onChange={(e) => setFStop(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                <span className="input-label">{t("coach.recipe.aperture")} · f/{activeFNumber.toFixed(1)}</span>
+                <input type="range" min={fMin} max={fMax} step="0.1"
+                  value={exposureAuto ? autoFNumber : fN}
+                  onChange={(e) => { setExposureAuto(false); setFStop(+e.target.value); }} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
               <label className="scene-field diagram-shutter-field">
-                <span className="input-label">{t("coach.recipe.shutter")} · 1/{shutterDen}</span>
-                <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
-                  onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                <span className="input-label">{t("coach.recipe.shutter")} · 1/{activeShutterDen}</span>
+                <input type="range" min={0} max={SHUTTERS.length - 1} step={1}
+                  value={exposureAuto ? SHUTTERS.indexOf(autoShutterDen) : shutterIdx}
+                  onChange={(e) => { setExposureAuto(false); setShutterIdx(+e.target.value); }} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
             </div>
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
