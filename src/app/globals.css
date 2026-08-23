@@ -349,6 +349,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-scene-actions .flash-toggle { margin-top: 0 !important; }
 .diagram-dof { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; color: var(--leaf); font-size: 0.82rem; font-weight: 600; }
 .diagram-info .card-grid { align-items: start; }
+.diagram-focus-field { max-width: 220px; }
 @media (min-width: 900px) {
   .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .diagram-scene-grid .diagram-place-field,

@@ -595,7 +595,7 @@ function DiagramInner() {
               </div>
             </div>
             <div className="scene-grid" style={{ marginTop: 12 }}>
-              <label className="scene-field">
+              <label className="scene-field diagram-focus-field">
                 <span className="input-label">{t("diagram.camera.focus")}</span>
                 <select className="input" value={focusTarget} onChange={(e) => setFocusTarget(e.target.value)}>
                   <option value="0">{t("diagram.camera.subject1")}</option>
