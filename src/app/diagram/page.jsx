@@ -473,10 +473,15 @@ function DiagramInner() {
             const sx = center.x + sub.dx;
             const sy = center.y + sub.dy;
             const distance = Math.hypot(sub.dx - scene.camera.dx, sub.dy - scene.camera.dy) / PX_PER_M;
+            const length = Math.hypot(sx - cx, sy - cy) || 1;
+            const offset = (i - (scene.subjects.length - 1) / 2) * 14;
+            const labelX = (cx + sx) / 2 - ((sy - cy) / length) * offset;
+            const labelY = (cy + sy) / 2 + ((sx - cx) / length) * offset;
             return (
               <g key={`distance-${i}`} pointerEvents="none">
                 <line x1={cx} y1={cy} x2={sx} y2={sy} stroke="var(--text-muted)" strokeWidth="0.7" strokeDasharray="2 3" opacity="0.45" />
-                <text x={(cx + sx) / 2} y={(cy + sy) / 2 - 3} textAnchor="middle" fontSize="7.5" fill="var(--text-muted)" opacity="0.9">
+                <rect x={labelX - 31} y={labelY - 8} width="62" height="12" rx="3" fill="var(--surface)" opacity="0.92" />
+                <text x={labelX} y={labelY + 1} textAnchor="middle" fontSize="7.5" fill="var(--text-muted)" opacity="0.95">
                   {t("diagram.distance", { subject: i + 1, distance: distance.toFixed(1) })}
                 </text>
               </g>
