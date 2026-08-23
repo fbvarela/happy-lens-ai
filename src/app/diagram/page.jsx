@@ -51,6 +51,7 @@ function DiagramInner() {
   });
   const [dragId, setDragId] = useState(null);
   const [fStop, setFStop] = useState(null);
+  const [focalLength, setFocalLength] = useState(null);
   const [shutterIdx, setShutterIdx] = useState(2);
   const [focusTarget, setFocusTarget] = useState("0");
   const [customFocusDistance, setCustomFocusDistance] = useState("5");
@@ -237,7 +238,10 @@ function DiagramInner() {
   const fMin = lens?.fNumberMin ?? 1.8;
   const fMax = lens?.fNumberMax ?? 16;
   const fN = Math.min(Math.max(fStop ?? fMin, fMin), fMax);
-  const focalMm = lens?.focalRangeMm ? (lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2 : 26;
+  const focalMin = lens?.focalRangeMm?.[0] ?? lens?.focalLengthMm ?? lens?.focalEq ?? 26;
+  const focalMax = lens?.focalRangeMm?.[1] ?? focalMin;
+  const focalMm = Math.min(Math.max(focalLength ?? focalMin, focalMin), focalMax);
+  const hasFocalSlider = focalMax > focalMin;
   const crop = gear.cropFactor || 1;
   const shutterDen = SHUTTERS[shutterIdx];
   const needsTripod = shutterDen < focalMm * crop;
@@ -250,15 +254,16 @@ function DiagramInner() {
   const subjectDist = focusTarget === "custom"
     ? (customDistance >= 50 ? Infinity : customDistance)
     : placedFocusDistance;
+  const coc = lens?.circleOfConfusionMm ?? gear.circleOfConfusionMm ?? 0.03 / crop;
   let dof = null;
   if (subjectDist && subjectDist > 0.2) {
-    const coc = 0.03 / crop;
     const H = (focalMm * focalMm) / (fN * coc) / 1000;
     dof = subjectDist === Infinity
-      ? { near: H, far: null }
+      ? { near: H, far: null, hyperfocal: H }
       : {
           near: (H * subjectDist) / (H + subjectDist),
           far: subjectDist < H ? (H * subjectDist) / (H - subjectDist) : null,
+          hyperfocal: H,
         };
   }
 
@@ -541,6 +546,7 @@ function DiagramInner() {
         {dof && (
           <div className="diagram-dof">
             <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
+            <span>· {focalMm.toFixed(1)} mm · c {coc.toFixed(3)} · H {dof.hyperfocal.toFixed(1)} m</span>
             {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
           </div>
         )}
@@ -609,6 +615,13 @@ function DiagramInner() {
                   <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
                   <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
                     onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                </label>
+              )}
+              {hasFocalSlider && (
+                <label className="scene-field diagram-focal-field">
+                  <span className="input-label">{t("diagram.camera.focalLength")} · {focalMm.toFixed(0)} mm</span>
+                  <input type="range" min={focalMin} max={focalMax} step="1" value={focalMm}
+                    onChange={(e) => setFocalLength(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
               )}
               <label className="scene-field diagram-aperture-field">
