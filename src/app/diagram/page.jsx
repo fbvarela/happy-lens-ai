@@ -318,6 +318,7 @@ function DiagramInner() {
     const p2 = pt(L, bearing + half);
     const nearPx = dof ? dof.near * PX_PER_M : null;
     const farPx = dof ? Math.min((dof.far ?? 500) * PX_PER_M, SCENE_R) : null;
+    const hyperfocalPx = dof ? dof.hyperfocal * PX_PER_M : null;
     return (
       <g pointerEvents="none">
         <path d={`M ${cx} ${cy} L ${p1.x} ${p1.y} A ${L} ${L} 0 0 1 ${p2.x} ${p2.y} Z`}
@@ -329,6 +330,11 @@ function DiagramInner() {
             <path d={`M ${n1.x} ${n1.y} A ${nearPx} ${nearPx} 0 0 1 ${n2.x} ${n2.y} L ${f2.x} ${f2.y} A ${farPx} ${farPx} 0 0 0 ${f1.x} ${f1.y} Z`}
               fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
           );
+        })()}
+        {hyperfocalPx != null && hyperfocalPx > 0 && hyperfocalPx < SCENE_R && (() => {
+          const h1 = pt(hyperfocalPx, bearing - half), h2 = pt(hyperfocalPx, bearing + half);
+          return <path d={`M ${h1.x} ${h1.y} A ${hyperfocalPx} ${hyperfocalPx} 0 0 1 ${h2.x} ${h2.y}`}
+            fill="none" stroke="var(--sun)" strokeOpacity="0.7" strokeWidth="1" strokeDasharray="2 2" />;
         })()}
       </g>
     );
