@@ -2,6 +2,7 @@ import "./globals.css";
 import AppShell from "./_components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme/ThemeProvider";
 
 export const metadata = {
   title: "Happy Lens AI — Shot coach",
@@ -16,7 +17,10 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#3d2b1f",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#203b34" },
+    { media: "(prefers-color-scheme: dark)", color: "#18211f" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -32,11 +36,16 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body suppressHydrationWarning>
-        <LocaleProvider>
-          <AuthProvider>
-            <AppShell>{children}</AppShell>
-          </AuthProvider>
-        </LocaleProvider>
+        {/* Applies the stored theme before paint so there is no flash of the
+            wrong palette. Must run before React hydrates. */}
+        <script id="theme-init" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <ThemeProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

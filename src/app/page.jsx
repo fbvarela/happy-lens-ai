@@ -15,28 +15,28 @@ const FEATURES = [
 export default function HomePage() {
   const t = useT();
   return (
-    <>
+    <div className="home-layout">
       <header className="hero">
-        <div className="accent" style={{ fontSize: "1.4rem" }}>{t("home.kicker")}</div>
-        <h1>{t("home.title")}</h1>
-        <p>{t("home.body")}</p>
-        <div style={{ marginTop: 24, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link className="btn btn-primary" href="/coach" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Target size={16} aria-hidden /> {t("home.ctaCoach")}</Link>
+        <div className="accent">{t("home.kicker")}</div>
+        <h1 className="text-balance">{t("home.title")}</h1>
+        <p className="text-pretty">{t("home.body")}</p>
+        <div className="hero-actions">
+          <Link className="btn btn-primary" href="/coach"><Target size={15} aria-hidden /> {t("home.ctaCoach")}</Link>
           <Link className="btn btn-ghost" href="/plan">{t("home.ctaRoadmap")}</Link>
         </div>
       </header>
 
       <LastRecipeCard />
 
-      <section style={{ marginTop: 32 }}>
-        <h2 className="page-title" style={{ fontSize: "1.4rem" }}>{t("home.sectionTitle")}</h2>
+      <section className="home-section">
+        <h2 className="page-title home-section-title">{t("home.sectionTitle")}</h2>
         <p className="page-sub">{t("home.sectionSub")}</p>
 
         <div className="card-grid">
           {FEATURES.map((f) => (
             <Link key={f.href} href={f.href} className="card feature-card">
               <div className="feature-head">
-                <span className="feature-icon" aria-hidden><f.Icon size={26} /></span>
+                <span className="feature-icon" aria-hidden><f.Icon size={20} /></span>
                 <span className={`badge ${f.badgeClass}`}>{t(`home.feature.${f.key}.badge`)}</span>
               </div>
               <div className="card-title">{t(`home.feature.${f.key}.title`)}</div>
@@ -45,6 +45,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-    </>
+    </div>
   );
 }
