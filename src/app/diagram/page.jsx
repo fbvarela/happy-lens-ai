@@ -8,6 +8,7 @@ import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { dayWindows } from "@/lib/sun-day";
 import { sunSnapshot } from "@/lib/sun";
+import { weatherSnapshot } from "@/lib/weather";
 
 const SVG_SIZE = 300;
 const SCENE_R = 100;
@@ -43,6 +44,7 @@ function DiagramInner() {
   const [locating, setLocating] = useState(false);
   const [place, setPlace] = useState("");
   const [locateError, setLocateError] = useState(null);
+  const [weather, setWeather] = useState(null);
   const [scene, setScene] = useState({
     subjects: [{ dx: -32, dy: -14 }, { dx: 32, dy: -14 }],
     camera: { dx: 0, dy: 62 },
@@ -79,6 +81,23 @@ function DiagramInner() {
   const lat = form.lat ? +form.lat : null;
   const lng = form.lng ? +form.lng : null;
   const dateISO = new Date(`${form.date}T12:00:00Z`).toISOString();
+  const weatherHour = Math.floor(timeHour);
+
+  useEffect(() => {
+    if (lat == null || lng == null || !form.date) {
+      setWeather(null);
+      return;
+    }
+    let current = true;
+    weatherSnapshot({
+      lat,
+      lng,
+      date: `${form.date}T${String(weatherHour).padStart(2, "0")}:00`,
+    }).then((next) => {
+      if (current) setWeather(next);
+    });
+    return () => { current = false; };
+  }, [lat, lng, form.date, weatherHour]);
 
   const aerial = useMemo(() => {
     if (!showAerial || lat == null || lng == null) return null;
@@ -141,6 +160,8 @@ function DiagramInner() {
 
   const sunAlt = sun?.sun?.altitudeDeg;
   const sunAz = sun?.sun?.azimuthDeg;
+  const cloudCoverPct = weather?.cloudCoverPct;
+  const cloudy = cloudCoverPct != null && cloudCoverPct >= 60;
 
   const svgPoint = (e) => {
     const rect = svgRef.current.getBoundingClientRect();
@@ -271,7 +292,7 @@ function DiagramInner() {
     return (
       <polygon
         points={`${sx + px * w0},${sy + py * w0} ${end.x + px * w1},${end.y + py * w1} ${end.x - px * w1},${end.y - py * w1} ${sx - px * w0},${sy - py * w0}`}
-        fill="rgba(0,0,0,0.18)"
+        fill={cloudy ? "rgba(0,0,0,0.07)" : "rgba(0,0,0,0.18)"}
       />
     );
   };
@@ -301,12 +322,6 @@ function DiagramInner() {
           return (
             <path d={`M ${n1.x} ${n1.y} A ${nearPx} ${nearPx} 0 0 1 ${n2.x} ${n2.y} L ${f2.x} ${f2.y} A ${farPx} ${farPx} 0 0 0 ${f1.x} ${f1.y} Z`}
               fill="var(--leaf)" opacity="0.1" stroke="var(--leaf)" strokeOpacity="0.3" strokeWidth="0.75" />
-          );
-        })()}
-        {dof && dof.far == null && (() => {
-          const p = pt(SCENE_R, bearing);
-          return (
-            <text x={p.x} y={p.y + 3} textAnchor="middle" fontSize="9" fill="var(--leaf)" opacity="0.75">∞</text>
           );
         })()}
       </>
@@ -443,11 +458,11 @@ function DiagramInner() {
           {/* light direction line + sun marker */}
           {sunRimPos && sunAlt != null && (
             <>
-              <line x1={center.x} y1={center.y} x2={sunRimPos.x} y2={sunRimPos.y}
-                stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity="0.4" strokeDasharray="2 3" />
+                <line x1={center.x} y1={center.y} x2={sunRimPos.x} y2={sunRimPos.y}
+                stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity={cloudy ? 0.2 : 0.4} strokeDasharray="2 3" />
               <g transform={`translate(${sunRimPos.x},${sunRimPos.y})`} style={{ pointerEvents: "none" }}>
                 <circle r={8} fill="none" stroke={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} strokeWidth="1" opacity="0.65" />
-                <circle r={4} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={sunAlt > 0 ? 0.95 : 0.6} />
+                <circle r={4} fill={sunAlt > 0 ? "var(--sun)" : "var(--clay)"} opacity={cloudy ? 0.55 : sunAlt > 0 ? 0.95 : 0.6} />
               </g>
             </>
           )}
@@ -524,6 +539,9 @@ function DiagramInner() {
               </span>
             </div>
             <p className="recipe-line" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.advice`)}</p>
+            {weather && <p className="recipe-line" style={{ margin: "8px 0 0", color: "var(--text-muted)" }}>
+              {t(cloudy ? "diagram.weather.cloudy" : "diagram.weather.sunny", { cloud: cloudCoverPct })}
+            </p>}
           </div>
             )}
 
