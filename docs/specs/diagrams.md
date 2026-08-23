@@ -70,3 +70,4 @@ schematic feels too abstract.
 - [x] reduce the sun and the visor itself, less childish circles (sun: cartoon rays removed — thin ring + small disc; FOV cone shortened to 34px and fainter; shadow wedges narrowed and capped at 40px)
 - [x] Instead of infinite symbol on diagram, show the DoF band until the scene edge.
 - [x] Take into account the weather conditions: sunny/cloudy (hourly cloud cover from Open-Meteo softens shadows, dims the sun marker and adds a weather note to the light advice)
+- [x] show distances between the photographer and the subjects (subtle dashed measurement lines with midpoint labels in metres)

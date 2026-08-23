@@ -467,6 +467,22 @@ function DiagramInner() {
             </>
           )}
 
+          {scene.camera && scene.subjects.map((sub, i) => {
+            const cx = center.x + scene.camera.dx;
+            const cy = center.y + scene.camera.dy;
+            const sx = center.x + sub.dx;
+            const sy = center.y + sub.dy;
+            const distance = Math.hypot(sub.dx - scene.camera.dx, sub.dy - scene.camera.dy) / PX_PER_M;
+            return (
+              <g key={`distance-${i}`} pointerEvents="none">
+                <line x1={cx} y1={cy} x2={sx} y2={sy} stroke="var(--text-muted)" strokeWidth="0.7" strokeDasharray="2 3" opacity="0.45" />
+                <text x={(cx + sx) / 2} y={(cy + sy) / 2 - 3} textAnchor="middle" fontSize="7.5" fill="var(--text-muted)" opacity="0.9">
+                  {t("diagram.distance", { subject: i + 1, distance: distance.toFixed(1) })}
+                </text>
+              </g>
+            );
+          })}
+
           {scene.subjects.map((sub, i) => {
             const sx = center.x + sub.dx;
             const sy = center.y + sub.dy;
