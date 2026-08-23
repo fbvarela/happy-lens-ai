@@ -610,12 +610,12 @@ function DiagramInner() {
                     onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
               )}
-              <label className="scene-field">
+              <label className="scene-field diagram-aperture-field">
                 <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
                 <input type="range" min={fMin} max={fMax} step="0.1" value={fN}
                   onChange={(e) => setFStop(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
-              <label className="scene-field">
+              <label className="scene-field diagram-shutter-field">
                 <span className="input-label">{t("coach.recipe.shutter")} · 1/{shutterDen}</span>
                 <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
                   onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
