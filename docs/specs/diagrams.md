@@ -71,7 +71,7 @@ schematic feels too abstract.
 - [x] Take into account the weather conditions: sunny/cloudy (hourly cloud cover from Open-Meteo softens shadows, dims the sun marker and adds a weather note to the light advice)
 - [x] show distances between the photographer and the subjects (subtle dashed measurement lines with midpoint labels in metres)
 - [ ] The DoF calculation needs a real optical input model. The current version is misleading because it uses a generic circle of confusion, a midpoint focal length and an approximate diagram distance.
-  - Store a circle of confusion per camera body/sensor format. Do not derive it only from a generic crop factor. For example, the Pentax K-5 uses approximately `0.019 mm`; each phone lens needs its own physical sensor/focal-length data.
+  - Store a circle of confusion per camera body/sensor format. Do not derive it only from a generic crop factor. The Pentax K-5 uses `0.02 mm`; each phone lens needs its own physical sensor/focal-length data.
   - Use the selected lens and its actual focal length. A 17 mm lens and a 55 mm lens must produce different DoF; zoom lenses need a focal-length control or a focal length selected from the current framing.
   - Use the explicit focus target already present in the UI: Subject 1, Subject 2, or custom distance. The subject-to-camera distance on the drawing is only a visual approximation and must not silently be presented as a real-world focusing distance.
   - Calculate with consistent millimetre units:
