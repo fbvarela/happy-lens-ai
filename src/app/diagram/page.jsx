@@ -474,7 +474,7 @@ function DiagramInner() {
             const sy = center.y + sub.dy;
             const distance = Math.hypot(sub.dx - scene.camera.dx, sub.dy - scene.camera.dy) / PX_PER_M;
             const length = Math.hypot(sx - cx, sy - cy) || 1;
-            const offset = (i - (scene.subjects.length - 1) / 2) * 14;
+            const offset = (i - (scene.subjects.length - 1) / 2) * 70;
             const labelX = (cx + sx) / 2 - ((sy - cy) / length) * offset;
             const labelY = (cy + sy) / 2 + ((sx - cx) / length) * offset;
             return (
