@@ -361,6 +361,10 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-info .card-grid { align-items: start; }
 .diagram-focus-field { max-width: 220px; }
 @media (min-width: 900px) {
+  .diagram-controls-card { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .diagram-controls-card > .coach-section:first-child { grid-column: 1 / -1; }
+}
+@media (min-width: 900px) {
   .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .diagram-scene-grid .diagram-place-field,
   .diagram-scene-grid .diagram-scene-actions { grid-column: 3 / -1; }

@@ -352,7 +352,7 @@ function DiagramInner() {
     <>
       <h1 className="page-title">{t("diagram.title")}</h1>
 
-      <div className="card coach-card" style={{ display: "grid", gap: 16 }}>
+      <div className="card coach-card diagram-controls-card" style={{ display: "grid", gap: 16 }}>
         <div className="coach-section">
           <div className="coach-step-title"><span className="step-num">1</span> {t("diagram.form.scene")}</div>
           <div className="scene-grid diagram-scene-grid">
