@@ -62,7 +62,6 @@ schematic feels too abstract.
 - [x] when i chose pentax k5 with a manual 18-55mm lens, data of lens and aperture is missing. why? (root cause: the preset's preferredLens ids are phone-lens ids that don't exist on the Pentax → lens lookup fell through to "—"; now falls back to the gear's own lens, and variable-aperture zooms show the f/3.5–5.6 range)
 - [x] also, i want to select the active gear from Gear screen (and use it in all places) and remove the camera selection in all other pages (Gear screen already had the active picker; diagram now uses the active gear directly — its own camera chips were removed)
 
-### improvements
 - [x] The diagram could be improved, be more elegant and professional at least. (thinner scene ring and strokes, hour ticks on the rim at the sun's azimuth with 6/12/18 labels, slimmer marker labels)
 - [x] Reduce the visor and the circles (halo rings around the subject/camera markers removed — a single dot with white stroke remains; the invisible 18px drag hit-area is kept for touch)
 - [x] Think about making it more interesting (camera view cone derived from the active lens' field of view, aimed at the first subject — wider on the phone's ultrawide, tighter on the Pentax tele end)
@@ -71,3 +70,16 @@ schematic feels too abstract.
 - [x] Instead of infinite symbol on diagram, show the DoF band until the scene edge.
 - [x] Take into account the weather conditions: sunny/cloudy (hourly cloud cover from Open-Meteo softens shadows, dims the sun marker and adds a weather note to the light advice)
 - [x] show distances between the photographer and the subjects (subtle dashed measurement lines with midpoint labels in metres)
+- [ ] The DoF calculation needs a real optical input model. The current version is misleading because it uses a generic circle of confusion, a midpoint focal length and an approximate diagram distance.
+  - Store a circle of confusion per camera body/sensor format. Do not derive it only from a generic crop factor. For example, the Pentax K-5 uses approximately `0.019 mm`; each phone lens needs its own physical sensor/focal-length data.
+  - Use the selected lens and its actual focal length. A 17 mm lens and a 55 mm lens must produce different DoF; zoom lenses need a focal-length control or a focal length selected from the current framing.
+  - Use the explicit focus target already present in the UI: Subject 1, Subject 2, or custom distance. The subject-to-camera distance on the drawing is only a visual approximation and must not silently be presented as a real-world focusing distance.
+  - Calculate with consistent millimetre units:
+    - `H = f² / (N × c) + f` (hyperfocal distance)
+    - `near = (H × d) / (H + d)`
+    - `far = (H × d) / (H - d)` when `d < H`; otherwise `Infinity`
+    - `total = far - near`, also `Infinity` when `far` is infinite
+  - When focus distance is infinity, use `near = H` and `far = Infinity`; draw the in-focus region from that near limit to the scene edge, without an infinity glyph.
+  - Show the inputs used beside the result: camera, lens/focal length, f-stop, focus distance, circle of confusion, hyperfocal distance, near limit and far limit.
+  - Reference: https://www.dofmaster.com/dofjs.html
+  - Example acceptance case: Canon 7D, `c = 0.019 mm`, 55 mm, f/16, focus distance 10 m should produce approximately a 5 m near limit and an infinite far limit.
