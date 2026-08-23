@@ -2,6 +2,7 @@ export const DICTIONARIES = {
   en: {
     nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Adjust", gear: "Gear", account: "Account" },
     locale: { label: "Language", en: "English", es: "Español" },
+    theme: { label: "Appearance", light: "Light", dark: "Dark", toLight: "Switch to light mode", toDark: "Switch to dark mode" },
 
     home: {
       kicker: "happy lens",
@@ -331,6 +332,7 @@ entryDiagram: "Light diagram",
   es: {
     nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
     locale: { label: "Idioma", en: "English", es: "Español" },
+    theme: { label: "Apariencia", light: "Claro", dark: "Oscuro", toLight: "Cambiar a modo claro", toDark: "Cambiar a modo oscuro" },
 
     home: {
       kicker: "happy lens",

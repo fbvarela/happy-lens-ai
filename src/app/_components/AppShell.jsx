@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User } from "lucide-react";
+import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User, Sun, Moon } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
+import { useTheme } from "@/lib/theme/ThemeProvider";
 
 const NAV = [
   { href: "/",         key: "home",     Icon: Home },
@@ -38,6 +39,24 @@ function LocaleSwitcher({ className = "" }) {
         onClick={() => setLocale("es")}
       >ES</button>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  const t = useT();
+  const dark = theme === "dark";
+  return (
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={toggle}
+      aria-label={dark ? t("theme.toLight") : t("theme.toDark")}
+      title={dark ? t("theme.toLight") : t("theme.toDark")}
+    >
+      {dark ? <Sun size={15} aria-hidden /> : <Moon size={15} aria-hidden />}
+      <span className="theme-toggle-text">{dark ? t("theme.light") : t("theme.dark")}</span>
+    </button>
   );
 }
 
@@ -76,14 +95,20 @@ export default function AppShell({ children }) {
           ))}
         </div>
         <div className="sidebar-footer">
-          <LocaleSwitcher />
-          <span className="accent" style={{ fontSize: "0.95rem", display: "block", marginTop: 10 }}>Happy Factory</span>
+          <div className="sidebar-footer-row">
+            <LocaleSwitcher />
+            <ThemeToggle />
+          </div>
+          <span className="accent sidebar-signature">Happy Factory</span>
         </div>
       </nav>
 
       <header className="nav-mobile-bar">
         <span className="nav-mobile-logo">happy lens</span>
-        <LocaleSwitcher className="locale-switch-mobile" />
+        <div className="nav-mobile-actions">
+          <ThemeToggle />
+          <LocaleSwitcher className="locale-switch-mobile" />
+        </div>
       </header>
 
       <main className="app">

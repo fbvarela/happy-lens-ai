@@ -785,36 +785,211 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   .card { border-radius: var(--radius); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: #121917;
-    --surface: #1b2421;
-    --cream: #222e2a;
-    --line: #384742;
-    --text: #edf4f1;
-    --text-muted: #a6b6b0;
-    --bark: #d9ebe4;
-    --bark-light: #a7d0c1;
-    --leaf: #6fbd97;
-    --leaf-light: #93d5b3;
-    --sun: #e8b958;
-    --sun-light: #f2cf78;
-    --clay: #e18a70;
-    --clay-light: #efad94;
-    --shadow: 0 2px 12px rgba(0, 0, 0, .24);
-    --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
+/* Dark theme — driven by [data-theme="dark"] on <html> (set by ThemeProvider),
+   with prefers-color-scheme as the no-JS fallback. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121917;
+  --surface: #1b2421;
+  --cream: #222e2a;
+  --line: #384742;
+  --text: #edf4f1;
+  --text-muted: #a6b6b0;
+  --bark: #d9ebe4;
+  --bark-light: #a7d0c1;
+  --leaf: #6fbd97;
+  --leaf-light: #93d5b3;
+  --sun: #e8b958;
+  --sun-light: #f2cf78;
+  --clay: #e18a70;
+  --clay-light: #efad94;
+  --shadow: 0 2px 12px rgba(0, 0, 0, .24);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
+  --nav-bg: #0d1412;
+}
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .hero h1,
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .recipe-stat-value,
+[data-theme="dark"] .timeline-value { color: var(--bark); }
+[data-theme="dark"] .btn-primary { background: var(--bark); color: #12201b; }
+[data-theme="dark"] .btn-primary:hover { background: var(--bark-light); }
+[data-theme="dark"] .btn-leaf { color: #10221a; }
+[data-theme="dark"] .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
+[data-theme="dark"] .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
+[data-theme="dark"] .badge-clay,
+[data-theme="dark"] .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
+[data-theme="dark"] .coach-step-title .step-num { background: var(--bark); color: #12201b; }
+[data-theme="dark"] .chip[aria-pressed="true"] { background: var(--bark); border-color: var(--bark); color: #12201b; }
+[data-theme="dark"] .sideitem.active { color: #12201b; }
+[data-theme="dark"] .preview-wrap { background: #0b100f; }
+[data-theme="dark"] .input:focus { background: var(--surface); }
+
+/* ==========================================================================
+   Workspace layout: dense, wide-screen aware, no oversized fields or cards.
+   ========================================================================== */
+:root { --nav-bg: #203b34; --nav-w: 204px; }
+[data-theme="dark"] { --nav-bg: #0d1412; }
+
+.sidebar-nav, .nav-mobile-bar, .bottom-nav { background: var(--nav-bg); }
+
+/* Shell */
+.app { padding-left: var(--nav-w); }
+.sidebar-nav { width: var(--nav-w); }
+.sidebar-logo { font-size: 1rem; padding: 16px 14px 14px; }
+.sidebar-section { padding: 12px 12px 4px; font-size: 0.6rem; }
+.sideitem { min-height: 34px; padding: 6px 10px; font-size: 0.84rem; }
+.sidebar-footer { padding: 10px 12px 12px; }
+.sidebar-footer-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.sidebar-signature { display: block; margin-top: 8px; font-size: 0.85rem; }
+
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 9px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.78);
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em;
+  cursor: pointer; transition: background 0.14s, color 0.14s;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+.nav-mobile-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Page rhythm: cap the measure, kill the dead right-hand gutter. */
+.page { max-width: 1360px; margin-inline: auto; padding: 22px 26px 48px; }
+.page-title { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.9rem); margin-bottom: 2px; }
+.page-sub { font-size: 0.88rem; margin-bottom: 16px; max-width: 62ch; }
+
+/* Cards: informational surfaces, not billboards. */
+.card { padding: 14px 16px; }
+.card-title { font-size: 1rem; margin-bottom: 10px; }
+.card-grid { gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+
+/* Home */
+.hero { text-align: left; padding: 4px 0 16px; max-width: 68ch; }
+.hero .accent { font-size: 1rem !important; }
+.hero h1 { font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.3rem); margin-bottom: 6px; }
+.hero p { margin: 0; font-size: 0.92rem; max-width: 62ch; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.home-layout { display: grid; gap: 20px; align-items: start; }
+.home-main { display: grid; gap: 4px; align-content: start; }
+.home-section { margin-top: 22px; }
+.home-section-title { font-size: 1.05rem; margin: 0 0 2px; }
+.feature-card { padding: 13px 14px; gap: 6px; }
+.feature-card .card-title { font-size: 0.95rem; margin: 0; }
+.feature-body { font-size: 0.85rem; line-height: 1.45; }
+.feature-icon svg { width: 20px; height: 20px; }
+.badge { font-size: 0.7rem; padding: 2px 8px; }
+.last-recipe .recipe-stats { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); padding: 10px; }
+
+/* Forms: fields sized to their content, laid out in columns on wide screens. */
+.input { min-height: 36px; padding: 6px 10px; font-size: 0.88rem; }
+.input-label { font-size: 0.68rem; margin-bottom: 3px; }
+.field { margin-bottom: 10px; }
+.chip { height: 32px; padding-inline: 10px; font-size: 0.82rem; }
+.time-presets .chip, .chip-sm { height: 30px; padding-inline: 10px; font-size: 0.79rem; }
+.locate-btn { height: 32px; padding-inline: 11px; font-size: 0.84rem; }
+.btn { min-height: 34px; padding: 6px 14px; font-size: 0.86rem; }
+.btn-sm { min-height: 28px; padding: 4px 10px; font-size: 0.78rem; }
+.coach-step-title { font-size: 0.9rem; margin-bottom: 8px; }
+.coach-step-title .step-num { width: 20px; height: 20px; flex-basis: 20px; font-size: 0.7rem; }
+.coach-form .input { height: 36px; }
+.coach-form { gap: 14px 20px; }
+.scene-grid { gap: 8px 12px; }
+.gear-pill { padding: 9px 11px; }
+.gear-reference-form { max-width: 460px; }
+.gear-list { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.gear-pill .gear-icon svg { width: 18px; height: 18px; }
+.gear-pill .gear-label { font-size: 0.9rem; }
+.flash-toggle { margin-top: 8px; padding: 8px 10px; }
+.flash-toggle-label { font-size: 0.84rem; }
+.coach-submit { height: 38px; font-size: 0.9rem; }
+.dropzone { min-height: 132px; padding: 18px 16px; }
+
+/* Recipes */
+.recipe-stats { padding: 10px; gap: 6px 10px; }
+.recipe-stat-label { font-size: 0.62rem; }
+.recipe-stat-value { font-size: 0.9rem; }
+.recipe-line, .recipe-tips { font-size: 0.85rem; }
+.recipe-actions { margin-top: 10px; padding-top: 10px; }
+.vote-btn, .copy-btn { height: 30px; padding-inline: 11px; font-size: 0.82rem; }
+.timeline-row { min-height: 32px; padding: 5px 0; font-size: 0.86rem; }
+.weather-strip { grid-template-columns: repeat(auto-fit, minmax(68px, 1fr)); }
+.weather-temp { font-size: 1.05rem; }
+
+@media (min-width: 1000px) {
+  /* Two working columns inside the coach card so the form fills the width
+     instead of stretching one field across the whole screen. */
+  .coach-form-split { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); align-items: start; }
+  .coach-form > .coach-section,
+  .coach-form > .coach-section:first-child { max-width: none; }
+  /* Subject + gear stack in the left rail, scene occupies the right one. */
+  .coach-form-split > .coach-section:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+  .coach-form-split > .coach-section:nth-of-type(2) { grid-column: 2; grid-row: 1 / span 2; }
+  .coach-form-split > .coach-section:nth-of-type(3) { grid-column: 1; grid-row: 2; }
+  .coach-form-split > .coach-submit,
+  .coach-form-split > .field-error { grid-column: 1 / -1; }
+  .coach-form .scene-grid { max-width: none; }
+  .coach-form select.input { max-width: none; }
+  .coach-submit {
+    grid-column: 1 / -1; justify-self: start;
+    width: auto; min-width: 220px;
   }
-  h1, h2, h3, h4, .page-title, .hero h1, .card-title, .recipe-stat-value, .timeline-value { color: var(--bark); }
-  .sidebar-nav, .nav-mobile-bar, .bottom-nav { background: #0d1412; }
-  .btn-primary { background: var(--bark); color: #12201b; }
-  .btn-primary:hover { background: var(--bark-light); }
-  .btn-leaf { color: #10221a; }
-  .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
-  .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
-  .badge-clay, .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
-  .preview-wrap { background: #0b100f; }
-  .input:focus { background: var(--surface); }
+  .coach-form:not(.coach-form-split) {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    align-items: start;
+    max-width: 1000px;
+  }
+  .scene-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .recipe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1100px) {
+  /* Home reads as a workspace: intro on the left, entry points beside it. */
+  .home-layout { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 28px; }
+  .home-aside { margin-top: 4px; }
+  .home-aside .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hero { padding-top: 0; }
+}
+
+@media (min-width: 1360px) {
+  .recipe-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 999px) {
+  .coach-submit { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .app { padding-left: 0; padding-top: 56px; padding-bottom: 68px; }
+  .page { padding: 14px 14px 20px; }
+  .card { padding: 12px 13px; }
+  .hero { padding: 0 0 12px; }
+  .hero-actions { margin-top: 12px; }
+  .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
+  .bottom-nav { height: 56px; }
+  .bottom-nav-item { min-height: 56px; font-size: 0.6rem; }
+  .theme-toggle-text { display: none; }
+  .theme-toggle { width: 30px; height: 30px; padding: 0; justify-content: center; }
+  .card-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .recipe-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* 16px keeps iOS from zooming on focus. */
+  .input, .coach-form .input { font-size: 16px; min-height: 40px; height: auto; }
+  .scene-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .scene-grid .full { grid-column: 1 / -1; }
+  .chip, .locate-btn { height: 34px; }
+}
+
+@media (max-width: 420px) {
+  .card-grid { grid-template-columns: 1fr; }
+  .recipe-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

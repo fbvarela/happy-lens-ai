@@ -36,7 +36,7 @@ export default function LastRecipeCard() {
   const subjectLabel = t(`subject.${state.subjectId}`);
   const lensLabel = t(`lens.${r.lens}`);
   return (
-    <section style={{ marginTop: 28 }}>
+    <section className="home-section">
       <div className="card last-recipe">
         <div className="recipe-head">
           <div className="card-title" style={{ margin: 0 }}>
