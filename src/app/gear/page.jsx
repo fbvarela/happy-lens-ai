@@ -136,10 +136,9 @@ export default function GearPage() {
                 </button>
               </form>
               {referenceUrl && (
-                <a className="chip chip-sm" href={referenceUrl} target="_blank" rel="noreferrer"
-                  onClick={(e) => e.stopPropagation()}>
+                <a className="btn btn-ghost btn-sm icon-btn" href={referenceUrl} target="_blank" rel="noreferrer"
+                  onClick={(e) => e.stopPropagation()} aria-label={t("gear.reference")} title={t("gear.reference")}>
                   <ExternalLink size={14} aria-hidden />
-                  <span>{t("gear.reference")}</span>
                 </a>
               )}
               <div className="recipe-stat-label" style={{ marginTop: 8 }}>{t("gear.lenses")}</div>
