@@ -604,7 +604,7 @@ function DiagramInner() {
                 </select>
               </label>
               {focusTarget === "custom" && (
-                <label className="scene-field">
+                <label className="scene-field diagram-focus-distance-field">
                   <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
                   <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
                     onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />

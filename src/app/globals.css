@@ -202,6 +202,8 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   .diagram-light-card { grid-column: 1; grid-row: 2; }
   .diagram-camera-card { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
   .diagram-info > .field-error { grid-column: 2; grid-row: 1; }
+  .diagram-focus-field,
+  .diagram-focus-distance-field { grid-column: 1 / -1; }
 }
 
 /* Buttons — pill shape per brand spec */
