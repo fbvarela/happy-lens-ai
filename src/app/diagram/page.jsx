@@ -232,6 +232,7 @@ function DiagramInner() {
   const fNumber = lens?.fNumberFixed ?? lens?.fNumberMin ?? null;
   const fNumberTele = lens?.apertureAtTele ?? null;
   const shutter = preset?.shutterFloorSec ? `1/${Math.round(1 / preset.shutterFloorSec)}s` : null;
+  const cameraMode = gear.modes?.includes("Av") ? "Av" : gear.modes?.[0] || preset?.cameraMode;
 
   const fMin = lens?.fNumberMin ?? 1.8;
   const fMax = lens?.fNumberMax ?? 16;
@@ -587,7 +588,7 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
-                <div className="recipe-stat-value">{preset?.cameraMode ?? "—"}</div>
+                <div className="recipe-stat-value">{cameraMode ?? "—"}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
@@ -595,7 +596,7 @@ function DiagramInner() {
               </div>
             </div>
             <div className="scene-grid" style={{ marginTop: 12 }}>
-              <label className="scene-field">
+              <label className="scene-field diagram-focus-field">
                 <span className="input-label">{t("diagram.camera.focus")}</span>
                 <select className="input" value={focusTarget} onChange={(e) => setFocusTarget(e.target.value)}>
                   <option value="0">{t("diagram.camera.subject1")}</option>
@@ -604,18 +605,18 @@ function DiagramInner() {
                 </select>
               </label>
               {focusTarget === "custom" && (
-                <label className="scene-field">
+                <label className="scene-field diagram-focus-distance-field">
                   <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
                   <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
                     onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
               )}
-              <label className="scene-field">
+              <label className="scene-field diagram-aperture-field">
                 <span className="input-label">{t("coach.recipe.aperture")} · f/{fN.toFixed(1)}</span>
                 <input type="range" min={fMin} max={fMax} step="0.1" value={fN}
                   onChange={(e) => setFStop(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
-              <label className="scene-field">
+              <label className="scene-field diagram-shutter-field">
                 <span className="input-label">{t("coach.recipe.shutter")} · 1/{shutterDen}</span>
                 <input type="range" min={0} max={SHUTTERS.length - 1} step={1} value={shutterIdx}
                   onChange={(e) => setShutterIdx(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />

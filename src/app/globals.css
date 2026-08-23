@@ -202,6 +202,16 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   .diagram-light-card { grid-column: 1; grid-row: 2; }
   .diagram-camera-card { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
   .diagram-info > .field-error { grid-column: 2; grid-row: 1; }
+  .diagram-focus-field,
+  .diagram-focus-distance-field { grid-column: 1 / -1; }
+  .diagram-aperture-field,
+  .diagram-shutter-field { grid-column: 1 / -1; }
+}
+@media (min-width: 1200px) {
+  .diagram-row { grid-template-columns: minmax(360px, 480px) minmax(240px, 0.7fr) minmax(380px, 1fr); }
+  .diagram-light-card { grid-column: 3; grid-row: 1; }
+  .diagram-camera-card { grid-column: 2; grid-row: 1; }
+  .diagram-info > .field-error { grid-column: 2 / -1; grid-row: 2; }
 }
 
 /* Buttons — pill shape per brand spec */
@@ -349,6 +359,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-scene-actions .flash-toggle { margin-top: 0 !important; }
 .diagram-dof { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; color: var(--leaf); font-size: 0.82rem; font-weight: 600; }
 .diagram-info .card-grid { align-items: start; }
+.diagram-focus-field { max-width: 220px; }
 @media (min-width: 900px) {
   .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .diagram-scene-grid .diagram-place-field,
@@ -379,6 +390,9 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .gear-pill .gear-icon { font-size: 1.5rem; line-height: 1; }
 .gear-pill .gear-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .gear-pill .gear-label { font-weight: 600; font-size: 0.98rem; color: var(--bark); }
+.gear-reference-form { display: flex; gap: 6px; margin-top: 10px; }
+.gear-reference-form .input { min-width: 0; flex: 1; height: 36px; }
+.icon-btn { width: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
 .gear-pill .gear-meta { color: var(--text-muted); font-size: 0.78rem; }
 
 .coach-submit {

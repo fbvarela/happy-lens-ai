@@ -1,6 +1,7 @@
 export const IPHONE_16_PRO = {
   id: "iphone-16-pro",
   label: "iPhone 16 Pro",
+  referenceUrl: "https://support.apple.com/en-us/121031",
   kind: "phone",
   modes: ["Photo", "Portrait", "Night", "ProRAW", "Cinematic", "Action", "Pano", "Macro", "Selfie"],
   photographicStyles: ["Standard", "Vibrant", "Natural", "Luminous", "Dramatic", "Quiet", "Amber", "Gold", "Rose Gold", "Ethereal"],
