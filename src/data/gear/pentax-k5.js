@@ -5,6 +5,7 @@ export const PENTAX_K5 = {
   kind: "dslr",
   bodyNotes: "APS-C CMOS, 16 MP, 1.5× crop, built-in sensor-shift stabilisation (SR).",
   cropFactor: 1.5,
+  circleOfConfusionMm: 0.02,
   exposureModes: ["P", "Sv", "Av", "Tv", "M", "B", "TAv"],
   modes: ["P", "Av", "Tv", "M", "B"],
   lenses: [
