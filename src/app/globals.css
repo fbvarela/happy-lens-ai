@@ -208,7 +208,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   .diagram-shutter-field { grid-column: 1 / -1; }
 }
 @media (min-width: 1200px) {
-  .diagram-row { grid-template-columns: minmax(360px, 480px) minmax(240px, 0.7fr) minmax(380px, 1fr); }
+  .diagram-row { grid-template-columns: minmax(420px, 560px) minmax(340px, 1fr) minmax(200px, 0.5fr); }
   .diagram-light-card { grid-column: 3; grid-row: 1; }
   .diagram-camera-card { grid-column: 2; grid-row: 1; }
   .diagram-info > .field-error { grid-column: 2 / -1; grid-row: 2; }
@@ -359,6 +359,10 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-scene-actions .flash-toggle { margin-top: 0 !important; }
 .diagram-dof { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; color: var(--leaf); font-size: 0.82rem; font-weight: 600; }
 .diagram-focus-note { display: grid; gap: 3px; margin-top: 8px; color: var(--clay); font-size: 0.8rem; font-weight: 600; text-align: center; }
+.diagram-explanations { margin-top: 12px; }
+.diagram-explanations summary { cursor: pointer; color: var(--bark); font-weight: 600; font-size: 0.85rem; }
+.diagram-explanations ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 5px; color: var(--text-muted); font-size: 0.8rem; }
+.diagram-explanations-warning { color: var(--clay); font-weight: 600; }
 .diagram-info .card-grid { align-items: start; }
 .diagram-focus-field { max-width: 220px; }
 .diagram-key { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; margin-top: 10px; padding: 9px 10px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 0.74rem; line-height: 1.3; }
