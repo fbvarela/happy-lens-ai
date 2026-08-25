@@ -6,7 +6,7 @@ import { MapPin, Smartphone, Camera as CameraIcon } from "lucide-react";
 import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
 import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
-import { dayWindows } from "@/lib/sun-day";
+import { dayWindows, hourlyWeather } from "@/lib/sun-day";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
 import { calculateDof, recommendExposure } from "@/lib/exposure.mjs";
@@ -46,6 +46,7 @@ function DiagramInner() {
   const [place, setPlace] = useState("");
   const [locateError, setLocateError] = useState(null);
   const [weather, setWeather] = useState(null);
+  const [weatherTimeline, setWeatherTimeline] = useState(null);
   const [scene, setScene] = useState({
     subjects: [{ dx: -32, dy: -14 }, { dx: 32, dy: -14 }],
     camera: { dx: 0, dy: 62 },
@@ -102,6 +103,18 @@ function DiagramInner() {
     });
     return () => { current = false; };
   }, [lat, lng, form.date, weatherHour]);
+
+  useEffect(() => {
+    if (lat == null || lng == null || !form.date) {
+      setWeatherTimeline(null);
+      return;
+    }
+    let current = true;
+    hourlyWeather({ lat, lng, date: `${form.date}T12:00:00Z` }).then((hours) => {
+      if (current) setWeatherTimeline(hours);
+    });
+    return () => { current = false; };
+  }, [lat, lng, form.date]);
 
   const aerial = useMemo(() => {
     if (!showAerial || lat == null || lng == null) return null;
@@ -646,6 +659,27 @@ function DiagramInner() {
             <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
             <span>· {focalMm.toFixed(1)} mm · c {coc.toFixed(3)} · H {dof.hyperfocal.toFixed(1)} m</span>
             {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
+          </div>
+        )}
+        {weatherTimeline && (
+          <div className="diagram-weather-timeline">
+            <strong>{t("diagram.weather.timeline")}</strong>
+            <div className="diagram-weather-hours">
+              {weatherTimeline.map((hour) => {
+                const local = new Date(`${hour.time}Z`);
+                const localHour = local.getHours();
+                return (
+                  <button key={hour.time} type="button" className={localHour === weatherHour ? "selected" : ""}
+                    onClick={() => setTimeHour(localHour)} title={`${localHour}:00 · ${hour.cloudCoverPct ?? "—"}%`}>
+                    <span>{String(localHour).padStart(2, "0")}:00</span>
+                    <small>{hour.cloudCoverPct ?? "—"}%</small>
+                    <small>{hour.tempC != null ? `${Math.round(hour.tempC)}°` : "—"}</small>
+                    <small>{hour.windKph != null ? `${hour.windKph} km/h` : "—"}</small>
+                    <small>{hour.precipMm > 0 ? t("diagram.weather.rain") : t("diagram.weather.dry")}</small>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
         </div>

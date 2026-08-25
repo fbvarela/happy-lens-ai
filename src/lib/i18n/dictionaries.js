@@ -90,7 +90,7 @@ entryDiagram: "Light diagram",
       },
       camera: { title: "Camera settings", hint: "Drag the subjects and the camera on the diagram — the light mode and recipe update live.",
         auto: "Auto", dof: "Depth of field", tripod: "too slow to hand-hold — use a tripod", focus: "Focus on", subject1: "Subject 1", subject2: "Subject 2", custom: "Custom distance", focusDistance: "Focus distance (m)", focalLength: "Focal length", closePlacement: "Close placement" },
-      weather: { sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
+      weather: { timeline: "Weather by hour", rain: "Rain", dry: "Dry", sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
     },
 
     plan: {
@@ -419,7 +419,7 @@ entryDiagram: "Diagrama de luz",
       },
       camera: { title: "Parámetros de cámara", hint: "Arrastra a los sujetos y la cámara en el diagrama — el modo de luz y la receta se actualizan en vivo.",
         auto: "Auto", dof: "Profundidad de campo", tripod: "demasiado lento para pulso — usa trípode", focus: "Enfocar a", subject1: "Sujeto 1", subject2: "Sujeto 2", custom: "Distancia personalizada", focusDistance: "Distancia de enfoque (m)", focalLength: "Distancia focal", closePlacement: "Encuadre cercano" },
-      weather: { sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
+      weather: { timeline: "Tiempo por hora", rain: "Lluvia", dry: "Seco", sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
     },
 
     plan: {
