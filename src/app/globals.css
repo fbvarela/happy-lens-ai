@@ -823,37 +823,35 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   .card { border-radius: var(--radius); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: #121917;
-    --surface: #1b2421;
-    --cream: #222e2a;
-    --line: #384742;
-    --text: #edf4f1;
-    --text-muted: #a6b6b0;
-    --bark: #d9ebe4;
-    --bark-light: #a7d0c1;
-    --leaf: #6fbd97;
-    --leaf-light: #93d5b3;
-    --sun: #e8b958;
-    --sun-light: #f2cf78;
-    --clay: #e18a70;
-    --clay-light: #efad94;
-    --shadow: 0 2px 12px rgba(0, 0, 0, .24);
-    --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
-  }
-  h1, h2, h3, h4, .page-title, .hero h1, .card-title, .recipe-stat-value, .timeline-value { color: var(--bark); }
-  .sidebar-nav, .nav-mobile-bar, .bottom-nav { background: #0d1412; }
-  .btn-primary { background: var(--bark); color: #12201b; }
-  .btn-primary:hover { background: var(--bark-light); }
-  .btn-leaf { color: #10221a; }
-  .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
-  .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
-  .badge-clay, .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
-  .preview-wrap { background: #0b100f; }
-  .input:focus { background: var(--surface); }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121917;
+  --surface: #1b2421;
+  --cream: #222e2a;
+  --line: #384742;
+  --text: #edf4f1;
+  --text-muted: #a6b6b0;
+  --bark: #d9ebe4;
+  --bark-light: #a7d0c1;
+  --leaf: #6fbd97;
+  --leaf-light: #93d5b3;
+  --sun: #e8b958;
+  --sun-light: #f2cf78;
+  --clay: #e18a70;
+  --clay-light: #efad94;
+  --shadow: 0 2px 12px rgba(0, 0, 0, .24);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
 }
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] .page-title, [data-theme="dark"] .hero h1, [data-theme="dark"] .card-title, [data-theme="dark"] .recipe-stat-value, [data-theme="dark"] .timeline-value { color: var(--bark); }
+[data-theme="dark"] .sidebar-nav, [data-theme="dark"] .nav-mobile-bar, [data-theme="dark"] .bottom-nav { background: #0d1412; }
+[data-theme="dark"] .btn-primary { background: var(--bark); color: #12201b; }
+[data-theme="dark"] .btn-primary:hover { background: var(--bark-light); }
+[data-theme="dark"] .btn-leaf { color: #10221a; }
+[data-theme="dark"] .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
+[data-theme="dark"] .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
+[data-theme="dark"] .badge-clay, [data-theme="dark"] .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
+[data-theme="dark"] .preview-wrap { background: #0b100f; }
+[data-theme="dark"] .input:focus { background: var(--surface); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
