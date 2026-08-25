@@ -142,6 +142,19 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 }
 .locale-btn:hover { color: #fff; }
 .locale-btn.locale-on { background: var(--sun); color: var(--bark); }
+.sidebar-footer-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 12px; border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "DM Sans", sans-serif; font-size: 0.74rem; font-weight: 600;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover { color: #fff; }
+.theme-toggle.theme-on { background: var(--sun); color: var(--bark); border-color: var(--sun); }
+.theme-toggle-text { white-space: nowrap; }
 .bottom-nav {
   display: none;
   position: fixed; bottom: 0; left: 0; right: 0;
@@ -810,38 +823,64 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   .card { border-radius: var(--radius); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: #121917;
-    --surface: #1b2421;
-    --cream: #222e2a;
-    --line: #384742;
-    --text: #edf4f1;
-    --text-muted: #a6b6b0;
-    --bark: #d9ebe4;
-    --bark-light: #a7d0c1;
-    --leaf: #6fbd97;
-    --leaf-light: #93d5b3;
-    --sun: #e8b958;
-    --sun-light: #f2cf78;
-    --clay: #e18a70;
-    --clay-light: #efad94;
-    --shadow: 0 2px 12px rgba(0, 0, 0, .24);
-    --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
-  }
-  h1, h2, h3, h4, .page-title, .hero h1, .card-title, .recipe-stat-value, .timeline-value { color: var(--bark); }
-  .sidebar-nav, .nav-mobile-bar, .bottom-nav { background: #0d1412; }
-  .btn-primary { background: var(--bark); color: #12201b; }
-  .btn-primary:hover { background: var(--bark-light); }
-  .btn-leaf { color: #10221a; }
-  .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
-  .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
-  .badge-clay, .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
-  .preview-wrap { background: #0b100f; }
-  .input:focus { background: var(--surface); }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121917;
+  --surface: #1b2421;
+  --cream: #222e2a;
+  --line: #384742;
+  --text: #edf4f1;
+  --text-muted: #a6b6b0;
+  --bark: #d9ebe4;
+  --bark-light: #a7d0c1;
+  --leaf: #6fbd97;
+  --leaf-light: #93d5b3;
+  --sun: #e8b958;
+  --sun-light: #f2cf78;
+  --clay: #e18a70;
+  --clay-light: #efad94;
+  --shadow: 0 2px 12px rgba(0, 0, 0, .24);
+  --shadow-lg: 0 12px 30px rgba(0, 0, 0, .34);
 }
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] .page-title, [data-theme="dark"] .hero h1, [data-theme="dark"] .card-title, [data-theme="dark"] .recipe-stat-value, [data-theme="dark"] .timeline-value { color: var(--bark); }
+[data-theme="dark"] .sidebar-nav, [data-theme="dark"] .nav-mobile-bar, [data-theme="dark"] .bottom-nav { background: #0d1412; }
+[data-theme="dark"] .btn-primary { background: var(--bark); color: #12201b; }
+[data-theme="dark"] .btn-primary:hover { background: var(--bark-light); }
+[data-theme="dark"] .btn-leaf { color: #10221a; }
+[data-theme="dark"] .badge-leaf { background: #203c31; color: var(--leaf-light); border-color: #386450; }
+[data-theme="dark"] .badge-sun { background: #46391e; color: var(--sun-light); border-color: #77602d; }
+[data-theme="dark"] .badge-clay, [data-theme="dark"] .recipe-warning { background: #432b25; color: var(--clay-light); border-color: #754538; }
+[data-theme="dark"] .preview-wrap { background: #0b100f; }
+[data-theme="dark"] .input:focus { background: var(--surface); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Field mode: high-contrast colours and larger touch targets for outdoor use */
+:root[data-field="on"] {
+  --bark: #241a10;
+  --leaf: #1f6b3c;
+  --sun: #b97700;
+  --clay: #b33a17;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --cream: #faf7f1;
+  --line: #8f7f6b;
+  --text: #17100a;
+  --text-muted: #40321f;
+}
+:root[data-field="on"] .input,
+:root[data-field="on"] select.input,
+:root[data-field="on"] .btn { min-height: 52px; }
+:root[data-field="on"] .btn-sm { min-height: 44px; }
+:root[data-field="on"] .chip { height: 48px; }
+:root[data-field="on"] .sideitem,
+:root[data-field="on"] .bottom-nav-item { min-height: 54px; }
+:root[data-field="on"] .diagram-weather-hours button { min-width: 78px; padding: 8px 6px; }
+:root[data-field="on"] input[type="range"] { height: 48px; }
+:root[data-field="on"] .input { border-width: 2px; }
+:root[data-field="on"] .card { border-width: 1.5px; box-shadow: none; }
+:root[data-field="on"] .text-muted,
+:root[data-field="on"] .recipe-stat-label,
+:root[data-field="on"] .input-label { font-weight: 600; }

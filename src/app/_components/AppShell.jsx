@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User, Sun, Moon } from "lucide-react";
+import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User, Sun, Moon, SunMedium } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 
@@ -60,6 +60,36 @@ function ThemeToggle() {
   );
 }
 
+function FieldToggle() {
+  const t = useT();
+  const [on, setOn] = useState(false);
+
+  useEffect(() => {
+    setOn(document.documentElement.dataset.field === "on");
+  }, []);
+
+  const toggle = () => {
+    const next = document.documentElement.dataset.field !== "on";
+    document.documentElement.dataset.field = next ? "on" : "off";
+    try { localStorage.setItem("hl.field", next ? "on" : "off"); } catch {}
+    setOn(next);
+  };
+
+  return (
+    <button
+      type="button"
+      className={`theme-toggle ${on ? "theme-on" : ""}`}
+      onClick={toggle}
+      aria-pressed={on}
+      aria-label={t("field.toggle")}
+      title={t("field.highContrast")}
+    >
+      <SunMedium size={15} aria-hidden />
+      <span className="theme-toggle-text">{t("field.on")}</span>
+    </button>
+  );
+}
+
 export default function AppShell({ children }) {
   const pathname = usePathname() || "/";
   const t = useT();
@@ -98,6 +128,7 @@ export default function AppShell({ children }) {
           <div className="sidebar-footer-row">
             <LocaleSwitcher />
             <ThemeToggle />
+            <FieldToggle />
           </div>
           <span className="accent sidebar-signature">Happy Factory</span>
         </div>
@@ -106,6 +137,7 @@ export default function AppShell({ children }) {
       <header className="nav-mobile-bar">
         <span className="nav-mobile-logo">happy lens</span>
         <div className="nav-mobile-actions">
+          <FieldToggle />
           <ThemeToggle />
           <LocaleSwitcher className="locale-switch-mobile" />
         </div>

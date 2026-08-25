@@ -2,6 +2,8 @@ export const DICTIONARIES = {
   en: {
     nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Adjust", gear: "Gear", account: "Account" },
     locale: { label: "Language", en: "English", es: "Español" },
+    theme: { light: "Light", dark: "Dark", toLight: "Switch to light theme", toDark: "Switch to dark theme" },
+    field: { toggle: "Toggle field mode", on: "Field mode", off: "Field mode", highContrast: "High-contrast colours, larger controls for outdoor use" },
 
     home: {
       kicker: "happy lens",
@@ -103,7 +105,7 @@ entryDiagram: "Light diagram",
         iso_limit: "ISO is at its ceiling — consider opening the aperture or supporting the camera.",
         balanced: "Balanced exposure for the current light and scene.",
       },
-      weather: { timeline: "Weather by hour", rain: "Rain", dry: "Dry", sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
+      weather: { timeline: "Weather by hour", rain: "Rain", dry: "Dry", unavailable: "Weather unavailable", sunny: (p) => `Sunny conditions · ${p.cloud}% cloud cover`, cloudy: (p) => `Cloudy conditions · ${p.cloud}% cloud cover · softer shadows` },
     },
 
     plan: {
@@ -344,6 +346,8 @@ entryDiagram: "Light diagram",
   es: {
     nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
     locale: { label: "Idioma", en: "English", es: "Español" },
+    theme: { light: "Claro", dark: "Oscuro", toLight: "Cambiar a tema claro", toDark: "Cambiar a tema oscuro" },
+    field: { toggle: "Activar modo campo", on: "Modo campo", off: "Modo campo", highContrast: "Colores de alto contraste y controles más grandes para exteriores" },
 
     home: {
       kicker: "happy lens",
@@ -445,7 +449,7 @@ entryDiagram: "Diagrama de luz",
         iso_limit: "ISO en su límite — abre el diafragma o apoya la cámara.",
         balanced: "Exposición equilibrada para la luz y la escena actuales.",
       },
-      weather: { timeline: "Tiempo por hora", rain: "Lluvia", dry: "Seco", sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
+      weather: { timeline: "Tiempo por hora", rain: "Lluvia", dry: "Seco", unavailable: "Tiempo no disponible", sunny: (p) => `Condiciones soleadas · ${p.cloud}% de nubosidad`, cloudy: (p) => `Condiciones nubladas · ${p.cloud}% de nubosidad · sombras más suaves` },
     },
 
     plan: {
