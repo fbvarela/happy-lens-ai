@@ -2,7 +2,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createGroq } from "@ai-sdk/groq";
 
 const DEFAULT_GROQ_VISION = "meta-llama/llama-3.2-11b-vision-preview";
-const DEFAULT_GEMINI_VISION = "gemini-2.5-flash";
+const DEFAULT_GEMINI_VISION = "gemini-3.6-flash";
 
 export function hasVisionKey() {
   return Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY);
