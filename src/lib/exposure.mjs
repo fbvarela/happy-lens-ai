@@ -77,6 +77,7 @@ export function recommendExposure({
     aperture,
     shutterDenominator,
     iso,
+    lightEv,
     dof: calculateDof({ focalLengthMm, aperture, focusDistanceM, circleOfConfusionMm: coc }),
     reasons: [...new Set(reasons)],
     warnings: [...new Set(warnings)],

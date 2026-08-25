@@ -314,6 +314,10 @@ function DiagramInner() {
   const autoIso = recommendation.iso;
   const activeFNumber = exposureAuto ? autoFNumber : fN;
   const activeShutterDen = exposureAuto ? autoShutterDen : shutterDen;
+  const activeIso = exposureAuto
+    ? autoIso
+    : Math.max(gear.iso?.min ?? 100, Math.min(gear.iso?.max ?? 6400,
+        Math.round(100 * activeFNumber ** 2 * activeShutterDen / 2 ** recommendation.lightEv)));
   const needsTripod = activeShutterDen < focalMm * crop;
   const dof = exposureAuto ? recommendation.dof : calculateDof({
     focalLengthMm: focalMm,
@@ -686,7 +690,7 @@ function DiagramInner() {
         {dof && (
           <div className="diagram-dof">
             <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
-            <span>· {focalMm.toFixed(1)} mm · c {coc.toFixed(3)} · H {dof.hyperfocal.toFixed(1)} m</span>
+            <span>· {focalMm.toFixed(1)} mm · c {coc.toFixed(3)} · H {dof.hyperfocal.toFixed(1)} m · EV {recommendation.lightEv.toFixed(1)}</span>
             {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
           </div>
         )}
@@ -769,7 +773,7 @@ function DiagramInner() {
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
-                <div className="recipe-stat-value">{autoIso}</div>
+                <div className="recipe-stat-value">{activeIso}</div>
               </div>
               <div>
                 <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
