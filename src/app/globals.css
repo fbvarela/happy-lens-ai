@@ -360,6 +360,19 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-dof { display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 8px; color: var(--leaf); font-size: 0.82rem; font-weight: 600; }
 .diagram-info .card-grid { align-items: start; }
 .diagram-focus-field { max-width: 220px; }
+.diagram-key { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 10px; margin-top: 10px; padding: 9px 10px; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 0.74rem; line-height: 1.3; }
+.diagram-key strong { grid-column: 1 / -1; color: var(--text); font-size: 0.78rem; }
+.diagram-key span { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.diagram-key-swatch { display: inline-block; flex: 0 0 14px; height: 8px; border-radius: 2px; background: var(--line); }
+.diagram-key-swatch.shadow { background: rgba(0, 0, 0, 0.25); }
+.diagram-key-swatch.visor { background: var(--clay); opacity: 0.35; }
+.diagram-key-swatch.dof { background: var(--leaf); opacity: 0.45; }
+.diagram-key-swatch.distance { border-top: 1px dashed var(--text-muted); background: transparent; }
+.diagram-key-swatch.light { border-top: 1px dashed var(--sun); background: transparent; }
+.diagram-key-swatch.boundary { border: 1px dashed var(--line); background: transparent; }
+.diagram-inset-wrap { display: grid; justify-items: center; gap: 4px; margin-top: 10px; }
+.diagram-inset-title { color: var(--text-muted); font-size: 0.72rem; font-weight: 600; }
+.diagram-inset { width: 132px; height: 132px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); touch-action: none; }
 @media (min-width: 900px) {
   .diagram-controls-card { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .diagram-controls-card > .coach-section:first-child { grid-column: 1 / -1; }
