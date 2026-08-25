@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { generateObject } from "ai";
-import { createGroq } from "@ai-sdk/groq";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES, PORTRAIT_LIGHTING, DEPTH_FSTOPS } from "@/lib/adjustment-schema";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDb, schema } from "@/lib/db";
+import { visionModel, hasVisionKey } from "@/lib/vision-provider";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-3.2-11b-vision-preview";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
@@ -125,8 +124,7 @@ export async function POST(req) {
 
   const user = await getCurrentUser().catch(() => null);
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  if (!hasVisionKey()) {
     const clamped = clampRecipe(stubRecipe(), { hasDepth });
     const out = { ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "stub" };
     const id = await persistRecipe({ user, recipe: clamped, deviceProfile: out.deviceProfile, subject, thumbnail: imageDataUrl });
@@ -134,9 +132,8 @@ export async function POST(req) {
   }
 
   try {
-    const groq = createGroq({ apiKey });
     const { object } = await generateObject({
-      model: groq(VISION_MODEL),
+      model: visionModel(),
       schema: AdjustmentRecipeSchema,
       messages: [{
         role: "user",
