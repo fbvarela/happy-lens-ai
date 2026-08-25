@@ -322,6 +322,33 @@ function DiagramInner() {
     circleOfConfusionMm: coc,
   });
 
+  // Visual focus assistant: flag subjects outside the active focus range and
+  // suggest the smallest concrete correction.
+  const focusIssues = [];
+  if (dof && scene.subjects.length > 1 && subjectDist) {
+    scene.subjects.forEach((subject, i) => {
+      if (i === focusIndex) return;
+      const distance = Math.hypot(subject.dx - scene.camera.dx, subject.dy - scene.camera.dy) / PX_PER_M;
+      if (!(distance > 0.2)) return;
+      const outside = distance < dof.near || (dof.far !== Infinity && distance > dof.far);
+      if (!outside) return;
+      let neededAperture = null;
+      for (let candidate = fMin; candidate <= fMax; candidate += 0.1) {
+        const candidateDof = calculateDof({ focalLengthMm: focalMm, aperture: candidate, focusDistanceM: subjectDist, circleOfConfusionMm: coc });
+        if (candidateDof && candidateDof.near <= distance && (candidateDof.far === Infinity || candidateDof.far >= distance)) {
+          neededAperture = +candidate.toFixed(1);
+          break;
+        }
+      }
+      const suggestion = neededAperture != null && neededAperture > activeFNumber + 0.001
+        ? { kind: "stop-down", value: neededAperture }
+        : hasFocalSlider && focalMm > focalMin
+          ? { kind: "wider-focal" }
+          : { kind: "reposition" };
+      focusIssues.push({ index: i, distance, suggestion });
+    });
+  }
+
   // Light mode relative to camera→subject bearing vs sun azimuth.
   let lightMode = null;
   if (sunAz != null && scene.subjects[0] && scene.camera) {
@@ -572,10 +599,12 @@ function DiagramInner() {
             const displaySubject = displaySubjects[i];
             const sx = center.x + displaySubject.dx;
             const sy = center.y + displaySubject.dy;
+            const issue = focusIssues.find((item) => item.index === i);
             return (
               <g key={i}>
                 {shadowWedge(sx, sy)}
                 <g transform={`translate(${sx},${sy})`}>
+                  {issue && <circle r={9} fill="none" stroke="var(--clay)" strokeWidth="1.5" strokeDasharray="3 2" />}
                   <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
                   <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{i + 1}</text>
                   <circle r={dragHitRadius} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
@@ -659,6 +688,19 @@ function DiagramInner() {
             <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
             <span>· {focalMm.toFixed(1)} mm · c {coc.toFixed(3)} · H {dof.hyperfocal.toFixed(1)} m</span>
             {needsTripod && <span>· {t("diagram.camera.tripod")}</span>}
+          </div>
+        )}
+        {focusIssues.length > 0 && (
+          <div className="diagram-focus-note">
+            {focusIssues.map((issue) => (
+              <span key={issue.index}>
+                {t("diagram.focus.outside", { subject: issue.index + 1 })}
+                {" — "}
+                {issue.suggestion.kind === "stop-down" && t("diagram.focus.stopDown", { f: issue.suggestion.value })}
+                {issue.suggestion.kind === "wider-focal" && t("diagram.focus.widerFocal")}
+                {issue.suggestion.kind === "reposition" && t("diagram.focus.reposition")}
+              </span>
+            ))}
           </div>
         )}
         {weatherTimeline && (
