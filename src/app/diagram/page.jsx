@@ -819,6 +819,20 @@ function DiagramInner() {
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
               {t("diagram.camera.hint")}
             </p>
+            <details className="diagram-explanations">
+              <summary>{t("diagram.explanations.title")}</summary>
+              <ul>
+                {recommendation.reasons.map((reason) => (
+                  <li key={reason}>{t(`diagram.explanations.${reason}`)}</li>
+                ))}
+                {recommendation.warnings.map((warning) => (
+                  <li key={warning} className="diagram-explanations-warning">{t(`diagram.explanations.${warning}`)}</li>
+                ))}
+                {recommendation.reasons.length === 0 && recommendation.warnings.length === 0 && (
+                  <li>{t("diagram.explanations.balanced")}</li>
+                )}
+              </ul>
+            </details>
           </div>
           </section>
         </div>

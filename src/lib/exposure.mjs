@@ -55,11 +55,9 @@ export function recommendExposure({
   if (cloudCoverPct >= 60) reasons.push("cloud_cover");
   if (lightMode === "backlit") reasons.push("backlit");
 
-  const minimumDenominator = Math.max(
-    1,
-    Math.round(1 / (shutterFloorSec || 1 / 125)),
-    Math.ceil(focalLengthMm * cropFactor),
-  );
+  const motionDenominator = Math.round(1 / (shutterFloorSec || 1 / 125));
+  const handholdDenominator = Math.ceil(focalLengthMm * cropFactor);
+  const minimumDenominator = Math.max(1, motionDenominator, handholdDenominator);
   const targetDenominator = Math.max(minimumDenominator, (200 * 2 ** lightEv) / (100 * aperture ** 2));
   const shutterDenominator = shutterOptions.reduce((best, denominator) => (
     Math.abs(Math.log2(denominator) - Math.log2(targetDenominator))
@@ -71,7 +69,9 @@ export function recommendExposure({
     warnings.push("iso_limit");
     reasons.push("low_light");
   }
-  if (shutterDenominator === minimumDenominator) reasons.push("motion");
+  if (shutterDenominator === minimumDenominator) {
+    reasons.push(handholdDenominator >= motionDenominator ? "telephoto" : "motion");
+  }
 
   return {
     aperture,
