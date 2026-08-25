@@ -9,6 +9,7 @@ import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { dayWindows } from "@/lib/sun-day";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
+import { calculateDof, recommendExposure } from "@/lib/exposure.mjs";
 
 const SVG_SIZE = 300;
 const SCENE_R = 100;
@@ -57,6 +58,7 @@ function DiagramInner() {
   const [focusTarget, setFocusTarget] = useState("0");
   const [customFocusDistance, setCustomFocusDistance] = useState("5");
   const svgRef = useRef(null);
+  const insetRef = useRef(null);
 
   useEffect(() => {
     const qS = params.get("subject");
@@ -180,6 +182,10 @@ function DiagramInner() {
     if (!dragId) return;
     const p = svgPoint(e);
     const local = { dx: p.x - center.x, dy: p.y - center.y };
+    updateDraggedPoint(local);
+  };
+
+  const updateDraggedPoint = (local) => {
     const dist = Math.hypot(local.dx, local.dy);
     if (dist > SCENE_R) { local.dx *= SCENE_R / dist; local.dy *= SCENE_R / dist; }
     setScene((s) => {
@@ -187,6 +193,17 @@ function DiagramInner() {
       const i = Number(dragId.replace("s", ""));
       const subjects = s.subjects.map((sub, j) => (j === i ? local : sub));
       return { ...s, subjects };
+    });
+  };
+
+  const onInsetPointerMove = (e) => {
+    if (!dragId || !insetRef.current) return;
+    const rect = insetRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) * 120) / rect.width;
+    const y = ((e.clientY - rect.top) * 120) / rect.height;
+    updateDraggedPoint({
+      dx: insetAnchor.dx + (x - 60) / insetScale,
+      dy: insetAnchor.dy + (y - 60) / insetScale,
     });
   };
 
@@ -253,30 +270,9 @@ function DiagramInner() {
     ? (customDistance >= 50 ? Infinity : customDistance)
     : placedFocusDistance;
   const coc = lens?.circleOfConfusionMm ?? gear.circleOfConfusionMm ?? 0.03 / crop;
-  const calculateDof = (aperture, distance) => {
-    if (!distance || distance <= 0.2) return null;
-    const H = (focalMm * focalMm) / (aperture * coc) / 1000;
-    return distance === Infinity
-      ? { near: H, far: null, hyperfocal: H }
-      : {
-          near: (H * distance) / (H + distance),
-          far: distance < H ? (H * distance) / (H - distance) : null,
-          hyperfocal: H,
-        };
-  };
   const subjectDistances = scene.subjects
     .map((s) => Math.hypot(s.dx - scene.camera.dx, s.dy - scene.camera.dy) / PX_PER_M)
     .filter((distance) => distance > 0.2);
-  const nearestSubject = Math.min(...subjectDistances);
-  const farthestSubject = Math.max(...subjectDistances);
-  let autoFNumber = fMin;
-  for (let candidate = fMin; candidate <= fMax; candidate += 0.1) {
-    const candidateDof = calculateDof(candidate, subjectDist);
-    if (candidateDof && candidateDof.near <= nearestSubject && (candidateDof.far == null || candidateDof.far >= farthestSubject)) {
-      autoFNumber = +candidate.toFixed(1);
-      break;
-    }
-  }
   let exposureLightMode = null;
   if (sunAz != null && scene.subjects[0] && scene.camera) {
     const bearing = ((Math.atan2(scene.subjects[0].dx - scene.camera.dx, -(scene.subjects[0].dy - scene.camera.dy)) * 180) / Math.PI + 360) % 360;
@@ -284,19 +280,34 @@ function DiagramInner() {
     if (rel > 180) rel = 360 - rel;
     exposureLightMode = rel <= 40 ? "backlit" : rel <= 115 ? "side" : "front";
   }
-  const lightCompensation = exposureLightMode === "backlit" ? 1 : exposureLightMode === "side" ? 0.3 : 0;
-  const lightEv = Math.max(5, Math.min(15, 8 + Math.max(0, sunAlt ?? 20) * 0.1 - (cloudCoverPct ?? 0) * 0.025 - lightCompensation));
-  const minShutterDen = Math.max(1, Math.round(1 / (preset?.shutterFloorSec || 1 / 125)), Math.ceil(focalMm * crop));
-  const targetShutterDen = Math.max(minShutterDen, (200 * 2 ** lightEv) / (100 * autoFNumber ** 2));
-  const autoShutterDen = SHUTTERS.reduce((best, den) => (
-    Math.abs(Math.log2(den) - Math.log2(targetShutterDen)) < Math.abs(Math.log2(best) - Math.log2(targetShutterDen)) ? den : best
-  ), SHUTTERS[0]);
-  const isoMax = Math.min(gear.iso?.max ?? 6400, preset?.isoCeiling ?? 6400);
+  const recommendation = recommendExposure({
+    apertureMin: fMin,
+    apertureMax: fMax,
+    shutterFloorSec: preset?.shutterFloorSec,
+    shutterOptions: SHUTTERS,
+    isoMin: gear.iso?.min ?? 100,
+    isoMax: gear.iso?.max ?? 6400,
+    focalLengthMm: focalMm,
+    cropFactor: crop,
+    sunAltitudeDeg: sunAlt,
+    cloudCoverPct: cloudCoverPct ?? 0,
+    lightMode: exposureLightMode,
+    focusDistanceM: subjectDist,
+    subjectDistancesM: subjectDistances,
+    circleOfConfusionMm: coc,
+  });
+  const autoFNumber = recommendation.aperture;
+  const autoShutterDen = recommendation.shutterDenominator;
+  const autoIso = recommendation.iso;
   const activeFNumber = exposureAuto ? autoFNumber : fN;
   const activeShutterDen = exposureAuto ? autoShutterDen : shutterDen;
-  const autoIso = Math.max(gear.iso?.min ?? 100, Math.min(isoMax, Math.round(100 * activeFNumber ** 2 * activeShutterDen / 2 ** lightEv)));
   const needsTripod = activeShutterDen < focalMm * crop;
-  const dof = calculateDof(activeFNumber, subjectDist);
+  const dof = exposureAuto ? recommendation.dof : calculateDof({
+    focalLengthMm: focalMm,
+    aperture: activeFNumber,
+    focusDistanceM: subjectDist,
+    circleOfConfusionMm: coc,
+  });
 
   // Light mode relative to camera→subject bearing vs sun azimuth.
   let lightMode = null;
@@ -336,13 +347,13 @@ function DiagramInner() {
 
   // Camera view cone from the active lens field of view, aimed at the first subject.
   const fovCone = (cx, cy) => {
-    const target = focusSubject || scene.subjects[0];
+    const target = displaySubjects[focusIndex] || displaySubjects[0];
     if (!target || !scene.camera) return null;
     const focal = lens?.focalRangeEq ? (lens.focalRangeEq[0] + lens.focalRangeEq[1]) / 2
       : lens?.focalRangeMm ? ((lens.focalRangeMm[0] + lens.focalRangeMm[1]) / 2) * (gear.cropFactor || 1)
       : 28;
     const half = Math.atan(18 / focal);
-    const bearing = Math.atan2(target.dx - scene.camera.dx, -(target.dy - scene.camera.dy));
+    const bearing = Math.atan2(target.dx - displayCamera.dx, -(target.dy - displayCamera.dy));
     const L = 34;
     const pt = (r, a) => ({ x: cx + r * Math.sin(a), y: cy - r * Math.cos(a) });
     const p1 = pt(L, bearing - half);
@@ -378,6 +389,24 @@ function DiagramInner() {
   const sunRimPos = sunAz != null
     ? { x: center.x + SCENE_R * Math.sin((sunAz * Math.PI) / 180), y: center.y - SCENE_R * Math.cos((sunAz * Math.PI) / 180) }
     : null;
+
+  // Keep rendered markers at their real positions; only labels are offset.
+  const focusPoint = focusSubject || scene.subjects[0];
+  const focusPixelDistance = focusPoint && scene.camera
+    ? Math.hypot(focusPoint.dx - scene.camera.dx, focusPoint.dy - scene.camera.dy)
+    : Infinity;
+  const displayCamera = scene.camera;
+  const displaySubjects = scene.subjects;
+  const closePlacement = focusPixelDistance < 18;
+  const insetScale = 4;
+  const insetAnchor = focusPoint && scene.camera
+    ? { dx: (focusPoint.dx + scene.camera.dx) / 2, dy: (focusPoint.dy + scene.camera.dy) / 2 }
+    : { dx: 0, dy: 0 };
+  const insetPoint = (point) => ({
+    x: 60 + (point.dx - insetAnchor.dx) * insetScale,
+    y: 60 + (point.dy - insetAnchor.dy) * insetScale,
+  });
+  const dragHitRadius = 18;
 
   return (
     <>
@@ -505,10 +534,11 @@ function DiagramInner() {
           )}
 
           {scene.camera && scene.subjects.map((sub, i) => {
-            const cx = center.x + scene.camera.dx;
-            const cy = center.y + scene.camera.dy;
-            const sx = center.x + sub.dx;
-            const sy = center.y + sub.dy;
+            const cx = center.x + displayCamera.dx;
+            const cy = center.y + displayCamera.dy;
+            const displaySubject = displaySubjects[i];
+            const sx = center.x + displaySubject.dx;
+            const sy = center.y + displaySubject.dy;
             const distance = Math.hypot(sub.dx - scene.camera.dx, sub.dy - scene.camera.dy) / PX_PER_M;
             const length = Math.hypot(sx - cx, sy - cy) || 1;
             const offset = (i - (scene.subjects.length - 1) / 2) * 70;
@@ -526,23 +556,24 @@ function DiagramInner() {
           })}
 
           {scene.subjects.map((sub, i) => {
-            const sx = center.x + sub.dx;
-            const sy = center.y + sub.dy;
+            const displaySubject = displaySubjects[i];
+            const sx = center.x + displaySubject.dx;
+            const sy = center.y + displaySubject.dy;
             return (
               <g key={i}>
                 {shadowWedge(sx, sy)}
                 <g transform={`translate(${sx},${sy})`}>
                   <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
                   <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{i + 1}</text>
-                  <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
+                  <circle r={dragHitRadius} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
                 </g>
               </g>
             );
           })}
 
           {scene.camera && (() => {
-            const cx = center.x + scene.camera.dx;
-            const cy = center.y + scene.camera.dy;
+            const cx = center.x + displayCamera.dx;
+            const cy = center.y + displayCamera.dy;
             return (
               <>
                 {fovCone(cx, cy)}
@@ -550,12 +581,39 @@ function DiagramInner() {
                 <g transform={`translate(${cx},${cy})`}>
                   <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
                   <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
-                  <circle r={18} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
+                  <circle r={dragHitRadius} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
                 </g>
               </>
             );
           })()}
         </svg>
+
+        {closePlacement && (
+          <div className="diagram-inset-wrap">
+            <span className="diagram-inset-title">{t("diagram.camera.closePlacement")}</span>
+            <svg ref={insetRef} className="diagram-inset" viewBox="0 0 120 120"
+              onPointerMove={onInsetPointerMove} onPointerUp={onPointerUp}>
+              {(() => {
+                const camera = insetPoint(scene.camera);
+                const subject = insetPoint(focusPoint);
+                return (
+                  <>
+                    <line x1={camera.x} y1={camera.y} x2={subject.x} y2={subject.y}
+                      stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2 2" />
+                    <circle cx={subject.x} cy={subject.y} r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
+                    <text x={subject.x} y={subject.y - 8} textAnchor="middle" fontSize="9" fill="var(--text)">{focusIndex + 1}</text>
+                    <circle cx={subject.x} cy={subject.y} r={9} fill="transparent"
+                      onPointerDown={(e) => onPointerDown(e, `s${focusIndex}`)} />
+                    <circle cx={camera.x} cy={camera.y} r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
+                    <text x={camera.x} y={camera.y + 15} textAnchor="middle" fontSize="9" fill="var(--text)">{t("diagram.legend.camera").slice(0, 1)}</text>
+                    <circle cx={camera.x} cy={camera.y} r={9} fill="transparent"
+                      onPointerDown={(e) => onPointerDown(e, "camera")} />
+                  </>
+                );
+              })()}
+            </svg>
+          </div>
+        )}
 
         <div className="diagram-legend" style={{ marginTop: 10, display: "flex", gap: 14, flexWrap: "wrap", fontSize: "0.82rem", color: "var(--text-muted)" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
@@ -573,6 +631,15 @@ function DiagramInner() {
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5, width: "100%" }}>
             {t("diagram.form.drag")}
           </span>
+        </div>
+        <div className="diagram-key" aria-label={t("diagram.legend.key")}>
+          <strong>{t("diagram.legend.key")}</strong>
+          <span><i className="diagram-key-swatch shadow" />{t("diagram.legend.shadow")}</span>
+          <span><i className="diagram-key-swatch visor" />{t("diagram.legend.visor")}</span>
+          <span><i className="diagram-key-swatch dof" />{t("diagram.legend.dof")}</span>
+          <span><i className="diagram-key-swatch distance" />{t("diagram.legend.distance")}</span>
+          <span><i className="diagram-key-swatch light" />{t("diagram.legend.light")}</span>
+          <span><i className="diagram-key-swatch boundary" />{t("diagram.legend.boundary")}</span>
         </div>
         {dof && (
           <div className="diagram-dof">
