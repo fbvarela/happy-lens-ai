@@ -6,7 +6,7 @@ import { CritiqueSchema } from "@/lib/critique-schema";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
+const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-3.2-11b-vision-preview";
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 

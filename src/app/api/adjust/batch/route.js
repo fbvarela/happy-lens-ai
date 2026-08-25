@@ -27,7 +27,7 @@ async function persistBatch({ user, sharedRecipe, perPhoto }) {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
+const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-3.2-11b-vision-preview";
 const MAX_PHOTOS = 12;
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
