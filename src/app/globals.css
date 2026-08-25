@@ -373,6 +373,13 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-inset-wrap { display: grid; justify-items: center; gap: 4px; margin-top: 10px; }
 .diagram-inset-title { color: var(--text-muted); font-size: 0.72rem; font-weight: 600; }
 .diagram-inset { width: 132px; height: 132px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); touch-action: none; }
+.diagram-weather-timeline { margin-top: 10px; padding: 8px 0 0; border-top: 1px solid var(--line); color: var(--text-muted); font-size: 0.72rem; }
+.diagram-weather-timeline strong { color: var(--text); font-size: 0.78rem; }
+.diagram-weather-hours { display: flex; gap: 4px; overflow-x: auto; padding-top: 6px; scrollbar-width: thin; }
+.diagram-weather-hours button { display: grid; gap: 1px; min-width: 68px; padding: 5px 4px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); color: var(--text-muted); font: inherit; cursor: pointer; }
+.diagram-weather-hours button.selected { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 18%, var(--surface)); color: var(--text); }
+.diagram-weather-hours button span { font-size: 0.7rem; }
+.diagram-weather-hours button small { font-size: 0.62rem; }
 @media (min-width: 900px) {
   .diagram-controls-card { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .diagram-controls-card > .coach-section:first-child { grid-column: 1 / -1; }
