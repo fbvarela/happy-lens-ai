@@ -102,8 +102,8 @@ export default function AdjustPage() {
 
   return (
     <>
-      <h1 className="page-title">Critique & adjust a photo</h1>
-      <p className="page-sub">Drop a photo — get a verdict and the exact iPhone 16 Pro Photos-app slider values to fix it.</p>
+      <h1 className="page-title">Infer a photo's settings</h1>
+      <p className="page-sub">Drop a photo — get the camera params used, the distance and light, and the exact iPhone 16 Pro Photos-app slider values to fix it.</p>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
         <Link href="/adjust/batch" className="btn btn-ghost">Batch mode</Link>
         <Link href="/adjust/subjects" className="btn btn-ghost">Subject baselines</Link>

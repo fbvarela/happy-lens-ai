@@ -1,6 +1,6 @@
 export const DICTIONARIES = {
   en: {
-    nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Adjust", gear: "Gear", account: "Account" },
+    nav: { home: "Home", coach: "Coach", plan: "Plan", diagram: "Diagram", adjust: "Infer", gear: "Gear", account: "Account" },
     locale: { label: "Language", en: "English", es: "Español" },
     theme: { light: "Light", dark: "Dark", toLight: "Switch to light theme", toDark: "Switch to dark theme" },
     field: { toggle: "Toggle field mode", on: "Field mode", off: "Field mode", highContrast: "High-contrast colours, larger controls for outdoor use" },
@@ -344,7 +344,7 @@ entryDiagram: "Light diagram",
   },
 
   es: {
-    nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Ajustes", gear: "Equipo", account: "Cuenta" },
+    nav: { home: "Inicio", coach: "Coach", plan: "Plan", diagram: "Diagrama", adjust: "Inferir", gear: "Equipo", account: "Cuenta" },
     locale: { label: "Idioma", en: "English", es: "Español" },
     theme: { light: "Claro", dark: "Oscuro", toLight: "Cambiar a tema claro", toDark: "Cambiar a tema oscuro" },
     field: { toggle: "Activar modo campo", on: "Modo campo", off: "Modo campo", highContrast: "Colores de alto contraste y controles más grandes para exteriores" },
