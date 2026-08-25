@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { generateObject } from "ai";
-import { createGroq } from "@ai-sdk/groq";
 import { z } from "zod";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES } from "@/lib/adjustment-schema";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDb, schema } from "@/lib/db";
+import { visionModel, hasVisionKey } from "@/lib/vision-provider";
 
 async function persistBatch({ user, sharedRecipe, perPhoto }) {
   if (!user) return null;
@@ -27,7 +27,6 @@ async function persistBatch({ user, sharedRecipe, perPhoto }) {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
 const MAX_PHOTOS = 12;
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
@@ -88,8 +87,7 @@ export async function POST(req) {
 
   const user = await getCurrentUser().catch(() => null);
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  if (!hasVisionKey()) {
     const out = { ...stubBatch(images.length), source: "stub" };
     const id = await persistBatch({ user, sharedRecipe: out.shared, perPhoto: out.perPhoto });
     return NextResponse.json(id ? { ...out, id } : out);
@@ -106,9 +104,8 @@ export async function POST(req) {
   ].join("\n");
 
   try {
-    const groq = createGroq({ apiKey });
     const { object } = await generateObject({
-      model: groq(VISION_MODEL),
+      model: visionModel(),
       schema: BatchOutputSchema,
       messages: [{
         role: "user",

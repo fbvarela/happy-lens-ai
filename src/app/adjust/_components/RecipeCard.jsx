@@ -34,7 +34,15 @@ const signed = (v) => v > 0 ? `+${v}` : `${v}`;
 const fmt = (v, d) => Number(v).toFixed(d);
 
 export function recipeToText(r) {
-  const lines = [r.title, "", r.diagnosis, "", "Photographic Style:"];
+  const lines = [r.title, "", r.diagnosis, ""];
+  if (r.shot) {
+    lines.push("Shot settings:");
+    for (const [k, label] of [["camera", "Camera"], ["lens", "Lens"], ["focalLength", "Focal length"], ["aperture", "Aperture"], ["shutter", "Shutter"], ["iso", "ISO"], ["subjectDistance", "Subject distance"], ["light", "Light"], ["position", "Position"]]) {
+      if (r.shot[k]) lines.push(`  ${label}: ${r.shot[k]}`);
+    }
+    lines.push("");
+  }
+  lines.push("Photographic Style:");
   lines.push(`  ${r.photographicStyle.preset}` + (r.photographicStyle.tone != null ? `  Tone ${fmt(r.photographicStyle.tone, 1)}` : "") + (r.photographicStyle.color != null ? `  Color ${fmt(r.photographicStyle.color, 1)}` : ""));
   lines.push("", "Light:");
   for (const [k, v] of Object.entries(r.light)) if (v) lines.push(`  ${LABELS[k] || k}: ${signed(v)}`);
@@ -52,6 +60,12 @@ export function recipeToText(r) {
 
 export function recipeToShortcutsList(r) {
   const items = [];
+  if (r.shot) {
+    for (const [k, label] of [["camera", "Camera"], ["focalLength", "Focal length"], ["aperture", "Aperture"], ["shutter", "Shutter"], ["iso", "ISO"], ["subjectDistance", "Distance"], ["light", "Light"], ["position", "Position"]]) {
+      if (r.shot[k]) items.push(`${label} → ${r.shot[k]}`);
+    }
+    items.push("");
+  }
   items.push(`Photographic Style → ${r.photographicStyle.preset}`);
   if (r.photographicStyle.tone != null) items.push(`Style Tone → ${fmt(r.photographicStyle.tone, 1)}`);
   if (r.photographicStyle.color != null) items.push(`Style Color → ${fmt(r.photographicStyle.color, 1)}`);
@@ -110,6 +124,26 @@ export default function RecipeCard({ recipe, previewUrl, deviceProfile, deviceWa
               </ul>
             </>
           )}
+        </div>
+      )}
+
+      {recipe.shot && (
+        <div className="card">
+          <div className="recipe-head">
+            <div className="card-title" style={{ margin: 0 }}>Shot settings</div>
+            <span className="badge badge-sun">To shoot this</span>
+          </div>
+          <div className="recipe-stats" style={{ gridTemplateColumns: "repeat(3, 1fr)" }}>
+            {recipe.shot.camera && <div><div className="recipe-stat-label">Camera</div><div className="recipe-stat-value">{recipe.shot.camera}</div></div>}
+            {recipe.shot.lens && <div><div className="recipe-stat-label">Lens</div><div className="recipe-stat-value">{recipe.shot.lens}</div></div>}
+            {recipe.shot.focalLength && <div><div className="recipe-stat-label">Focal length</div><div className="recipe-stat-value">{recipe.shot.focalLength}</div></div>}
+            {recipe.shot.aperture && <div><div className="recipe-stat-label">Aperture</div><div className="recipe-stat-value">{recipe.shot.aperture}</div></div>}
+            {recipe.shot.shutter && <div><div className="recipe-stat-label">Shutter</div><div className="recipe-stat-value">{recipe.shot.shutter}</div></div>}
+            {recipe.shot.iso && <div><div className="recipe-stat-label">ISO</div><div className="recipe-stat-value">{recipe.shot.iso}</div></div>}
+            {recipe.shot.subjectDistance && <div><div className="recipe-stat-label">Subject distance</div><div className="recipe-stat-value">{recipe.shot.subjectDistance}</div></div>}
+            {recipe.shot.light && <div><div className="recipe-stat-label">Light</div><div className="recipe-stat-value">{recipe.shot.light}</div></div>}
+            {recipe.shot.position && <div><div className="recipe-stat-label">Position</div><div className="recipe-stat-value">{recipe.shot.position}</div></div>}
+          </div>
         </div>
       )}
 

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { generateObject } from "ai";
-import { createGroq } from "@ai-sdk/groq";
 import { CritiqueSchema } from "@/lib/critique-schema";
+import { visionModel, hasVisionKey } from "@/lib/vision-provider";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 
@@ -68,15 +67,13 @@ export async function POST(req) {
     return NextResponse.json({ error: "Image too large (max ~4 MB after compression)." }, { status: 413 });
   }
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  if (!hasVisionKey()) {
     return NextResponse.json({ ...stubCritique(intent, exif), source: "stub" });
   }
 
   try {
-    const groq = createGroq({ apiKey });
     const { object } = await generateObject({
-      model: groq(VISION_MODEL),
+      model: visionModel(),
       schema: CritiqueSchema,
       messages: [
         {

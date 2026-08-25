@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server";
 import { generateObject } from "ai";
-import { createGroq } from "@ai-sdk/groq";
 import { AdjustmentRecipeSchema, clampRecipe, PHOTOGRAPHIC_STYLES, PORTRAIT_LIGHTING, DEPTH_FSTOPS } from "@/lib/adjustment-schema";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDb, schema } from "@/lib/db";
+import { visionModel, hasVisionKey } from "@/lib/vision-provider";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-const VISION_MODEL = process.env.GROQ_VISION_MODEL || "meta-llama/llama-4-scout-17b-16e-instruct";
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const LOCALE_NAME = { en: "English", es: "Spanish (Spain)" };
 
@@ -36,6 +35,7 @@ function stubRecipe() {
   return {
     title: "Stub Lift",
     verdict: { score: 3, headline: "Stub critique — set GROQ_API_KEY to enable the real coach." },
+    shot: null,
     diagnosis: "Stub recipe — set GROQ_API_KEY in .env.local to enable real analysis.",
     strengths: ["Image received and EXIF parsed."],
     issues: [{ area: "technical", observation: "AI vision not available in this environment." }],
@@ -91,6 +91,13 @@ function buildPrompt({ exif, hasDepth, isIPhone16Pro, subject, locale }) {
     "- `reasons[].slider` MUST use the exact iOS Photos.app label as a human string — never a dotted path or JSON key.",
     '  Allowed values: "Photographic Style", "Style Tone", "Style Color", "Exposure", "Brilliance", "Highlights", "Shadows", "Contrast", "Brightness", "Black Point", "Saturation", "Vibrance", "Warmth", "Tint", "Sharpness", "Definition", "Noise Reduction", "Vignette", "Depth Control", "Portrait Lighting", "Lighting Intensity".',
     "- `reasons` must contain a one-line why for every non-zero slider, in display order (Photographic Style → Light → Color → Detail → Depth). Max 12.",
+    "",
+    "SHOT PARAMETERS (shot block):",
+    "- `shot.camera`, `shot.lens`, `shot.focalLength`, `shot.aperture`, `shot.shutter`, `shot.iso`: use the EXIF values below verbatim when present; otherwise estimate a plausible value from the image and mark it as an estimate.",
+    "- `shot.subjectDistance`: estimate the distance in metres from camera to the main subject (e.g. '~2 m').",
+    "- `shot.light`: describe light direction and quality (e.g. 'soft window light from the left').",
+    "- `shot.position`: describe camera height and distance (e.g. 'eye level, ~3 m from the subject').",
+    "- Write `shot` string values in ${langName}.",
     `- ${isIPhone16Pro ? "This is an iPhone 16 Pro photo — full slider set available." : "This is NOT an iPhone 16 Pro — output the equivalent values the user can dial in if they were on iPhone 16 Pro Photos.app."}`,
     `- ${hasDepth ? "Depth map detected — you MAY set the `depth` block." : "No depth map — leave `depth` null."}`,
     subject ? `- Subject hint: ${subject}` : "",
@@ -117,8 +124,7 @@ export async function POST(req) {
 
   const user = await getCurrentUser().catch(() => null);
 
-  const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
+  if (!hasVisionKey()) {
     const clamped = clampRecipe(stubRecipe(), { hasDepth });
     const out = { ...clamped, deviceProfile: isIPhone16Pro ? "iphone-16-pro" : "generic", source: "stub" };
     const id = await persistRecipe({ user, recipe: clamped, deviceProfile: out.deviceProfile, subject, thumbnail: imageDataUrl });
@@ -126,9 +132,8 @@ export async function POST(req) {
   }
 
   try {
-    const groq = createGroq({ apiKey });
     const { object } = await generateObject({
-      model: groq(VISION_MODEL),
+      model: visionModel(),
       schema: AdjustmentRecipeSchema,
       messages: [{
         role: "user",

@@ -20,6 +20,17 @@ export const AdjustmentRecipeSchema = z.object({
     score: z.number().int().min(1).max(5).describe("1=weak to 5=excellent."),
     headline: z.string().describe("One-line verdict on the photo as shot. Specific, no platitudes."),
   }),
+  shot: z.object({
+    camera: z.string().nullable().describe("Camera that took the photo: from EXIF when provided, else best estimate from image."),
+    lens: z.string().nullable().describe("Lens or equivalent, e.g. '26mm main'."),
+    focalLength: z.string().nullable().describe("e.g. '26mm'."),
+    aperture: z.string().nullable().describe("e.g. 'f/1.8'."),
+    shutter: z.string().nullable().describe("e.g. '1/125s'."),
+    iso: z.string().nullable().describe("e.g. 'ISO 100'."),
+    subjectDistance: z.string().nullable().describe("Estimated distance to the main subject, e.g. '~2 m'."),
+    light: z.string().nullable().describe("Light direction and quality, e.g. 'soft window light from the left'."),
+    position: z.string().nullable().describe("Camera position/angle, e.g. 'eye level, ~3 m from the subject'."),
+  }).nullable().describe("How this shot was taken: parameters, distance, light and position."),
   diagnosis: z.string().describe("One paragraph: what is in the frame and what hurts it."),
   strengths: z.array(z.string()).max(4).describe("What the shot already does well. May be empty, but include the field."),
   issues: z.array(z.object({

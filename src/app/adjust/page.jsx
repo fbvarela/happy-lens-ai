@@ -26,6 +26,7 @@ export default function AdjustPage() {
   const [dragging, setDragging] = useState(false);
   const [copied, setCopied] = useState(null);
   const [history, setHistory] = useState([]);
+  const [modal, setModal] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => { setHistory(listHistory()); }, []);
@@ -102,8 +103,8 @@ export default function AdjustPage() {
 
   return (
     <>
-      <h1 className="page-title">Critique & adjust a photo</h1>
-      <p className="page-sub">Drop a photo — get a verdict and the exact iPhone 16 Pro Photos-app slider values to fix it.</p>
+      <h1 className="page-title">Infer a photo's settings</h1>
+      <p className="page-sub">Drop a photo — get the camera params used, the distance and light, and the exact iPhone 16 Pro Photos-app slider values to fix it.</p>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, alignItems: "center" }}>
         <Link href="/adjust/batch" className="btn btn-ghost">Batch mode</Link>
         <Link href="/adjust/subjects" className="btn btn-ghost">Subject baselines</Link>
@@ -200,7 +201,7 @@ export default function AdjustPage() {
                 key={i}
                 type="button"
                 className="card"
-                onClick={() => { setRecipe(h.recipe); setPreviewUrl(h.thumbnail); setSubject(h.subject || ""); }}
+                onClick={() => setModal({ recipe: h.recipe, previewUrl: h.thumbnail, subject: h.subject || "", title: h.title || h.recipe?.title || "Inference", at: h.at })}
                 style={{ textAlign: "left", cursor: "pointer", padding: 10 }}
               >
                 <div className="preview-wrap" style={{ marginBottom: 8 }}>
@@ -214,6 +215,29 @@ export default function AdjustPage() {
             ))}
           </div>
         </section>
+      )}
+
+      {modal && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setModal(null)}>
+          <div className="modal-dialog" role="dialog" aria-modal="true" aria-label={modal.title} onClick={(e) => e.stopPropagation()}>
+            <div className="recipe-head">
+              <div className="card-title" style={{ margin: 0 }}>{modal.title}</div>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setModal(null)}>Close</button>
+            </div>
+            {modal.subject && <p className="recipe-line" style={{ margin: "8px 0 0", color: "var(--text-muted)" }}>Subject: {modal.subject}</p>}
+            <div className="modal-scroll">
+              <RecipeCard recipe={modal.recipe} previewUrl={modal.previewUrl} deviceProfile={modal.recipe?.deviceProfile} />
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <button type="button" className="btn btn-primary btn-sm" onClick={() => copy("text", recipeToText(modal.recipe))}>
+                  {copied === "text" ? "Copied!" : "Copy as text"}
+                </button>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => copy("shortcuts", recipeToShortcutsList(modal.recipe))}>
+                  {copied === "shortcuts" ? "Copied!" : "Copy for Shortcuts"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
