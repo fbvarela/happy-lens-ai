@@ -142,6 +142,19 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 }
 .locale-btn:hover { color: #fff; }
 .locale-btn.locale-on { background: var(--sun); color: var(--bark); }
+.sidebar-footer-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 12px; border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "DM Sans", sans-serif; font-size: 0.74rem; font-weight: 600;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover { color: #fff; }
+.theme-toggle.theme-on { background: var(--sun); color: var(--bark); border-color: var(--sun); }
+.theme-toggle-text { white-space: nowrap; }
 .bottom-nav {
   display: none;
   position: fixed; bottom: 0; left: 0; right: 0;
@@ -845,3 +858,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+/* Field mode: high-contrast colours and larger touch targets for outdoor use */
+:root[data-field="on"] {
+  --bark: #241a10;
+  --leaf: #1f6b3c;
+  --sun: #b97700;
+  --clay: #b33a17;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --cream: #faf7f1;
+  --line: #8f7f6b;
+  --text: #17100a;
+  --text-muted: #40321f;
+}
+:root[data-field="on"] .input,
+:root[data-field="on"] select.input,
+:root[data-field="on"] .btn { min-height: 52px; }
+:root[data-field="on"] .btn-sm { min-height: 44px; }
+:root[data-field="on"] .chip { height: 48px; }
+:root[data-field="on"] .sideitem,
+:root[data-field="on"] .bottom-nav-item { min-height: 54px; }
+:root[data-field="on"] .diagram-weather-hours button { min-width: 78px; padding: 8px 6px; }
+:root[data-field="on"] input[type="range"] { height: 48px; }
+:root[data-field="on"] .input { border-width: 2px; }
+:root[data-field="on"] .card { border-width: 1.5px; box-shadow: none; }
+:root[data-field="on"] .text-muted,
+:root[data-field="on"] .recipe-stat-label,
+:root[data-field="on"] .input-label { font-weight: 600; }

@@ -487,7 +487,8 @@ function DiagramInner() {
             <label className="scene-field">
               <span className="input-label">{t("diagram.form.time")} · {timeStr}</span>
               <input type="range" min="0" max="24" step="0.25" value={timeHour}
-                onChange={(e) => setTimeHour(+e.target.value)} style={{ width: "100%", height: 44, accentColor: "var(--sun)" }} />
+                onChange={(e) => setTimeHour(+e.target.value)} aria-label={t("diagram.form.time")} aria-valuetext={timeStr}
+                style={{ width: "100%", height: 44, accentColor: "var(--sun)" }} />
               <div className="time-hint ok">
                 {t("diagram.form.sun", { alt: sunAltStr, az: sunAzStr })}
               </div>
@@ -707,7 +708,7 @@ function DiagramInner() {
             ))}
           </div>
         )}
-        {weatherTimeline && (
+        {weatherTimeline ? (
           <div className="diagram-weather-timeline">
             <strong>{t("diagram.weather.timeline")}</strong>
             <div className="diagram-weather-hours">
@@ -727,6 +728,8 @@ function DiagramInner() {
               })}
             </div>
           </div>
+        ) : (
+          <p className="field-error" style={{ marginTop: 8 }}>{t("diagram.weather.unavailable")}</p>
         )}
         </div>
 
@@ -797,27 +800,31 @@ function DiagramInner() {
                 <label className="scene-field diagram-focus-distance-field">
                   <span className="input-label">{t("diagram.camera.focusDistance")} · {customDistance >= 50 ? "∞" : `${customFocusDistance} m`}</span>
                   <input type="range" min="0.5" max="50" step="0.1" value={customFocusDistance}
-                    onChange={(e) => setCustomFocusDistance(e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                    onChange={(e) => setCustomFocusDistance(e.target.value)} aria-label={t("diagram.camera.focusDistance")} aria-valuetext={`${customDistance >= 50 ? "∞" : `${customDistance} m`}`}
+                    style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
               )}
               {hasFocalSlider && (
                 <label className="scene-field diagram-focal-field">
                   <span className="input-label">{t("diagram.camera.focalLength")} · {focalMm.toFixed(0)} mm</span>
                   <input type="range" min={focalMin} max={focalMax} step="1" value={focalMm}
-                    onChange={(e) => setFocalLength(+e.target.value)} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                    onChange={(e) => setFocalLength(+e.target.value)} aria-label={t("diagram.camera.focalLength")} aria-valuetext={`${focalMm.toFixed(0)} mm`}
+                    style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
                 </label>
               )}
               <label className="scene-field diagram-aperture-field">
                 <span className="input-label">{t("coach.recipe.aperture")} · f/{activeFNumber.toFixed(1)}</span>
                 <input type="range" min={fMin} max={fMax} step="0.1"
                   value={exposureAuto ? autoFNumber : fN}
-                  onChange={(e) => { setExposureAuto(false); setFStop(+e.target.value); }} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                  onChange={(e) => { setExposureAuto(false); setFStop(+e.target.value); }} aria-label={t("coach.recipe.aperture")} aria-valuetext={`f/${activeFNumber.toFixed(1)}`}
+                  style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
               <label className="scene-field diagram-shutter-field">
                 <span className="input-label">{t("coach.recipe.shutter")} · 1/{activeShutterDen}</span>
                 <input type="range" min={0} max={SHUTTERS.length - 1} step={1}
                   value={exposureAuto ? SHUTTERS.indexOf(autoShutterDen) : shutterIdx}
-                  onChange={(e) => { setExposureAuto(false); setShutterIdx(+e.target.value); }} style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
+                  onChange={(e) => { setExposureAuto(false); setShutterIdx(+e.target.value); }} aria-label={t("coach.recipe.shutter")} aria-valuetext={`1/${activeShutterDen} s`}
+                  style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
             </div>
             <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
