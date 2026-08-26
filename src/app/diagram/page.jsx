@@ -450,6 +450,14 @@ function DiagramInner() {
     x: 60 + (point.dx - insetAnchor.dx) * insetScale,
     y: 60 + (point.dy - insetAnchor.dy) * insetScale,
   });
+  const insertLabel = (camera, subject) => {
+    const below = subject ? camera.y + 34 : camera.y + 34;
+    const side = Math.sign(subject.x - camera.x) || 1;
+    return {
+      x: Math.max(30, Math.min(90, camera.x + side * 6)),
+      y: Math.min(below, 110),
+    };
+  };
   const dragHitRadius = 18;
 
   return (
@@ -530,7 +538,7 @@ function DiagramInner() {
 
       <div className="diagram-row" style={{ marginTop: 18 }}>
         <div className="diagram-wrap" style={{ maxWidth: 520 }}>
-        <svg ref={svgRef} viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+        <svg ref={svgRef} className="diagram-svg" viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
           onPointerMove={onPointerMove} onPointerUp={onPointerUp}
           style={{ width: "100%", height: "auto", touchAction: "none", background: showAerial ? "transparent" : "var(--cream)", borderRadius: 8, border: "1.5px solid var(--line)", display: "block" }}>
           {aerial && aerial.tiles.map((tile, i) => (
@@ -546,7 +554,7 @@ function DiagramInner() {
             const x = center.x + SCENE_R * Math.sin(rad);
             const y = center.y - SCENE_R * Math.cos(rad);
             return (
-              <text key={label} x={x} y={y + (deg === 180 ? 14 : 4)} textAnchor="middle" fontSize="10" fill="var(--text-muted)" fontWeight="700">{label}</text>
+              <text key={label} x={x} y={y + (deg === 180 ? 15 : 4)} textAnchor="middle" fontSize="12" fill="var(--text)" fontWeight="800">{label}</text>
             );
           })}
 
@@ -592,8 +600,8 @@ function DiagramInner() {
             return (
               <g key={`distance-${i}`} pointerEvents="none">
                 <line x1={cx} y1={cy} x2={sx} y2={sy} stroke="var(--text-muted)" strokeWidth="0.7" strokeDasharray="2 3" opacity="0.45" />
-                <rect x={labelX - 31} y={labelY - 8} width="62" height="12" rx="3" fill="var(--surface)" opacity="0.92" />
-                <text x={labelX} y={labelY + 1} textAnchor="middle" fontSize="7.5" fill="var(--text-muted)" opacity="0.95">
+                <rect x={labelX - 33} y={labelY - 9} width="66" height="14" rx="3" fill="var(--surface)" opacity="0.92" />
+                <text x={labelX} y={labelY + 2} textAnchor="middle" fontSize="11" fill="var(--text)" fontWeight="600" opacity="0.95">
                   {t("diagram.distance", { subject: i + 1, distance: distance.toFixed(1) })}
                 </text>
               </g>
@@ -610,8 +618,8 @@ function DiagramInner() {
                 {shadowWedge(sx, sy)}
                 <g transform={`translate(${sx},${sy})`}>
                   {issue && <circle r={9} fill="none" stroke="var(--clay)" strokeWidth="1.5" strokeDasharray="3 2" />}
-                  <circle r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
-                  <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{i + 1}</text>
+                  <circle r={5.5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
+                  <text y={22} textAnchor="middle" fontSize="12" fill="var(--text)" fontWeight="600">{i + 1}</text>
                   <circle r={dragHitRadius} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, `s${i}`)} />
                 </g>
               </g>
@@ -626,8 +634,8 @@ function DiagramInner() {
                 {fovCone(cx, cy)}
                 {shadowWedge(cx, cy)}
                 <g transform={`translate(${cx},${cy})`}>
-                  <circle r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
-                  <text y={20} textAnchor="middle" fontSize="10" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
+                  <circle r={5.5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
+                  <text y={22} textAnchor="middle" fontSize="12" fill="var(--text)" fontWeight="600">{t("diagram.legend.camera").slice(0, 1)}</text>
                   <circle r={dragHitRadius} fill="transparent" style={{ cursor: "grab" }} onPointerDown={(e) => onPointerDown(e, "camera")} />
                 </g>
               </>
@@ -643,16 +651,29 @@ function DiagramInner() {
               {(() => {
                 const camera = insetPoint(scene.camera);
                 const subject = insetPoint(focusPoint);
+                const insetDist = scene.camera && focusPoint
+                  ? Math.hypot(focusPoint.dx - scene.camera.dx, focusPoint.dy - scene.camera.dy) / PX_PER_M
+                  : null;
+                const dLabel = insertLabel(camera, subject);
                 return (
                   <>
                     <line x1={camera.x} y1={camera.y} x2={subject.x} y2={subject.y}
                       stroke="var(--text-muted)" strokeWidth="1" strokeDasharray="2 2" />
-                    <circle cx={subject.x} cy={subject.y} r={5} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
-                    <text x={subject.x} y={subject.y - 8} textAnchor="middle" fontSize="9" fill="var(--text)">{focusIndex + 1}</text>
+                    {insetDist != null && (
+                      <>
+                        <rect x={dLabel.x - 26} y={dLabel.y - 9} width="52" height="16" rx="4"
+                          fill="var(--surface)" stroke="var(--line)" opacity="0.95" />
+                        <text x={dLabel.x} y={dLabel.y + 4} textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--text)">
+                          {`${insetDist.toFixed(1)} m`}
+                        </text>
+                      </>
+                    )}
+                    <circle cx={subject.x} cy={subject.y} r={6} fill="var(--leaf)" stroke="#fff" strokeWidth="1.5" />
+                    <text x={subject.x} y={subject.y - 9} textAnchor="middle" fontSize="11" fill="var(--text)">{focusIndex + 1}</text>
                     <circle cx={subject.x} cy={subject.y} r={9} fill="transparent"
                       onPointerDown={(e) => onPointerDown(e, `s${focusIndex}`)} />
-                    <circle cx={camera.x} cy={camera.y} r={5} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
-                    <text x={camera.x} y={camera.y + 15} textAnchor="middle" fontSize="9" fill="var(--text)">{t("diagram.legend.camera").slice(0, 1)}</text>
+                    <circle cx={camera.x} cy={camera.y} r={6} fill="var(--clay)" stroke="#fff" strokeWidth="1.5" />
+                    <text x={camera.x} y={camera.y + 16} textAnchor="middle" fontSize="11" fill="var(--text)">{t("diagram.legend.camera").slice(0, 1)}</text>
                     <circle cx={camera.x} cy={camera.y} r={9} fill="transparent"
                       onPointerDown={(e) => onPointerDown(e, "camera")} />
                   </>
