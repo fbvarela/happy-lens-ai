@@ -383,7 +383,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-key span { display: flex; align-items: center; gap: 5px; min-width: 0; }
 .diagram-key-swatch { display: inline-block; flex: 0 0 14px; height: 8px; border-radius: 2px; background: var(--line); }
 .diagram-key-swatch.shadow { background: rgba(0, 0, 0, 0.25); }
-.diagram-key-swatch.visor { background: var(--clay); opacity: 0.35; }
+.diagram-key-swatch.visor { background: var(--clay); opacity: 0.35; font-size: 1.2rem; } @media (max-width: 600px) {.diagram-key-swatch.visor { font-size: 1.5rem; }} }
 .diagram-key-swatch.dof { background: var(--leaf); opacity: 0.45; }
 .diagram-key-swatch.distance { border-top: 1px dashed var(--text-muted); background: transparent; }
 .diagram-key-swatch.light { border-top: 1px dashed var(--sun); background: transparent; }
