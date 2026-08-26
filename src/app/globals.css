@@ -885,15 +885,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 :root[data-field="on"] .recipe-stat-label,
 :root[data-field="on"] .input-label { font-weight: 600; }
 
-/* ponytail: scope-var overrides keep light+dark themes; accent mix toward var(--text) boosts contrast in both */
+/* ponytail: fixed dark canvas = max contrast, identical in both themes */
 :root[data-field="on"] .diagram-wrap {
-  --cream: color-mix(in srgb, var(--cream) 74%, var(--text));
-  --line: color-mix(in srgb, var(--line) 48%, var(--text));
-  --text-muted: color-mix(in srgb, var(--text-muted) 62%, var(--text));
-  --surface: color-mix(in srgb, var(--surface) 68%, var(--text));
-  --leaf: color-mix(in srgb, var(--leaf) 78%, var(--text));
-  --clay: color-mix(in srgb, var(--clay) 80%, var(--text));
-  --sun: color-mix(in srgb, var(--sun) 80%, var(--text));
+  --cream: #1a2420;
+  --line: #5c6d65;
+  --text: #f2f7f4;
+  --text-muted: #dbe7e1;
+  --surface: #2b3731;
+  --leaf: #7fe0ae;
+  --clay: #ff9a6e;
+  --sun: #ffcf5e;
 }
 :root[data-field="on"] .diagram-wrap svg { border-width: 2px; }
 :root[data-field="on"] .diagram-wrap svg text { font-weight: 700; }
@@ -902,8 +903,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 :root[data-field="on"] .diagram-wrap svg [opacity="0.1"] { opacity: 0.24; }
 :root[data-field="on"] .diagram-wrap svg [stroke-opacity="0.2"] { stroke-opacity: 0.55; }
 :root[data-field="on"] .diagram-wrap svg [stroke-opacity="0.3"] { stroke-opacity: 0.7; }
-:root[data-field="on"] .diagram-wrap svg [opacity="0.07"] { opacity: 0.12; }
-:root[data-field="on"] .diagram-wrap svg [opacity="0.18"] { opacity: 0.3; }
 :root[data-field="on"] .diagram-key { border-top-width: 2px; }
 :root[data-field="on"] .diagram-key-swatch { height: 12px; }
 
