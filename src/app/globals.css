@@ -407,9 +407,15 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   .coach-form select.input { max-width: 360px; }
 }
 @media (min-width: 900px) {
-  .diagram-scene-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .diagram-scene-grid .diagram-place-field,
-  .diagram-scene-grid .diagram-scene-actions { grid-column: 3 / -1; }
+  .diagram-scene-grid {
+    grid-template-columns: minmax(80px, 0.7fr) minmax(80px, 0.7fr) minmax(220px, 1.7fr) minmax(120px, 1fr) minmax(160px, 1.3fr) auto auto;
+    align-items: end;
+  }
+  .diagram-scene-grid .diagram-place-field.full,
+  .diagram-scene-grid .diagram-scene-actions.full { grid-column: auto; }
+  .diagram-scene-grid .locate-text,
+  .diagram-scene-grid .flash-toggle-label { display: none; }
+  .diagram-scene-grid .locate-btn { padding: 0 12px; gap: 0; }
 }
 
 .coach-form .input {

@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Smartphone, Camera as CameraIcon, Aperture, Timer, Gauge, Cpu, Sun } from "lucide-react";
+import { MapPin, Smartphone, Satellite, Camera as CameraIcon, Aperture, Timer, Gauge, Cpu, Sun } from "lucide-react";
 import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
 import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
@@ -494,12 +494,15 @@ function DiagramInner() {
               </div>
             </label>
             <div className="full diagram-scene-actions">
-              <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}>
+              <button type="button" className="locate-btn" onClick={useMyLocation} disabled={locating}
+                aria-label={t("coach.locate.ready")} title={t("coach.locate.ready")}>
                 <MapPin size={16} aria-hidden />
-                <span>{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
+                <span className="locate-text">{locating ? t("coach.locate.locating") : t("coach.locate.ready")}</span>
               </button>
-              <label className="flash-toggle" style={{ marginTop: 10 }}>
-                <input type="checkbox" checked={showAerial} onChange={(e) => setShowAerial(e.target.checked)} />
+              <label className="flash-toggle aerial-toggle" title={t("diagram.form.aerial")}>
+                <input type="checkbox" checked={showAerial} onChange={(e) => setShowAerial(e.target.checked)}
+                  aria-label={t("diagram.form.aerial")} />
+                <Satellite size={16} aria-hidden />
                 <span className="flash-toggle-label">{t("diagram.form.aerial")}</span>
               </label>
             </div>
