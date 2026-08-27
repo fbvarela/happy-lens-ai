@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Smartphone, Camera as CameraIcon } from "lucide-react";
+import { MapPin, Smartphone, Camera as CameraIcon, Aperture, Timer, Gauge, Cpu, Sun } from "lucide-react";
 import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
 import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
@@ -688,6 +688,7 @@ function DiagramInner() {
           <span><i className="diagram-key-swatch light" />{t("diagram.legend.light")}</span>
           <span><i className="diagram-key-swatch boundary" />{t("diagram.legend.boundary")}</span>
         </div>
+        </div>
         {dof && (
           <div className="diagram-dof">
             <span>{t("diagram.camera.dof")}: {dof.near.toFixed(1)}–{dof.far == null ? "∞" : dof.far.toFixed(1)} m</span>
@@ -729,9 +730,8 @@ function DiagramInner() {
             </div>
           </div>
         ) : (
-          <p className="field-error" style={{ marginTop: 8 }}>{t("diagram.weather.unavailable")}</p>
+          <p className="field-error diagram-weather-empty" style={{ marginTop: 8 }}>{t("diagram.weather.unavailable")}</p>
         )}
-        </div>
 
         <div className="diagram-info">
           {sunAlt != null && sunAlt <= 0 && (
@@ -742,7 +742,7 @@ function DiagramInner() {
             {lightMode && (
           <div className="card diagram-light-card">
             <div className="recipe-head">
-              <div className="card-title" style={{ margin: 0 }}>{t(`diagram.light.${lightMode}.title`)}</div>
+              <div className="card-title" style={{ margin: 0, display: "inline-flex", alignItems: "center", gap: 6 }}><Sun size={16} aria-hidden /> {t(`diagram.light.${lightMode}.title`)}</div>
               <span className={`badge ${lightMode === "front" ? "badge-sun" : lightMode === "side" ? "badge-leaf" : "badge-clay"}`}>
                 {t(`diagram.light.${lightMode}.label`)}
               </span>
@@ -756,34 +756,34 @@ function DiagramInner() {
 
           <div className="card diagram-camera-card">
             <div className="recipe-head">
-              <div className="card-title" style={{ margin: 0 }}>{t("diagram.camera.title")}</div>
+              <div className="card-title" style={{ margin: 0, display: "inline-flex", alignItems: "center", gap: 6 }}><CameraIcon size={16} aria-hidden /> {t("diagram.camera.title")}</div>
               <button type="button" className="chip chip-sm" aria-pressed={exposureAuto} onClick={() => setExposureAuto(true)}>
                 {t("diagram.camera.auto")}
               </button>
             </div>
             <div className="recipe-stats">
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.lens")}</div>
+                <div className="recipe-stat-label"><CameraIcon size={13} aria-hidden /> {t("coach.recipe.lens")}</div>
                 <div className="recipe-stat-value">{lens ? lens.label : "—"}</div>
               </div>
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.aperture")}</div>
+                <div className="recipe-stat-label"><Aperture size={13} aria-hidden /> {t("coach.recipe.aperture")}</div>
                 <div className="recipe-stat-value">{activeFNumber != null ? `f/${activeFNumber.toFixed(1)}` : "—"}</div>
               </div>
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.shutter")}</div>
+                <div className="recipe-stat-label"><Timer size={13} aria-hidden /> {t("coach.recipe.shutter")}</div>
                 <div className="recipe-stat-value">1/{activeShutterDen}s</div>
               </div>
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.iso")}</div>
+                <div className="recipe-stat-label"><Gauge size={13} aria-hidden /> {t("coach.recipe.iso")}</div>
                 <div className="recipe-stat-value">{activeIso}</div>
               </div>
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.mode")}</div>
+                <div className="recipe-stat-label"><Cpu size={13} aria-hidden /> {t("coach.recipe.mode")}</div>
                 <div className="recipe-stat-value">{cameraMode ?? "—"}</div>
               </div>
               <div>
-                <div className="recipe-stat-label">{t("coach.recipe.ev")}</div>
+                <div className="recipe-stat-label"><Sun size={13} aria-hidden /> {t("coach.recipe.ev")}</div>
                 <div className="recipe-stat-value">{lightMode ? t(`diagram.light.${lightMode}.ev`) : "—"}</div>
               </div>
             </div>

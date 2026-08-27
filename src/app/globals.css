@@ -206,25 +206,24 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
-.diagram-row { display: grid; gap: 16px; }
+.diagram-row { display: grid; gap: 16px; align-items: start; }
 .diagram-info { display: grid; gap: 12px; align-content: start; }
 @media (min-width: 900px) {
-  .diagram-row { grid-template-columns: minmax(320px, 480px) 1fr; align-items: start; }
+  .diagram-row { grid-template-columns: minmax(340px, 1.2fr) minmax(320px, 1fr) minmax(280px, 0.9fr); }
   .diagram-info,
   .diagram-info .card-grid { display: contents; }
-  .diagram-light-card { grid-column: 1; grid-row: 2; }
-  .diagram-camera-card { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
-  .diagram-info > .field-error { grid-column: 2; grid-row: 1; }
+  .diagram-wrap { grid-column: 1; grid-row: 1; }
+  .diagram-camera-card { grid-column: 2; grid-row: 1; }
+  .diagram-light-card { grid-column: 3; grid-row: 1; }
+  .diagram-dof { grid-column: 3; grid-row: 2; }
+  .diagram-focus-note { grid-column: 3; grid-row: 3; }
+  .diagram-weather-timeline,
+  .diagram-weather-empty { grid-column: 1 / -1; grid-row: 4; }
+  .diagram-info > .field-error { grid-column: 1 / -1; grid-row: 5; }
   .diagram-focus-field,
   .diagram-focus-distance-field { grid-column: 1 / -1; }
   .diagram-aperture-field,
   .diagram-shutter-field { grid-column: 1 / -1; }
-}
-@media (min-width: 1200px) {
-  .diagram-row { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-  .diagram-light-card { grid-column: 3; grid-row: 1; }
-  .diagram-camera-card { grid-column: 2; grid-row: 1; }
-  .diagram-info > .field-error { grid-column: 2 / -1; grid-row: 2; }
 }
 
 /* Buttons — pill shape per brand spec */
