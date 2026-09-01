@@ -103,7 +103,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   transition: background 0.14s, color 0.14s;
 }
 .sideitem:hover  { background: rgba(255, 255, 255, 0.1); color: #fff; }
-.sideitem.active { background: var(--sun); color: var(--bark); font-weight: 600; }
+.sideitem.active { background: var(--sun); color: #17100a; font-weight: 600; }
 .sidebar-footer {
   margin-top: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -141,7 +141,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   -webkit-tap-highlight-color: transparent;
 }
 .locale-btn:hover { color: #fff; }
-.locale-btn.locale-on { background: var(--sun); color: var(--bark); }
+.locale-btn.locale-on { background: var(--sun); color: #17100a; }
 .sidebar-footer-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .theme-toggle {
   display: inline-flex; align-items: center; gap: 6px;
@@ -153,7 +153,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 .theme-toggle:hover { color: #fff; }
-.theme-toggle.theme-on { background: var(--sun); color: var(--bark); border-color: var(--sun); }
+.theme-toggle.theme-on { background: var(--sun); color: #17100a; border-color: var(--sun); }
 .theme-toggle-text { white-space: nowrap; }
 .bottom-nav {
   display: none;
@@ -238,7 +238,7 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .btn:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
 .btn-primary { background: var(--bark); color: #fff; }
 .btn-primary:hover { background: var(--bark-light); }
-.btn-sun  { background: var(--sun); color: var(--bark); font-weight: 600; }
+.btn-sun  { background: var(--sun); color: #17100a; font-weight: 600; }
 .btn-sun:hover { background: var(--sun-light); }
 .btn-leaf { background: var(--leaf); color: #fff; }
 .btn-leaf:hover { background: var(--leaf-light); }
@@ -355,6 +355,9 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .chip:hover { border-color: var(--bark-light); }
 .chip[aria-pressed="true"] {
   background: var(--bark); border-color: var(--bark); color: #fff;
+}
+[data-theme="dark"] .chip[aria-pressed="true"] {
+  background: var(--bark); border-color: var(--bark); color: #12201b;
 }
 
 .scene-grid {
@@ -881,9 +884,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 /* Field mode: high-contrast colours and larger touch targets for outdoor use */
 :root[data-field="on"] {
   --bark: #241a10;
+  --bark-light: #4b3a26;
   --leaf: #1f6b3c;
+  --leaf-light: #2f8752;
   --sun: #b97700;
+  --sun-light: #d19026;
   --clay: #b33a17;
+  --clay-light: #cf5630;
   --bg: #ffffff;
   --surface: #ffffff;
   --cream: #faf7f1;
@@ -891,6 +898,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   --text: #17100a;
   --text-muted: #40321f;
 }
+/* Dark theme + field mode: darker high-contrast variant (oposite of the light one above) */
+:root[data-field="on"][data-theme="dark"] {
+  --bark: #eef7f4;
+  --bark-light: #c2e0d5;
+  --leaf: #8fe6bd;
+  --leaf-light: #aaf0d0;
+  --sun: #fcd76f;
+  --sun-light: #ffe6a0;
+  --clay: #ffa983;
+  --clay-light: #ffc4a2;
+  --bg: #0d1211;
+  --surface: #161e1b;
+  --cream: #1b2521;
+  --line: #55665f;
+  --text: #f4f8f6;
+  --text-muted: #c2d0cb;
+}
+:root[data-field="on"][data-theme="dark"] .btn-primary,
+:root[data-field="on"][data-theme="dark"] .btn-leaf,
+:root[data-field="on"][data-theme="dark"] .btn-primary:hover,
+:root[data-field="on"][data-theme="dark"] .btn-leaf:hover { color: #12201b; }
 :root[data-field="on"] .input,
 :root[data-field="on"] select.input,
 :root[data-field="on"] .btn { min-height: 52px; }
