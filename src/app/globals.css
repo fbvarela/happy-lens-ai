@@ -710,6 +710,8 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
   .page { padding: 20px 16px 24px; }
   .page-title { font-size: 1.6rem; }
   .card { padding: 16px; }
+  .nav-mobile-bar .theme-toggle { padding: 0 10px; }
+  .nav-mobile-bar .theme-toggle-text { display: none; }
 }
 @media (max-width: 480px) {
   .page { padding: 16px 12px 16px; }

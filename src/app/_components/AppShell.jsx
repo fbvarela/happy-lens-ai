@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User, Sun, Moon, SunMedium } from "lucide-react";
+import { Home, Target, Map, Compass, SlidersHorizontal, Camera, User, Sun, Moon, Focus } from "lucide-react";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 
@@ -84,7 +84,7 @@ function FieldToggle() {
       aria-label={t("field.toggle")}
       title={t("field.highContrast")}
     >
-      <SunMedium size={15} aria-hidden />
+      <Focus size={15} aria-hidden />
       <span className="theme-toggle-text">{t("field.on")}</span>
     </button>
   );
