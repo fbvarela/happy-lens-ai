@@ -406,6 +406,13 @@ h1, h2, h3, h4 { font-family: "Fraunces", Georgia, serif; color: var(--bark); }
 .diagram-weather-hours button.selected { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 18%, var(--surface)); color: var(--text); }
 .diagram-weather-hours button span { font-size: 0.7rem; }
 .diagram-weather-hours button small { font-size: 0.62rem; }
+.diagram-weather-days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-top: 6px; }
+.diagram-weather-days button { display: grid; grid-auto-flow: row; justify-items: center; gap: 2px; min-height: 82px; padding: 8px 4px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--text-muted); font: inherit; cursor: pointer; }
+.diagram-weather-days button svg { color: var(--sun); }
+.diagram-weather-days button.selected { border-color: var(--sun); background: color-mix(in srgb, var(--sun) 18%, var(--surface)); color: var(--text); }
+.diagram-weather-days .day-name { font-weight: 600; color: var(--text); }
+.diagram-weather-days .day-temp { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+.diagram-weather-days button small { font-size: 0.72rem; }
 @media (min-width: 900px) {
   .diagram-controls-card { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
   .diagram-controls-card > .coach-section:first-child { grid-column: 1 / -1; }

@@ -62,3 +62,34 @@ export async function hourlyWeather({ lat, lng, date }) {
     return null;
   }
 }
+
+export async function dailyWeather({ lat, lng, date }) {
+  if (lat == null || lng == null) return null;
+  const d = date ? new Date(date) : new Date();
+  const start = d.toISOString().slice(0, 10);
+  const end = new Date(d.getTime() + 2 * 86400000).toISOString().slice(0, 10);
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.searchParams.set("latitude", String(lat));
+  url.searchParams.set("longitude", String(lng));
+  url.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max");
+  url.searchParams.set("timezone", "UTC");
+  url.searchParams.set("start_date", start);
+  url.searchParams.set("end_date", end);
+  try {
+    const res = await fetch(url, { next: { revalidate: 900 } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const da = data?.daily;
+    if (!da?.time?.length) return null;
+    return da.time.map((time, i) => ({
+      date: time,
+      weatherCode: da.weather_code?.[i] ?? null,
+      tempMaxC: da.temperature_2m_max?.[i] ?? null,
+      tempMinC: da.temperature_2m_min?.[i] ?? null,
+      precipMm: da.precipitation_sum?.[i] ?? null,
+      windKph: da.wind_speed_10m_max?.[i] != null ? +(da.wind_speed_10m_max[i] * 3.6).toFixed(1) : null,
+    }));
+  } catch {
+    return null;
+  }
+}

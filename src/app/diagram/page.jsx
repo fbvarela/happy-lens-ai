@@ -2,11 +2,11 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { MapPin, Smartphone, Satellite, Camera as CameraIcon, Aperture, Timer, Gauge, Cpu, Sun } from "lucide-react";
+import { MapPin, Smartphone, Satellite, Sun, CloudSun, Cloud, CloudRain, CloudSnow, CloudLightning, CloudFog, CloudDrizzle, Camera as CameraIcon, Aperture, Timer, Gauge, Cpu } from "lucide-react";
 import { SUBJECT_PRESETS, getSubjectPreset } from "@/data/subjects/presets";
 import { useGearStore } from "@/lib/gear-store";
 import { useT, useLocale } from "@/lib/i18n/LocaleProvider";
-import { dayWindows, hourlyWeather } from "@/lib/sun-day";
+import { dayWindows, dailyWeather } from "@/lib/sun-day";
 import { sunSnapshot } from "@/lib/sun";
 import { weatherSnapshot } from "@/lib/weather";
 import { calculateDof, recommendExposure } from "@/lib/exposure.mjs";
@@ -31,6 +31,19 @@ function todayLocal() {
   return new Date(d.getTime() - tz).toISOString().slice(0, 10);
 }
 
+function weatherIcon(code) {
+  if (code == null) return Sun;
+  if (code === 0) return Sun;
+  if (code === 1 || code === 2) return CloudSun;
+  if (code === 3) return Cloud;
+  if ([45, 48].includes(code)) return CloudFog;
+  if ([51, 53, 55, 56, 57].includes(code)) return CloudDrizzle;
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return CloudRain;
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return CloudSnow;
+  if ([95, 96, 99].includes(code)) return CloudLightning;
+  return Cloud;
+}
+
 function DiagramInner() {
   const t = useT();
   const { locale } = useLocale();
@@ -46,7 +59,7 @@ function DiagramInner() {
   const [place, setPlace] = useState("");
   const [locateError, setLocateError] = useState(null);
   const [weather, setWeather] = useState(null);
-  const [weatherTimeline, setWeatherTimeline] = useState(null);
+  const [weatherDays, setWeatherDays] = useState(null);
   const [scene, setScene] = useState({
     subjects: [{ dx: -32, dy: -14 }, { dx: 32, dy: -14 }],
     camera: { dx: 0, dy: 62 },
@@ -106,12 +119,12 @@ function DiagramInner() {
 
   useEffect(() => {
     if (lat == null || lng == null || !form.date) {
-      setWeatherTimeline(null);
+      setWeatherDays(null);
       return;
     }
     let current = true;
-    hourlyWeather({ lat, lng, date: `${form.date}T12:00:00Z` }).then((hours) => {
-      if (current) setWeatherTimeline(hours);
+    dailyWeather({ lat, lng, date: `${form.date}T12:00:00Z` }).then((days) => {
+      if (current) setWeatherDays(days);
     });
     return () => { current = false; };
   }, [lat, lng, form.date]);
@@ -735,21 +748,21 @@ function DiagramInner() {
             ))}
           </div>
         )}
-        {weatherTimeline ? (
+        {weatherDays ? (
           <div className="diagram-weather-timeline">
             <strong>{t("diagram.weather.timeline")}</strong>
-            <div className="diagram-weather-hours">
-              {weatherTimeline.map((hour) => {
-                const local = new Date(`${hour.time}Z`);
-                const localHour = local.getHours();
+            <div className="diagram-weather-days">
+              {weatherDays.map((day) => {
+                const Icon = weatherIcon(day.weatherCode);
+                const dt = new Date(`${day.date}T00:00:00Z`);
+                const name = new Intl.DateTimeFormat(locale === "es" ? "es-ES" : "en-US", { weekday: "short" }).format(dt);
                 return (
-                  <button key={hour.time} type="button" className={localHour === weatherHour ? "selected" : ""}
-                    onClick={() => setTimeHour(localHour)} title={`${localHour}:00 · ${hour.cloudCoverPct ?? "—"}%`}>
-                    <span>{String(localHour).padStart(2, "0")}:00</span>
-                    <small>{hour.cloudCoverPct ?? "—"}%</small>
-                    <small>{hour.tempC != null ? `${Math.round(hour.tempC)}°` : "—"}</small>
-                    <small>{hour.windKph != null ? `${hour.windKph} km/h` : "—"}</small>
-                    <small>{hour.precipMm > 0 ? t("diagram.weather.rain") : t("diagram.weather.dry")}</small>
+                  <button key={day.date} type="button" className={day.date === form.date ? "selected" : ""}>
+                    <span className="day-name">{name}</span>
+                    <Icon size={22} aria-hidden />
+                    <span className="day-temp">{day.tempMaxC != null ? `${Math.round(day.tempMaxC)}°` : "—"}</span>
+                    <small>{day.tempMinC != null ? `${Math.round(day.tempMinC)}°` : "—"}</small>
+                    <small>{day.windKph != null ? `${day.windKph} km/h` : "—"}</small>
                   </button>
                 );
               })}
