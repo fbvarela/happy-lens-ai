@@ -906,6 +906,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
 
 /* ponytail: fixed dark canvas = max contrast, identical in both themes */
 :root[data-field="on"] .diagram-wrap { max-width: 100%; overflow: hidden;
+  background: #1a2420; border-radius: 8px;
   --cream: #1a2420;
   --line: #5c6d65;
   --text: #f2f7f4;
@@ -915,6 +916,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, .chip:focus-visible 
   --clay: #ff9a6e;
   --sun: #ffcf5e;
 }
+/* info blocks living outside .diagram-wrap share the same bright-on-dark panel */
+:root[data-field="on"] .diagram-dof,
+:root[data-field="on"] .diagram-focus-note,
+:root[data-field="on"] .diagram-weather-timeline,
+:root[data-field="on"] .diagram-weather-empty {
+  background: #1a2420; border-radius: 8px; padding: 8px 10px;
+  --text: #f2f7f4;
+  --text-muted: #dbe7e1;
+  --surface: #2b3731;
+  --line: #5c6d65;
+  --leaf: #7fe0ae;
+  --clay: #ff9a6e;
+  --sun: #ffcf5e;
+}
+:root[data-field="on"] .diagram-weather-timeline { margin-top: 10px; }
 :root[data-field="on"] .diagram-wrap svg { border-width: 2px; }
 :root[data-field="on"] .diagram-wrap svg text { font-weight: 700; }
 :root[data-field="on"] .diagram-wrap svg [stroke-width="0.75"] { stroke-width: 1.1; }
