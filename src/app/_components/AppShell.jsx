@@ -90,6 +90,62 @@ function FieldToggle() {
   );
 }
 
+const FONTSCALE_EVENT = "hl:fontscale";
+
+function readFontScale() {
+  const attr = typeof document !== "undefined" ? document.documentElement.dataset.fontScale : undefined;
+  return attr === "s" || attr === "l" ? attr : "";
+}
+
+function TextScaleToggle() {
+  const t = useT();
+  const [scale, setScale] = useState("");
+
+  // Two instances exist (sidebar + mobile bar, only one visible at a time).
+  // Keep them in sync: re-read the source of truth (the <html> attribute) on
+  // our own event, and on cross-tab `storage` changes.
+  useEffect(() => {
+    setScale(readFontScale());
+    const sync = () => setScale(readFontScale());
+    window.addEventListener(FONTSCALE_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(FONTSCALE_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
+
+  const apply = (k) => {
+    const next = readFontScale() === k ? "" : k;
+    if (next) {
+      document.documentElement.dataset.fontScale = next;
+      try { localStorage.setItem("hl.fontScale", next); } catch {}
+    } else {
+      delete document.documentElement.dataset.fontScale;
+      try { localStorage.removeItem("hl.fontScale"); } catch {}
+    }
+    window.dispatchEvent(new Event(FONTSCALE_EVENT));
+  };
+
+  return (
+    <div className="textscale" role="group" aria-label={t("a11y.textSize")}>
+      {["s", "m", "l"].map((k) => (
+        <button
+          key={k}
+          type="button"
+          className={`textscale-btn ${scale === k ? "textscale-on" : ""}`}
+          aria-pressed={scale === k}
+          aria-label={`${t("a11y.textSize")}: ${k.toUpperCase()}`}
+          title={`${t("a11y.textSize")}: ${k.toUpperCase()}`}
+          onClick={() => apply(k)}
+        >
+          {k.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function AppShell({ children }) {
   const pathname = usePathname() || "/";
   const t = useT();
@@ -108,6 +164,7 @@ export default function AppShell({ children }) {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">{t("a11y.skipToContent")}</a>
       <nav className="sidebar-nav" aria-label="Primary">
         <div className="sidebar-logo">happy lens</div>
         <div className="sidebar-section">Shoot</div>
@@ -130,6 +187,9 @@ export default function AppShell({ children }) {
             <ThemeToggle />
             <FieldToggle />
           </div>
+          <div className="sidebar-footer-row">
+            <TextScaleToggle />
+          </div>
           <span className="accent sidebar-signature">Happy Factory</span>
         </div>
       </nav>
@@ -139,11 +199,12 @@ export default function AppShell({ children }) {
         <div className="nav-mobile-actions">
           <FieldToggle />
           <ThemeToggle />
+          <TextScaleToggle />
           <LocaleSwitcher className="locale-switch-mobile" />
         </div>
       </header>
 
-      <main className="app">
+      <main className="app" id="main-content">
         <div className="page">{children}</div>
       </main>
 

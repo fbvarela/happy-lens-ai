@@ -123,7 +123,7 @@ export default function AdjustPage() {
           >
             <SlidersHorizontal size={32} aria-hidden style={{ color: "var(--leaf)" }} />
             <div style={{ fontWeight: 600, color: "var(--bark)" }}>Drop a photo here</div>
-            <div style={{ color: "var(--text-muted)", fontSize: "0.88rem" }}>JPEG, HEIC, PNG. Best results from iPhone 16 Pro.</div>
+            <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>JPEG, HEIC, PNG. Best results from iPhone 16 Pro.</div>
             <input
               ref={fileInput}
               type="file"

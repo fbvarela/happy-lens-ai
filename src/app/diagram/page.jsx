@@ -701,7 +701,7 @@ function DiagramInner() {
           </div>
         )}
 
-        <div className="diagram-legend" style={{ marginTop: 10, display: "flex", gap: 14, flexWrap: "wrap", fontSize: "0.82rem", color: "var(--text-muted)" }}>
+        <div className="diagram-legend" style={{ marginTop: 10, display: "flex", gap: 14, flexWrap: "wrap", fontSize: "0.9rem", color: "var(--text-muted)" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
             <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--leaf)", display: "inline-block" }} />
             {t("diagram.legend.subjects")}
@@ -866,7 +866,7 @@ function DiagramInner() {
                   style={{ width: "100%", height: 36, accentColor: "var(--clay)" }} />
               </label>
             </div>
-            <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
+            <p className="recipe-line" style={{ margin: "12px 0 0", color: "var(--text-muted)", fontSize: "0.92rem" }}>
               {t("diagram.camera.hint")}
             </p>
             <details className="diagram-explanations">

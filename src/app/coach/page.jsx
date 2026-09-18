@@ -487,7 +487,7 @@ function CoachPageInner() {
         <div className="card scene-block">
           <div className="card-title">{t("coach.sceneBlock.title")}</div>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>{error.replace(/^Scene:\s*/, "")}</p>
-          <p style={{ marginTop: 10, marginBottom: 0, fontSize: 13, color: "var(--text-muted)" }}>
+          <p style={{ marginTop: 10, marginBottom: 0, fontSize: "0.91rem", color: "var(--text-muted)" }}>
             {t("coach.sceneBlock.hint")}
           </p>
         </div>
@@ -537,7 +537,7 @@ function SavedRecipes({ recipes, gearStore, t, locale, lensLabel, onDelete }) {
                   </button>
                 </div>
               </div>
-              <p className="recipe-line" style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
+              <p className="recipe-line" style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
                 {r.subjectId ? t(`subject.${r.subjectId}`) : t("coach.savedRecipes.unknown")}
                 {" · "}{fmtWhen(r.createdAt)}
                 {r.lat != null && r.lng != null ? ` · ${r.lat.toFixed(2)}, ${r.lng.toFixed(2)}` : ""}
