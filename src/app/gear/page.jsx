@@ -263,7 +263,7 @@ export default function GearPage() {
             </div>
 
             <div className="coach-section">
-              <div className="coach-step-title">{t("gear.form.flash")} <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: 400 }}>({t("gear.form.optional")})</span></div>
+              <div className="coach-step-title">{t("gear.form.flash")} <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 400 }}>({t("gear.form.optional")})</span></div>
               <div className="scene-grid">
                 <label className="scene-field full">
                   <span className="input-label">{t("gear.form.flashLabel")}</span>
@@ -295,7 +295,7 @@ export default function GearPage() {
         )}
       </section>
 
-      <p style={{ marginTop: 20, color: "var(--text-muted)", fontSize: 13 }}>
+      <p style={{ marginTop: 20, color: "var(--text-muted)", fontSize: "0.91rem" }}>
         <Link href="/coach">← {t("gear.backToCoach")}</Link>
       </p>
     </>

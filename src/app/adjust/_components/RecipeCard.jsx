@@ -164,7 +164,7 @@ export default function RecipeCard({ recipe, previewUrl, deviceProfile, deviceWa
             </Tile>
           </div>
         )}
-        <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 6 }}>
+        <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: 6 }}>
           Simulated preview only — final result depends on the Photos app render.
         </div>
       </div>
@@ -235,7 +235,7 @@ function SliderGroup({ title, obj }) {
   if (!rows.length) return (
     <div className="card">
       <div className="recipe-stat-label">{title}</div>
-      <div style={{ color: "var(--text-muted)", fontSize: "0.88rem" }}>No changes recommended.</div>
+      <div style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>No changes recommended.</div>
     </div>
   );
   return (

@@ -4,6 +4,7 @@ export const DICTIONARIES = {
     locale: { label: "Language", en: "English", es: "Español" },
     theme: { light: "Light", dark: "Dark", toLight: "Switch to light theme", toDark: "Switch to dark theme" },
     field: { toggle: "Toggle field mode", on: "Field mode", off: "Field mode", highContrast: "High-contrast colours, larger controls for outdoor use" },
+    a11y: { skipToContent: "Skip to main content", textSize: "Text size" },
 
     home: {
       kicker: "happy lens",
@@ -348,6 +349,7 @@ entryDiagram: "Light diagram",
     locale: { label: "Idioma", en: "English", es: "Español" },
     theme: { light: "Claro", dark: "Oscuro", toLight: "Cambiar a tema claro", toDark: "Cambiar a tema oscuro" },
     field: { toggle: "Activar modo campo", on: "Modo campo", off: "Modo campo", highContrast: "Colores de alto contraste y controles más grandes para exteriores" },
+    a11y: { skipToContent: "Saltar al contenido principal", textSize: "Tamaño del texto" },
 
     home: {
       kicker: "happy lens",
