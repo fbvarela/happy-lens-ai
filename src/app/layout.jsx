@@ -1,8 +1,29 @@
 import "./globals.css";
+import { Atkinson_Hyperlegible, Fraunces } from "next/font/google";
 import AppShell from "./_components/AppShell";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { ThemeProvider, THEME_INIT_SCRIPT } from "@/lib/theme/ThemeProvider";
+
+// Self-hosted via next/font: no render-blocking Google Fonts request, fonts are
+// preloaded, and font-display is handled automatically (with metric-compatible
+// fallbacks to avoid layout shift). Weight/style subsets mirror the previous
+// Google Fonts URL exactly.
+const atkinson = Atkinson_Hyperlegible({
+  weight: ["400", "700"],
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-atkinson",
+});
+
+const fraunces = Fraunces({
+  weight: ["300", "400", "700"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-fraunces",
+});
 
 export const metadata = {
   title: "Happy Lens AI — Shot coach",
@@ -27,13 +48,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" suppressHydrationWarning className={`${atkinson.variable} ${fraunces.variable}`}>
       <body suppressHydrationWarning>
         {/* Applies the stored theme before paint so there is no flash of the
             wrong palette. Must run before React hydrates. */}
